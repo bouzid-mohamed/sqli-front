@@ -46,14 +46,14 @@ const Login = () => {
                                                         gutterBottom
                                                         variant={matchDownSM ? 'h3' : 'h2'}
                                                     >
-                                                        Hi, Welcome Back
+                                                        Bienvenue à nouveau
                                                     </Typography>
                                                     <Typography
                                                         variant="caption"
                                                         fontSize="16px"
                                                         textAlign={matchDownSM ? 'center' : 'inherit'}
                                                     >
-                                                        Enter your credentials to continue
+                                                        Entrez vos identifiants pour continuer
                                                     </Typography>
                                                 </Stack>
                                             </Grid>
@@ -69,11 +69,24 @@ const Login = () => {
                                         <Grid item container direction="column" alignItems="center" xs={12}>
                                             <Typography
                                                 component={Link}
-                                                to="/pages/register/register3"
+                                                to="/register/client"
                                                 variant="subtitle1"
                                                 sx={{ textDecoration: 'none' }}
                                             >
-                                                Don&apos;t have an account?
+                                                Creer votre compte client
+                                            </Typography>
+                                        </Grid>
+
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <Grid item container direction="column" alignItems="center" xs={12}>
+                                            <Typography
+                                                component={Link}
+                                                to="/register/company"
+                                                variant="subtitle1"
+                                                sx={{ textDecoration: 'none' }}
+                                            >
+                                                Creer votre compte entreprise
                                             </Typography>
                                         </Grid>
                                     </Grid>

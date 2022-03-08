@@ -51,6 +51,7 @@ const FirebaseLogin = ({ ...others }) => {
     const [showPassword, setShowPassword] = useState(false);
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
+        console.log(showPassword)
     };
 
     const handleMouseDownPassword = (event) => {
@@ -77,7 +78,7 @@ const FirebaseLogin = ({ ...others }) => {
                             <Box sx={{ mr: { xs: 1, sm: 2, width: 20 } }}>
                                 <img src={Google} alt="google" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
                             </Box>
-                            Sign in with Google
+                            Connectez-vous avec Google
                         </Button>
                     </AnimateButton>
                 </Grid>
@@ -105,7 +106,7 @@ const FirebaseLogin = ({ ...others }) => {
                             disableRipple
                             disabled
                         >
-                            OR
+                            OU
                         </Button>
 
                         <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
@@ -113,20 +114,20 @@ const FirebaseLogin = ({ ...others }) => {
                 </Grid>
                 <Grid item xs={12} container alignItems="center" justifyContent="center">
                     <Box sx={{ mb: 2 }}>
-                        <Typography variant="subtitle1">Sign in with Email address</Typography>
+                        <Typography variant="subtitle1">Connectez-vous avec votre adresse email</Typography>
                     </Box>
                 </Grid>
             </Grid>
 
             <Formik
                 initialValues={{
-                    email: 'info@codedthemes.com',
-                    password: '123456',
+                    email: '',
+                    password: '',
                     submit: null
                 }}
                 validationSchema={Yup.object().shape({
-                    email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-                    password: Yup.string().max(255).required('Password is required')
+                    email: Yup.string().email('Doit être un email valide').max(255).required('Email est requis'),
+                    password: Yup.string().max(255).min(5, 'Votre mot de passe n est pas assez sécurisé').required('Mot de passe est requis')
                 })}
                 onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
                     try {
@@ -147,7 +148,7 @@ const FirebaseLogin = ({ ...others }) => {
                 {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
                     <form noValidate onSubmit={handleSubmit} {...others}>
                         <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
-                            <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
+                            <InputLabel htmlFor="outlined-adornment-email-login">Adresse email </InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-email-login"
                                 type="email"
@@ -155,7 +156,7 @@ const FirebaseLogin = ({ ...others }) => {
                                 name="email"
                                 onBlur={handleBlur}
                                 onChange={handleChange}
-                                label="Email Address / Username"
+                                label="Adresse email"
                                 inputProps={{}}
                             />
                             {touched.email && errors.email && (
@@ -170,7 +171,7 @@ const FirebaseLogin = ({ ...others }) => {
                             error={Boolean(touched.password && errors.password)}
                             sx={{ ...theme.typography.customInput }}
                         >
-                            <InputLabel htmlFor="outlined-adornment-password-login">Password</InputLabel>
+                            <InputLabel htmlFor="outlined-adornment-password-login">Mot de passe</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-password-login"
                                 type={showPassword ? 'text' : 'password'}
@@ -210,10 +211,10 @@ const FirebaseLogin = ({ ...others }) => {
                                         color="primary"
                                     />
                                 }
-                                label="Remember me"
+                                label="Rester connecté"
                             />
                             <Typography variant="subtitle1" color="secondary" sx={{ textDecoration: 'none', cursor: 'pointer' }}>
-                                Forgot Password?
+                                Mot de passe oublié?
                             </Typography>
                         </Stack>
                         {errors.submit && (
@@ -233,7 +234,7 @@ const FirebaseLogin = ({ ...others }) => {
                                     variant="contained"
                                     color="secondary"
                                 >
-                                    Sign in
+                                    Connexion
                                 </Button>
                             </AnimateButton>
                         </Box>

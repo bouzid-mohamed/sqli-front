@@ -16,6 +16,8 @@ const UtilsTablerIcons = Loadable(lazy(() => import('views/utilities/TablerIcons
 
 // sample page routing
 const SamplePage = Loadable(lazy(() => import('views/sample-page')));
+const ListViewProducts = Loadable(lazy(() => import('views/pages/products/listViewProducts')));
+
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -26,6 +28,10 @@ const MainRoutes = {
         {
             path: '/',
             element: <DashboardDefault />
+        },
+        {
+            path: '/listView/products',
+            element: <ListViewProducts />
         },
         {
             path: '/dashboard/default',

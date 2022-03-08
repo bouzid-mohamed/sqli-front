@@ -6,6 +6,7 @@ import { styled } from '@mui/material/styles';
 const AuthWrapper1 = styled('div')(({ theme }) => ({
     backgroundColor: theme.palette.primary.light,
     minHeight: '100vh'
+    //backgroundImage: `url(${process.env.PUBLIC_URL + '/images/erica-zhou-IHpUgFDn7zU-unsplash.jpg'})`,
 }));
 
 export default AuthWrapper1;

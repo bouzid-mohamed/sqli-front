@@ -46,14 +46,14 @@ const Register = () => {
                                                         gutterBottom
                                                         variant={matchDownSM ? 'h3' : 'h2'}
                                                     >
-                                                        Sign up
+                                                        S'inscrire
                                                     </Typography>
                                                     <Typography
                                                         variant="caption"
                                                         fontSize="16px"
                                                         textAlign={matchDownSM ? 'center' : 'inherit'}
                                                     >
-                                                        Enter your credentials to continue
+                                                        Entrez vos identifiants pour continuer
                                                     </Typography>
                                                 </Stack>
                                             </Grid>
@@ -69,11 +69,11 @@ const Register = () => {
                                         <Grid item container direction="column" alignItems="center" xs={12}>
                                             <Typography
                                                 component={Link}
-                                                to="/pages/login/login3"
+                                                to="/login"
                                                 variant="subtitle1"
                                                 sx={{ textDecoration: 'none' }}
                                             >
-                                                Already have an account?
+                                                Vous avez déjà un compte?
                                             </Typography>
                                         </Grid>
                                     </Grid>

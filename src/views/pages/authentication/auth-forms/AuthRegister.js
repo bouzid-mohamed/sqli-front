@@ -17,7 +17,6 @@ import {
     InputAdornment,
     InputLabel,
     OutlinedInput,
-    TextField,
     Typography,
     useMediaQuery
 } from '@mui/material';
@@ -90,7 +89,7 @@ const FirebaseRegister = ({ ...others }) => {
                             <Box sx={{ mr: { xs: 1, sm: 2, width: 20 } }}>
                                 <img src={Google} alt="google" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
                             </Box>
-                            Sign up with Google
+                            S'inscrire avec Google
                         </Button>
                     </AnimateButton>
                 </Grid>
@@ -112,14 +111,14 @@ const FirebaseRegister = ({ ...others }) => {
                             disableRipple
                             disabled
                         >
-                            OR
+                            OU
                         </Button>
                         <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
                     </Box>
                 </Grid>
                 <Grid item xs={12} container alignItems="center" justifyContent="center">
                     <Box sx={{ mb: 2 }}>
-                        <Typography variant="subtitle1">Sign up with Email address</Typography>
+                        <Typography variant="subtitle1">Inscrivez-vous avec l'adresse email</Typography>
                     </Box>
                 </Grid>
             </Grid>
@@ -128,11 +127,17 @@ const FirebaseRegister = ({ ...others }) => {
                 initialValues={{
                     email: '',
                     password: '',
+                    numTel: '',
+                    nom: '',
+                    prenom: '',
                     submit: null
                 }}
                 validationSchema={Yup.object().shape({
-                    email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-                    password: Yup.string().max(255).required('Password is required')
+                    email: Yup.string().email('Doit être un email valide').max(255).required('Email est requis'),
+                    password: Yup.string().max(255).required('Mot de passe est requis'),
+                    numTel: Yup.number().min(10000000, 'Numéro de téléphone incoreect').max(99999999, 'Numéro de téléphone incoreect').required('Numéro de téléphone est requis'),
+                    nom: Yup.string().max(255).min(2, 'Doit être un nom valide').required('Nom est requis'),
+                    prenom: Yup.string().max(255).min(2, 'Doit être un prénom valide').required('Prénom est requis'),
                 })}
                 onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
                     try {
@@ -151,35 +156,77 @@ const FirebaseRegister = ({ ...others }) => {
                 }}
             >
                 {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-                    <form noValidate onSubmit={handleSubmit} {...others}>
+                    <form noValidate onSubmit={handleSubmit} {...others} >
                         <Grid container spacing={matchDownSM ? 0 : 2}>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="First Name"
-                                    margin="normal"
-                                    name="fname"
-                                    type="text"
-                                    defaultValue=""
-                                    sx={{ ...theme.typography.customInput }}
-                                />
+                            <Grid item xs={12} sm={6} >
+                                <FormControl fullWidth error={Boolean(touched.nom && errors.nom)} sx={{ ...theme.typography.customInput }}>
+                                    <InputLabel htmlFor="nom">Nom</InputLabel>
+
+                                    <OutlinedInput
+                                        fullWidth
+                                        in="nom"
+                                        label="Nom"
+                                        name="nom"
+                                        type="text"
+                                        value={values.nom}
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        inputProps={{}}
+                                        sx={{ ...theme.typography.customInput }}
+                                    />
+                                    {touched.nom && errors.nom && (
+                                        <FormHelperText error id="standard-weight-helper-text-nom-register">
+                                            {errors.nom}
+                                        </FormHelperText>
+                                    )}
+                                </FormControl>
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Last Name"
-                                    margin="normal"
-                                    name="lname"
-                                    type="text"
-                                    defaultValue=""
-                                    sx={{ ...theme.typography.customInput }}
-                                />
+                                <FormControl fullWidth error={Boolean(touched.prenom && errors.prenom)} sx={{ ...theme.typography.customInput }}>
+                                    <InputLabel htmlFor="prenom">Prénom</InputLabel>
+
+                                    <OutlinedInput
+                                        id="prenom"
+                                        fullWidth
+                                        label="Prénom"
+                                        name="prenom"
+                                        type="text"
+                                        value={values.prenom}
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        inputProps={{}}
+
+                                        sx={{ ...theme.typography.customInput }}
+                                    />
+                                    {touched.prenom && errors.prenom && (
+                                        <FormHelperText error id="standard-weight-helper-text-prenom-register">
+                                            {errors.prenom}
+                                        </FormHelperText>
+                                    )}
+                                </FormControl>
                             </Grid>
                         </Grid>
-                        <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
-                            <InputLabel htmlFor="outlined-adornment-email-register">Email Address / Username</InputLabel>
+                        <FormControl fullWidth error={Boolean(touched.numTel && errors.numTel)} sx={{ ...theme.typography.customInput }}>
+                            <InputLabel htmlFor="numTel">Numéro de Tél</InputLabel>
                             <OutlinedInput
-                                id="outlined-adornment-email-register"
+                                id="numTel"
+                                type="number"
+                                value={values.numTel}
+                                name="numTel"
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                                inputProps={{}}
+                            />
+                            {touched.numTel && errors.numTel && (
+                                <FormHelperText error id="standard-weight-helper-text-numTel-register">
+                                    {errors.numTel}
+                                </FormHelperText>
+                            )}
+                        </FormControl>
+                        <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
+                            <InputLabel htmlFor="email">Addresse email</InputLabel>
+                            <OutlinedInput
+                                id="email"
                                 type="email"
                                 value={values.email}
                                 name="email"
@@ -188,20 +235,22 @@ const FirebaseRegister = ({ ...others }) => {
                                 inputProps={{}}
                             />
                             {touched.email && errors.email && (
-                                <FormHelperText error id="standard-weight-helper-text--register">
+                                <FormHelperText error id="standard-weight-helper-text-email-register">
                                     {errors.email}
                                 </FormHelperText>
                             )}
                         </FormControl>
+
+
 
                         <FormControl
                             fullWidth
                             error={Boolean(touched.password && errors.password)}
                             sx={{ ...theme.typography.customInput }}
                         >
-                            <InputLabel htmlFor="outlined-adornment-password-register">Password</InputLabel>
+                            <InputLabel htmlFor="password">Mot de passe</InputLabel>
                             <OutlinedInput
-                                id="outlined-adornment-password-register"
+                                id="password"
                                 type={showPassword ? 'text' : 'password'}
                                 value={values.password}
                                 name="password"
@@ -266,9 +315,9 @@ const FirebaseRegister = ({ ...others }) => {
                                     }
                                     label={
                                         <Typography variant="subtitle1">
-                                            Agree with &nbsp;
+                                            D'accord avec &nbsp;
                                             <Typography variant="subtitle1" component={Link} to="#">
-                                                Terms & Condition.
+                                                Termes & conditions.
                                             </Typography>
                                         </Typography>
                                     }
@@ -292,7 +341,7 @@ const FirebaseRegister = ({ ...others }) => {
                                     variant="contained"
                                     color="secondary"
                                 >
-                                    Sign up
+                                    S'inscrire
                                 </Button>
                             </AnimateButton>
                         </Box>
