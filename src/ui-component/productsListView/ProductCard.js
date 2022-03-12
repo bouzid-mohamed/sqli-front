@@ -32,8 +32,8 @@ export default function ShopProductCard({ product }) {
     const { name, cover, price, colors, status, priceSale } = product;
     const [isLoading, setLoading] = useState(true);
     useEffect(() => {
-        setTimeout(() => { setLoading(false); }, 2000);
-        //setLoading(false);
+        // setTimeout(() => { setLoading(false); }, 2000);
+        setLoading(false);
     }, []);
 
     return (

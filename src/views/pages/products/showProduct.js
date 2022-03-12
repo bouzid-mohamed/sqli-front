@@ -9,7 +9,7 @@ import MainCard from 'ui-component/cards/MainCard';
 // ==============================|| SAMPLE PAGE ||============================== //
 
 const ShowProduct = () => (
-    <MainCard title="Sample Card">
+    <MainCard title="les détails du produit">
         <ShowOne></ShowOne>
     </MainCard>
 );
