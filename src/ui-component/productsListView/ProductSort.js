@@ -4,14 +4,13 @@ import { Menu, Button, MenuItem, Typography } from '@mui/material';
 // component
 import HeightRoundedIcon from '@mui/icons-material/HeightRounded';
 
-
 // ----------------------------------------------------------------------
 
 const SORT_BY_OPTIONS = [
-    { value: 'featured', label: 'Featured' },
-    { value: 'newest', label: 'Newest' },
-    { value: 'priceDesc', label: 'Price: High-Low' },
-    { value: 'priceAsc', label: 'Price: Low-High' }
+    { value: 'categorie', label: 'Categorie' },
+    { value: 'recent', label: 'Le plus récent' },
+    { value: 'priceDesc', label: 'Prix : haut-bas' },
+    { value: 'priceAsc', label: 'Prix : bas-élevé' }
 ];
 
 export default function ShopProductSort() {
@@ -33,9 +32,9 @@ export default function ShopProductSort() {
                 onClick={handleOpen}
                 endIcon={<HeightRoundedIcon />}
             >
-                Sort By:&nbsp;
+                Trier par:&nbsp;
                 <Typography component="span" variant="subtitle2" sx={{ color: 'text.secondary' }}>
-                    Newest
+                    Le plus récent
                 </Typography>
             </Button>
             <Menu
@@ -49,7 +48,7 @@ export default function ShopProductSort() {
                 {SORT_BY_OPTIONS.map((option) => (
                     <MenuItem
                         key={option.value}
-                        selected={option.value === 'newest'}
+                        selected={option.value === 'recent'}
                         onClick={handleClose}
                         sx={{ typography: 'body2' }}
                     >

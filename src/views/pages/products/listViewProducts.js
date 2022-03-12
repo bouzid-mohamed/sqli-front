@@ -3,14 +3,15 @@
 import { useFormik } from 'formik';
 import { useState } from 'react';
 // material
-import { Stack } from '@mui/material';
+import { Button, Pagination, Stack } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
 
-import ProductSort from './ProductSort';
-import ProductList from './ProductList';
-import ProductCartWidget from './ProductList';
-import ProductFilterSidebar from './ProductFilterSidebar';
+import ProductSort from 'ui-component/productsListView/ProductSort';
+import ProductList from 'ui-component/productsListView/ProductList';
+import ProductCartWidget from 'ui-component/productsListView/ProductList';
+import ProductFilterSidebar from 'ui-component/productsListView/ProductFilterSidebar';
 import PRODUCTS from '../../utilities/products';
+import AddIcon from '@mui/icons-material/Add';
 
 // project imports
 
@@ -49,7 +50,9 @@ export default function ListViewProducts() {
         handleSubmit();
         resetForm();
     };
-    return (<MainCard title="Sample Card">
+    return (<MainCard title="Liste des produits">
+
+
 
 
         <Stack
@@ -59,7 +62,13 @@ export default function ListViewProducts() {
             justifyContent="flex-end"
             sx={{ mb: 5 }}
         >
+
             <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
+
+                <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}> <Button variant="outlined" startIcon={<AddIcon />}>
+                    Ajouter
+                </Button></Stack>
+
                 <ProductFilterSidebar
                     formik={formik}
                     isOpenFilter={openFilter}
@@ -73,6 +82,9 @@ export default function ListViewProducts() {
 
         <ProductList products={PRODUCTS} />
         <ProductCartWidget />
+        <Stack direction="row-reverse" marginTop={"3%"}>
+            <Pagination color="primary" count={10} variant="outlined" />
+        </Stack>
 
     </MainCard>);
 

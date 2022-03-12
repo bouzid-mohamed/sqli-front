@@ -4,7 +4,7 @@
         "browser": true,
         "es2021": true
     },
-    "extends": [ "prettier", "plugin:react/jsx-runtime", "plugin:jsx-a11y/recommended", "plugin:react-hooks/recommended"],
+    "extends": [ "react-app","prettier", "plugin:react/jsx-runtime", "plugin:jsx-a11y/recommended", "plugin:react-hooks/recommended"],
     "settings": {
         "import/resolver": {
             "node": {
@@ -34,6 +34,9 @@
         "jsx-a11y/anchor-is-valid": 0,
         "prefer-destructuring": 0,
         "no-shadow": 0,
+        "jsx-a11y/no-autofocus": [ 2, {
+            "ignoreNonDOM": true
+        }],
         "no-unused-vars": [
             1,
             {

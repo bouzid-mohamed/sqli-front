@@ -2,6 +2,7 @@
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
 import TocIcon from '@mui/icons-material/Toc';
 import GridViewIcon from '@mui/icons-material/GridView';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
 
 
 
@@ -29,11 +30,19 @@ const produits = {
                     target: false
                 },
                 {
-                    id: 'register3',
+                    id: 'girdview',
                     title: 'Éléments',
                     type: 'item',
                     icon: GridViewIcon,
                     url: 'listView/products',
+                    target: false
+                },
+                {
+                    id: 'addProduct',
+                    title: 'Ajouter un produit',
+                    type: 'item',
+                    icon: BorderColorIcon,
+                    url: 'products/add',
                     target: false
                 }
             ]

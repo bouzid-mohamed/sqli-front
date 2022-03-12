@@ -4,6 +4,7 @@ import { lazy } from 'react';
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
 
+
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
 
@@ -17,7 +18,9 @@ const UtilsTablerIcons = Loadable(lazy(() => import('views/utilities/TablerIcons
 // sample page routing
 const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 const ListViewProducts = Loadable(lazy(() => import('views/pages/products/listViewProducts')));
-
+const ProductGird = Loadable(lazy(() => import('views/pages/products/ProductGird')));
+const AddProduct = Loadable(lazy(() => import('views/pages/products/addProduct')));
+const ShowProduct = Loadable(lazy(() => import('views/pages/products/showProduct')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -30,9 +33,22 @@ const MainRoutes = {
             element: <DashboardDefault />
         },
         {
+            path: '/tableView/products',
+            element: <ProductGird />
+        },
+        {
             path: '/listView/products',
             element: <ListViewProducts />
         },
+        {
+            path: '/products/add',
+            element: <AddProduct />
+        },
+        {
+            path: '/products/show',
+            element: <ShowProduct />
+        },
+
         {
             path: '/dashboard/default',
             element: <DashboardDefault />
