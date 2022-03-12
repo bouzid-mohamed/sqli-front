@@ -180,7 +180,7 @@ export default function ProductGird() {
                                         <StyledTableCell align="right">{row.promotion}%</StyledTableCell>
                                         <StyledTableCell align="right">{row.description}</StyledTableCell>
                                         <StyledTableCell align="right" scope="row"  >
-                                            <IconButton aria-label="show" size="large" color="primary" >
+                                            <IconButton aria-label="show" size="large" color="primary" href="/products/show" >
                                                 <VisibilityIcon />
                                             </IconButton>
                                             <IconButton aria-label="edit" size="large" color="success">
