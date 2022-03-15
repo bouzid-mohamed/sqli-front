@@ -1,9 +1,14 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import AuthService from "services/auth-services/AuthService";
+import { createBrowserHistory } from 'history';
+
+
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import {
+    Alert,
     Box,
     Button,
     Checkbox,
@@ -34,6 +39,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import Google from 'assets/images/icons/social-google.svg';
+import { LoadingButton } from '@mui/lab';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -48,6 +54,8 @@ const FirebaseLogin = ({ ...others }) => {
         console.error('Login');
     };
 
+    const [message, setMessage] = useState(null);
+
     const [showPassword, setShowPassword] = useState(false);
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -57,6 +65,28 @@ const FirebaseLogin = ({ ...others }) => {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
+
+    const handleSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
+
+        AuthService.login(values.email, values.password).then(
+            () => {
+                const history = createBrowserHistory();
+                history.push("/");
+                window.location.reload();
+            },
+            error => {
+                const resMessage =
+                    (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                    error.message ||
+                    error.toString();
+                setMessage(resMessage);
+                setSubmitting(false);
+
+            }
+        );
+    }
 
     return (
         <>
@@ -81,6 +111,8 @@ const FirebaseLogin = ({ ...others }) => {
                             Connectez-vous avec Google
                         </Button>
                     </AnimateButton>
+
+
                 </Grid>
                 <Grid item xs={12}>
                     <Box
@@ -129,21 +161,7 @@ const FirebaseLogin = ({ ...others }) => {
                     email: Yup.string().email('Doit être un email valide').max(255).required('Email est requis'),
                     password: Yup.string().max(255).min(5, 'Votre mot de passe n est pas assez sécurisé').required('Mot de passe est requis')
                 })}
-                onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-                    try {
-                        if (scriptedRef.current) {
-                            setStatus({ success: true });
-                            setSubmitting(false);
-                        }
-                    } catch (err) {
-                        console.error(err);
-                        if (scriptedRef.current) {
-                            setStatus({ success: false });
-                            setErrors({ submit: err.message });
-                            setSubmitting(false);
-                        }
-                    }
-                }}
+                onSubmit={(values, { setErrors, setStatus, setSubmitting }) => handleSubmit(values, { setErrors, setStatus, setSubmitting })}
             >
                 {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
                     <form noValidate onSubmit={handleSubmit} {...others}>
@@ -224,20 +242,32 @@ const FirebaseLogin = ({ ...others }) => {
                         )}
 
                         <Box sx={{ mt: 2 }}>
-                            <AnimateButton>
-                                <Button
-                                    disableElevation
-                                    disabled={isSubmitting}
-                                    fullWidth
-                                    size="large"
-                                    type="submit"
-                                    variant="contained"
-                                    color="secondary"
-                                >
-                                    Connexion
-                                </Button>
-                            </AnimateButton>
+
+                            {message && (
+                                <Alert severity="error"  >{message}</Alert>
+
+                            )}
                         </Box>
+
+                        <Box sx={{ mt: 2 }}>
+                            <LoadingButton
+                                disableElevation
+                                loading={isSubmitting}
+                                fullWidth
+                                size="large"
+                                type="submit"
+                                variant="contained"
+                                color="secondary"
+                            >
+                                Connexion
+                            </LoadingButton>
+                        </Box>
+
+
+
+
+
+
                     </form>
                 )}
             </Formik>

@@ -11,6 +11,7 @@ import Logo from 'ui-component/Logo';
 import AuthRegisterCompany from '../auth-forms/AuthRegisterCompany';
 import AuthFooter from 'ui-component/cards/AuthFooter';
 
+
 // assets
 
 // ===============================|| AUTH3 - REGISTER ||=============================== //
@@ -18,6 +19,7 @@ import AuthFooter from 'ui-component/cards/AuthFooter';
 const RegisterCompany = () => {
     const theme = useTheme();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
+
 
     return (
         <AuthWrapper1>

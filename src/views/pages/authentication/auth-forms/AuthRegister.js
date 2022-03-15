@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { createBrowserHistory } from 'history';
+
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import {
+    Alert,
     Box,
     Button,
     Checkbox,
@@ -34,6 +37,9 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 // assets
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import ClientServices from 'services/user-services/ClientServices';
+import { LoadingButton } from '@mui/lab';
+import Swal from 'sweetalert2';
 
 // ===========================|| FIREBASE - REGISTER ||=========================== //
 
@@ -44,6 +50,9 @@ const FirebaseRegister = ({ ...others }) => {
     const customization = useSelector((state) => state.customization);
     const [showPassword, setShowPassword] = useState(false);
     const [checked, setChecked] = useState(true);
+    const [message, setMessage] = useState(null);
+    const [messageSuccess, setMessageSuccess] = useState(null);
+
 
     const [strength, setStrength] = useState(0);
     const [level, setLevel] = useState();
@@ -69,6 +78,38 @@ const FirebaseRegister = ({ ...others }) => {
     useEffect(() => {
         changePassword('123456');
     }, []);
+
+
+    const handleSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
+        ClientServices.addClient(values.email, values.password, values.nom, values.prenom, values.numTel).then(
+            () => {
+
+                Swal.fire({
+                    title: 'Bon travail!!',
+                    text: "Votre compte a été créé avec succès!",
+                    icon: 'success',
+                    showCancelButton: false,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Ok'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        const history = createBrowserHistory();
+                        history.push("/login");
+                        window.location.reload();
+                    }
+                })
+                setMessage('');
+
+                setSubmitting(false);
+            },
+            error => {
+                const resMessage = "Ce compte existe déja"
+                setMessage(resMessage);
+                setSubmitting(false);
+            }
+        );
+    }
 
     return (
         <>
@@ -139,21 +180,7 @@ const FirebaseRegister = ({ ...others }) => {
                     nom: Yup.string().max(255).min(2, 'Doit être un nom valide').required('Nom est requis'),
                     prenom: Yup.string().max(255).min(2, 'Doit être un prénom valide').required('Prénom est requis'),
                 })}
-                onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-                    try {
-                        if (scriptedRef.current) {
-                            setStatus({ success: true });
-                            setSubmitting(false);
-                        }
-                    } catch (err) {
-                        console.error(err);
-                        if (scriptedRef.current) {
-                            setStatus({ success: false });
-                            setErrors({ submit: err.message });
-                            setSubmitting(false);
-                        }
-                    }
-                }}
+                onSubmit={(values, { setErrors, setStatus, setSubmitting }) => handleSubmit(values, { setErrors, setStatus, setSubmitting })}
             >
                 {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
                     <form noValidate onSubmit={handleSubmit} {...others} >
@@ -331,19 +358,25 @@ const FirebaseRegister = ({ ...others }) => {
                         )}
 
                         <Box sx={{ mt: 2 }}>
-                            <AnimateButton>
-                                <Button
-                                    disableElevation
-                                    disabled={isSubmitting}
-                                    fullWidth
-                                    size="large"
-                                    type="submit"
-                                    variant="contained"
-                                    color="secondary"
-                                >
-                                    S'inscrire
-                                </Button>
-                            </AnimateButton>
+
+                            {message && (
+                                <Alert severity="error"  >{message}</Alert>
+
+                            )}
+                        </Box>
+
+                        <Box sx={{ mt: 2 }}>
+                            <LoadingButton
+                                disableElevation
+                                loading={isSubmitting}
+                                fullWidth
+                                size="large"
+                                type="submit"
+                                variant="contained"
+                                color="secondary"
+                            >
+                                S'inscrire
+                            </LoadingButton>
                         </Box>
                     </form>
                 )}

@@ -60,7 +60,7 @@ function LinearProgressWithLabel({ value, ...others }) {
                 <Grid container justifyContent="space-between">
                     <Grid item>
                         <Typography variant="h6" sx={{ color: theme.palette.primary[800] }}>
-                            Progress
+                            Progrès
                         </Typography>
                     </Grid>
                     <Grid item>
@@ -99,17 +99,19 @@ const MenuCard = () => {
                                     border: 'none',
                                     borderColor: theme.palette.primary.main,
                                     background: '#fff',
-                                    marginRight: '12px'
+                                    marginRight: '12px',
                                 }}
+
+                                src="https://th.bing.com/th/id/R.2fabdfcf1d58bccd68f399d081f0e056?rik=yhXxfS6SzxMdxg&riu=http%3a%2f%2fwww.tunisietravail.net%2fuploads%2flogo_entreprise%2fmg-magasin-generale-tunisie.jpg&ehk=pHvNMlHCoRQ74XRhnrrqcZb85Prj2b%2fq%2fjp2N%2bguvjs%3d&risl=&pid=ImgRaw&r=0&sres=1&sresct=1"
                             >
-                                <TableChartOutlinedIcon fontSize="inherit" />
+
                             </Avatar>
                         </ListItemAvatar>
                         <ListItemText
                             sx={{ mt: 0 }}
                             primary={
                                 <Typography variant="subtitle1" sx={{ color: theme.palette.primary[800] }}>
-                                    Get Extra Space
+                                    Magasin général
                                 </Typography>
                             }
                             secondary={<Typography variant="caption"> 28/23 GB</Typography>}

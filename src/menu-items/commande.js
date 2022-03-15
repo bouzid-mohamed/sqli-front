@@ -12,7 +12,7 @@ const commandes = {
     type: 'group',
     children: [
         {
-            id: 'default',
+            id: 'commande',
             title: 'Commandes',
             type: 'item',
             url: '/commandes',
