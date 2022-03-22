@@ -22,6 +22,8 @@ import MainCard from 'ui-component/cards/MainCard';
 import { useEffect, useState } from 'react';
 import { Pagination } from '@mui/material';
 import GirdSkeleton from 'ui-component/cards/Skeleton/GirdSkeleton';
+import AuthService from 'services/auth-services/AuthService';
+import { createBrowserHistory } from 'history';
 
 
 
@@ -67,109 +69,118 @@ const rows = [
 
 
 export default function StockGird() {
+
     const [open, setOpen] = React.useState(false);
     const handleClose = () => {
         setOpen(false);
     };
 
+    const history = createBrowserHistory();
 
     const [isLoading, setLoading] = useState(true);
     useEffect(() => {
         //setTimeout(() => { setLoading(false); }, 2000);
         setLoading(false);
     }, []);
-    return (
-        <>
-            <MainCard title="Liste des produits">
+    if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
+
+        return (
+            <>
+                <MainCard title="Liste des produits">
 
 
-                <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                        <TableHead>
-                            <TableRow>
-                                <StyledTableCell>Image</StyledTableCell>
-                                <StyledTableCell align="right">Nom</StyledTableCell>
-                                <StyledTableCell align="right">Prix</StyledTableCell>
-                                <StyledTableCell align="right">Categorie</StyledTableCell>
-                                <StyledTableCell align="right">Couleur</StyledTableCell>
-                                <StyledTableCell align="right">Taille</StyledTableCell>
-                                <StyledTableCell align="right">Quantité</StyledTableCell>
-                                <StyledTableCell align="right">Actions</StyledTableCell>
+                    <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>Image</StyledTableCell>
+                                    <StyledTableCell align="right">Nom</StyledTableCell>
+                                    <StyledTableCell align="right">Prix</StyledTableCell>
+                                    <StyledTableCell align="right">Categorie</StyledTableCell>
+                                    <StyledTableCell align="right">Couleur</StyledTableCell>
+                                    <StyledTableCell align="right">Taille</StyledTableCell>
+                                    <StyledTableCell align="right">Quantité</StyledTableCell>
+                                    <StyledTableCell align="right">Actions</StyledTableCell>
 
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {rows.map((row) => (<>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {rows.map((row) => (<>
 
-                                {isLoading ? (
-                                    <GirdSkeleton loading={isLoading}> </GirdSkeleton>
-                                ) : (
+                                    {isLoading ? (
+                                        <GirdSkeleton loading={isLoading}> </GirdSkeleton>
+                                    ) : (
 
 
-                                    <StyledTableRow key={row.nom} >
-                                        <StyledTableCell align="right" scope="row">
-                                            <Avatar sx={{ width: 150, height: 100 }} src={`${process.env.PUBLIC_URL}/static/mock-images/products/` + row.image} variant="square" />
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">{row.nom}</StyledTableCell>
-                                        <StyledTableCell align="right">{row.prix}dt</StyledTableCell>
-                                        <StyledTableCell align="right">{row.categorie}</StyledTableCell>
-                                        <StyledTableCell align="right">
-                                            <Button variant="contained" style={{ "backgroundColor": row.couleur, "color": row.couleur }} >
-                                                .
-                                            </Button>
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">{row.taille}</StyledTableCell>
-                                        <StyledTableCell align="right">{row.quantite}</StyledTableCell>
+                                        <StyledTableRow key={row.nom} >
+                                            <StyledTableCell align="right" scope="row">
+                                                <Avatar sx={{ width: 150, height: 100 }} src={`${process.env.PUBLIC_URL}/static/mock-images/products/` + row.image} variant="square" />
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">{row.nom}</StyledTableCell>
+                                            <StyledTableCell align="right">{row.prix}dt</StyledTableCell>
+                                            <StyledTableCell align="right">{row.categorie}</StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <Button variant="contained" style={{ "backgroundColor": row.couleur, "color": row.couleur }} >
+                                                    .
+                                                </Button>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">{row.taille}</StyledTableCell>
+                                            <StyledTableCell align="right">{row.quantite}</StyledTableCell>
 
-                                        <StyledTableCell align="right" scope="row"  >
+                                            <StyledTableCell align="right" scope="row"  >
 
-                                            <IconButton aria-label="edit" size="large" color="success">
-                                                <EditIcon />
-                                            </IconButton>
-                                            <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true) }}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </StyledTableCell>
-                                    </StyledTableRow>
+                                                <IconButton aria-label="edit" size="large" color="success">
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true) }}>
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </StyledTableCell>
+                                        </StyledTableRow>
 
-                                )}
-                            </>
-                            ))}
-                        </TableBody>
-                    </Table>
-                    {
-                        open ? (<div>
+                                    )}
+                                </>
+                                ))}
+                            </TableBody>
+                        </Table>
+                        {
+                            open ? (<div>
 
-                            <Dialog
-                                open={open}
-                                onClose={handleClose}
-                                aria-labelledby="alert-dialog-title"
-                                aria-describedby="alert-dialog-description"
-                            >
-                                <DialogTitle id="alert-dialog-title">
-                                    {"Voulez-vous supprimer le produit"}
-                                </DialogTitle>
-                                <DialogContent>
-                                    <DialogContentText id="alert-dialog-description">
-                                        Let Google help apps determine location. This means sending anonymous
-                                        location data to Google, even when no apps are running.
-                                    </DialogContentText>
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={handleClose}>Annuler</Button>
-                                    <Button onClick={handleClose} autoFocus>
-                                        Confirmer
-                                    </Button>
-                                </DialogActions>
-                            </Dialog>
-                        </div>) : (null)}
-                    <Stack direction="row-reverse" marginTop={"2%"}>
-                        <Pagination color="primary" count={10} variant="outlined" />
-                    </Stack>
-                </TableContainer>
-            </MainCard>
+                                <Dialog
+                                    open={open}
+                                    onClose={handleClose}
+                                    aria-labelledby="alert-dialog-title"
+                                    aria-describedby="alert-dialog-description"
+                                >
+                                    <DialogTitle id="alert-dialog-title">
+                                        {"Voulez-vous supprimer le produit"}
+                                    </DialogTitle>
+                                    <DialogContent>
+                                        <DialogContentText id="alert-dialog-description">
+                                            Let Google help apps determine location. This means sending anonymous
+                                            location data to Google, even when no apps are running.
+                                        </DialogContentText>
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={handleClose}>Annuler</Button>
+                                        <Button onClick={handleClose} autoFocus>
+                                            Confirmer
+                                        </Button>
+                                    </DialogActions>
+                                </Dialog>
+                            </div>) : (null)}
+                        <Stack direction="row-reverse" marginTop={"2%"}>
+                            <Pagination color="primary" count={10} variant="outlined" />
+                        </Stack>
+                    </TableContainer>
+                </MainCard>
 
-        </>
+            </>
 
-    );
+        );
+    else {
+        history.push('/login');
+        window.location.reload();
+    }
+
 }

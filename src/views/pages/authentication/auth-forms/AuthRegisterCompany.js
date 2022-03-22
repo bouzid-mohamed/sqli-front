@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import CompanyServices from 'services/companyServices/CompanyServices';
+
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import {
+    Alert,
     Box,
     Button,
     Checkbox,
@@ -36,26 +39,14 @@ import MenuItem from '@mui/material/MenuItem';
 // assets
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import Swal from 'sweetalert2';
+import { createBrowserHistory } from 'history';
+import { LoadingButton } from '@mui/lab';
 
 // ===========================|| FIREBASE - REGISTER ||=========================== //
-const gouvernerats = [
-    {
-        value: 'USD',
-        label: '$',
-    },
-    {
-        value: 'EUR',
-        label: '€',
-    },
-    {
-        value: 'BTC',
-        label: '฿',
-    },
-    {
-        value: 'JPY',
-        label: '¥',
-    },
-];
+
+var data = require('../../../../data/gouvernerat.json')
+
 const FirebaseRegisterCompany = ({ ...others }) => {
     const theme = useTheme();
     const scriptedRef = useScriptRef();
@@ -63,6 +54,14 @@ const FirebaseRegisterCompany = ({ ...others }) => {
     const customization = useSelector((state) => state.customization);
     const [showPassword, setShowPassword] = useState(false);
     const [checked, setChecked] = useState(true);
+    const [dataGouvernerat, setDataGouvernerat] = useState([]);
+    const [gouv, setGouv] = useState('');
+    const [message, setMessage] = useState(null);
+
+
+
+    const [dataDelegation, setDataDelgation] = useState([]);
+
 
     const [strength, setStrength] = useState(0);
     const [level, setLevel] = useState();
@@ -87,7 +86,59 @@ const FirebaseRegisterCompany = ({ ...others }) => {
 
     useEffect(() => {
         changePassword('123456');
+        const gouvs = data.map((g) => {
+
+            if (dataGouvernerat.indexOf(g.gouvernerat) === -1) {
+                dataGouvernerat.push(g.gouvernerat)
+            }
+        });
+
+
     }, []);
+    const handleSelectGouvernerat = async (e) => {
+        const d = [];
+        setGouv(e.target.value)
+        await (setDataDelgation([]))
+        const delegs = data.map((g) => {
+            if (g.gouvernerat == e.target.value)
+                d.push(g.delegation)
+        })
+        setDataDelgation(d);
+    }
+
+    //ajouter une entreprise 
+
+    const handleSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
+        CompanyServices.addCompany(values.email, values.password, gouv, values.delegation, values.numTel).then(
+            () => {
+
+                Swal.fire({
+                    title: 'Bon travail!!',
+                    text: "Votre compte a été créé avec succès!",
+                    icon: 'success',
+                    showCancelButton: false,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Ok'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        const history = createBrowserHistory();
+                        history.push("/login");
+                        window.location.reload();
+                    }
+                })
+                setMessage('');
+
+                setSubmitting(false);
+            },
+            error => {
+                const resMessage = "Ce compte existe déja"
+                setMessage(resMessage);
+                setSubmitting(false);
+            }
+        );
+    }
+
 
     return (
         <>
@@ -147,7 +198,6 @@ const FirebaseRegisterCompany = ({ ...others }) => {
                     email: '',
                     password: '',
                     numTel: '',
-                    gouvernerat: '',
                     delegation: '',
                     submit: null
                 }}
@@ -155,50 +205,35 @@ const FirebaseRegisterCompany = ({ ...others }) => {
                     email: Yup.string().email('Doit être un email valide').max(255).required('Email est requis'),
                     password: Yup.string().max(255).required('Mot de passe est requis'),
                     numTel: Yup.number().min(10000000, 'Numéro de téléphone incoreect').max(99999999, 'Numéro de téléphone incoreect').required('Numéro de téléphone est requis'),
-                    gouvernerat: Yup.string().min(2).required('Gouvernerat est requis'),
                     delegation: Yup.string().required('Délégation est requis'),
                 })}
-                onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-                    try {
-                        if (scriptedRef.current) {
-                            setStatus({ success: true });
-                            setSubmitting(false);
-                        }
-                    } catch (err) {
-                        console.error(err);
-                        if (scriptedRef.current) {
-                            setStatus({ success: false });
-                            setErrors({ submit: err.message });
-                            setSubmitting(false);
-                        }
-                    }
-                }}
+                onSubmit={(values, { setErrors, setStatus, setSubmitting }) => handleSubmit(values, { setErrors, setStatus, setSubmitting })}
             >
                 {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
                     <form noValidate onSubmit={handleSubmit} {...others}>
                         <Grid container spacing={matchDownSM ? 0 : 2}>
                             <Grid item xs={12} sm={6}>
-                                <FormControl fullWidth error={Boolean(touched.gouvernerat && errors.gouvernerat)} sx={{ ...theme.typography.customInput }}>
+                                <FormControl fullWidth error={Boolean(touched.gouv && errors.gouv)} sx={{ ...theme.typography.customInput }}>
                                     <TextField
                                         fullWidth
                                         select
-                                        name="gouvernerat"
+                                        name="gouv"
                                         helperText="Sélectionner la gouvernerat"
                                         type="text"
-                                        value={values.gouvernerat}
+                                        value={gouv}
                                         onBlur={handleBlur}
-                                        onChange={handleChange}
+                                        onChange={handleSelectGouvernerat}
                                         inputProps={{}}
                                         sx={{ ...theme.typography.customInput }}>
-                                        {gouvernerats.map((option) => (
-                                            <MenuItem key={Math.random().toString(36).substr(2, 9)} value={option.value}>
-                                                {option.label}
+                                        {dataGouvernerat.map((option) => (
+                                            <MenuItem key={Math.random().toString(36).substr(2, 9)} value={option}>
+                                                {option}
                                             </MenuItem>
                                         ))}
                                     </TextField>
-                                    {touched.gouvernerat && errors.gouvernerat && (
+                                    {touched.gouv && errors.gouv && (
                                         <FormHelperText error id="standard-weight-helper-text-gouvernerat-register">
-                                            {errors.gouvernerat}
+                                            {errors.gouv}
                                         </FormHelperText>
                                     )}
                                 </FormControl>
@@ -216,9 +251,9 @@ const FirebaseRegisterCompany = ({ ...others }) => {
                                         onChange={handleChange}
                                         inputProps={{}}
                                         sx={{ ...theme.typography.customInput }}>
-                                        {gouvernerats.map((option) => (
-                                            <MenuItem key={Math.random().toString(36).substr(2, 9)} value={option.value}>
-                                                {option.label}
+                                        {dataDelegation.map((option) => (
+                                            <MenuItem key={Math.random().toString(36).substr(2, 9)} value={option}>
+                                                {option}
                                             </MenuItem>
                                         ))}
                                     </TextField>
@@ -355,19 +390,25 @@ const FirebaseRegisterCompany = ({ ...others }) => {
                         )}
 
                         <Box sx={{ mt: 2 }}>
-                            <AnimateButton>
-                                <Button
-                                    disableElevation
-                                    disabled={isSubmitting}
-                                    fullWidth
-                                    size="large"
-                                    type="submit"
-                                    variant="contained"
-                                    color="secondary"
-                                >
-                                    S'inscrire
-                                </Button>
-                            </AnimateButton>
+
+                            {message && (
+                                <Alert severity="error"  >{message}</Alert>
+
+                            )}
+                        </Box>
+
+                        <Box sx={{ mt: 2 }}>
+                            <LoadingButton
+                                disableElevation
+                                loading={isSubmitting}
+                                fullWidth
+                                size="large"
+                                type="submit"
+                                variant="contained"
+                                color="secondary"
+                            >
+                                S'inscrire
+                            </LoadingButton>
                         </Box>
                     </form>
                 )}

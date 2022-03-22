@@ -113,9 +113,9 @@ export default function ShopFilterSidebar({
                                         Sexe
                                     </Typography>
                                     <FormGroup>
-                                        {FILTER_GENDER_OPTIONS.map((item) => (
+                                        {FILTER_GENDER_OPTIONS.map((item, index) => (
                                             <FormControlLabel
-                                                key={item}
+                                                key={index}
                                                 control={
                                                     <Checkbox
                                                         {...getFieldProps('gender')}
@@ -134,8 +134,8 @@ export default function ShopFilterSidebar({
                                         Categorie
                                     </Typography>
                                     <RadioGroup {...getFieldProps('category')}>
-                                        {FILTER_CATEGORY_OPTIONS.map((item) => (
-                                            <FormControlLabel key={item} value={item} control={<Radio />} label={item} />
+                                        {FILTER_CATEGORY_OPTIONS.map((item, index) => (
+                                            <FormControlLabel key={index} value={item} control={<Radio />} label={item} />
                                         ))}
                                     </RadioGroup>
                                 </div>
@@ -158,9 +158,9 @@ export default function ShopFilterSidebar({
                                         Prix
                                     </Typography>
                                     <RadioGroup {...getFieldProps('priceRange')}>
-                                        {FILTER_PRICE_OPTIONS.map((item) => (
+                                        {FILTER_PRICE_OPTIONS.map((item, index) => (
                                             <FormControlLabel
-                                                key={item.value}
+                                                key={index}
                                                 value={item.value}
                                                 control={<Radio />}
                                                 label={item.label}

@@ -22,6 +22,8 @@ import MainCard from 'ui-component/cards/MainCard';
 import { useEffect, useState } from 'react';
 import { Pagination } from '@mui/material';
 import GirdSkeleton from 'ui-component/cards/Skeleton/GirdSkeleton';
+import AuthService from 'services/auth-services/AuthService';
+import { createBrowserHistory } from 'history';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -63,6 +65,7 @@ const rows = [
 
 export default function GirdViewBon() {
     const [open, setOpen] = React.useState(false);
+    const history = createBrowserHistory();
     const handleClose = () => {
         setOpen(false);
     };
@@ -72,84 +75,90 @@ export default function GirdViewBon() {
         //setTimeout(() => { setLoading(false); }, 2000);
         setLoading(false);
     }, []);
-    return (
-        <>
-            <MainCard title="Liste des Bons">
+    if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
+        return (
+            <>
+                <MainCard title="Liste des Bons">
 
 
-                <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                        <TableHead>
-                            <TableRow>
-                                <StyledTableCell>Code</StyledTableCell>
-                                <StyledTableCell align="right">Réduction</StyledTableCell>
-                                <StyledTableCell align="right">Actions</StyledTableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {rows.map((row) => (<>
+                    <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>Code</StyledTableCell>
+                                    <StyledTableCell align="right">Réduction</StyledTableCell>
+                                    <StyledTableCell align="right">Actions</StyledTableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {rows.map((row) => (<>
 
-                                {isLoading ? (
-                                    <GirdSkeleton loading={isLoading}> </GirdSkeleton>
-                                ) : (
+                                    {isLoading ? (
+                                        <GirdSkeleton loading={isLoading}> </GirdSkeleton>
+                                    ) : (
 
 
-                                    <StyledTableRow key={row.nom} >
+                                        <StyledTableRow key={row.nom} >
 
-                                        <StyledTableCell >{row.code}</StyledTableCell>
-                                        <StyledTableCell align="right">{row.reduction}dt</StyledTableCell>
+                                            <StyledTableCell >{row.code}</StyledTableCell>
+                                            <StyledTableCell align="right">{row.reduction}dt</StyledTableCell>
 
-                                        <StyledTableCell align="right" scope="row"  >
-                                            <IconButton aria-label="show" size="large" color="primary" href="/products/show" >
-                                                <VisibilityIcon />
-                                            </IconButton>
-                                            <IconButton aria-label="edit" size="large" color="success">
-                                                <EditIcon />
-                                            </IconButton>
-                                            <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true) }}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </StyledTableCell>
-                                    </StyledTableRow>
+                                            <StyledTableCell align="right" scope="row"  >
+                                                <IconButton aria-label="show" size="large" color="primary" href="/products/show" >
+                                                    <VisibilityIcon />
+                                                </IconButton>
+                                                <IconButton aria-label="edit" size="large" color="success">
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true) }}>
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </StyledTableCell>
+                                        </StyledTableRow>
 
-                                )}
-                            </>
-                            ))}
-                        </TableBody>
-                    </Table>
-                    {
-                        open ? (<div>
+                                    )}
+                                </>
+                                ))}
+                            </TableBody>
+                        </Table>
+                        {
+                            open ? (<div>
 
-                            <Dialog
-                                open={open}
-                                onClose={handleClose}
-                                aria-labelledby="alert-dialog-title"
-                                aria-describedby="alert-dialog-description"
-                            >
-                                <DialogTitle id="alert-dialog-title">
-                                    {"Voulez-vous supprimer ce bon"}
-                                </DialogTitle>
-                                <DialogContent>
-                                    <DialogContentText id="alert-dialog-description">
-                                        Let Google help apps determine location. This means sending anonymous
-                                        location data to Google, even when no apps are running.
-                                    </DialogContentText>
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={handleClose}>Annuler</Button>
-                                    <Button onClick={handleClose} autoFocus>
-                                        Confirmer
-                                    </Button>
-                                </DialogActions>
-                            </Dialog>
-                        </div>) : (null)}
-                    <Stack direction="row-reverse" marginTop={"2%"}>
-                        <Pagination color="primary" count={10} variant="outlined" />
-                    </Stack>
-                </TableContainer>
-            </MainCard>
+                                <Dialog
+                                    open={open}
+                                    onClose={handleClose}
+                                    aria-labelledby="alert-dialog-title"
+                                    aria-describedby="alert-dialog-description"
+                                >
+                                    <DialogTitle id="alert-dialog-title">
+                                        {"Voulez-vous supprimer ce bon"}
+                                    </DialogTitle>
+                                    <DialogContent>
+                                        <DialogContentText id="alert-dialog-description">
+                                            Let Google help apps determine location. This means sending anonymous
+                                            location data to Google, even when no apps are running.
+                                        </DialogContentText>
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={handleClose}>Annuler</Button>
+                                        <Button onClick={handleClose} autoFocus>
+                                            Confirmer
+                                        </Button>
+                                    </DialogActions>
+                                </Dialog>
+                            </div>) : (null)}
+                        <Stack direction="row-reverse" marginTop={"2%"}>
+                            <Pagination color="primary" count={10} variant="outlined" />
+                        </Stack>
+                    </TableContainer>
+                </MainCard>
 
-        </>
+            </>
 
-    );
+        );
+    else {
+        history.push('/login');
+        window.location.reload();
+    }
+
 }

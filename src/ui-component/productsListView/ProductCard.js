@@ -32,7 +32,7 @@ export default function ShopProductCard({ product }) {
     const { name, cover, price, colors, status, priceSale } = product;
     const [isLoading, setLoading] = useState(true);
     useEffect(() => {
-        // setTimeout(() => { setLoading(false); }, 2000);
+        //setTimeout(() => { setLoading(false); }, 2000);
         setLoading(false);
     }, []);
 
@@ -43,10 +43,10 @@ export default function ShopProductCard({ product }) {
             ) : (
                 <Card>
                     <Box sx={{ pt: '100%', position: 'relative' }}>
-                        {status && (
+                        {(new Date(product.createdAt.timestamp)).getMonth() == (new Date()).getMonth && (
                             <Label
                                 variant="filled"
-                                color={(status === 'sale' && 'error') || 'info'}
+                                color={('sale' === 'sale' && 'error') || 'info'}
                                 sx={{
                                     zIndex: 9,
                                     top: 16,
@@ -55,35 +55,53 @@ export default function ShopProductCard({ product }) {
                                     textTransform: 'uppercase'
                                 }}
                             >
-                                {status}
+                                new
                             </Label>
                         )}
-                        <ProductImgStyle alt={name} src={cover} />
+                        <ProductImgStyle alt={product.nom} src={"http://localhost:8000/uploads/" + product.images[0].nom} />
                     </Box>
 
                     <Stack spacing={2} sx={{ p: 3 }}>
                         <Link to="#" color="inherit" underline="hover" component={RouterLink}>
                             <Typography variant="subtitle2" noWrap>
-                                {name}
+
                             </Typography>
                         </Link>
 
                         <Stack direction="row" alignItems="center" justifyContent="space-between">
-                            <ColorPreview colors={colors} />
-                            <Typography variant="subtitle1">
-                                <Typography
-                                    component="span"
-                                    variant="body1"
-                                    sx={{
-                                        color: 'text.disabled',
-                                        textDecoration: 'line-through'
-                                    }}
-                                >
-                                    {priceSale && fCurrency(priceSale)}
-                                </Typography>
-                                &nbsp;
-                                {price} dt
-                            </Typography>
+                            <ColorPreview colors={["red", "green", "blue"]} />
+                            <Box sx={{ display: 'inline-flex' }} variant="subtitle1">
+                                {product.promotion ? (
+                                    <>
+                                        <Typography
+                                            component="span"
+                                            variant="body1"
+                                            sx={{
+                                                color: 'text.disabled',
+                                                textDecoration: 'line-through'
+                                            }}
+                                        >
+                                            {product.prix} dt
+
+
+
+                                        </Typography>
+                                        &nbsp;
+                                        {Math.trunc(product.prix - (product.prix * product.promotion.pourcentage / 100))} dt
+                                    </>
+                                ) : (
+                                    <Typography
+                                        component="span"
+                                        variant="body1"
+                                        sx={{
+                                            color: 'text.disabled',
+                                        }}
+                                    >
+                                        {product.prix} dt
+
+                                    </Typography>
+                                )}
+                            </Box>
                         </Stack>
                     </Stack>
                 </Card>

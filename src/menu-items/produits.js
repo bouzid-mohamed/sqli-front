@@ -25,7 +25,7 @@ const produits = {
                     id: 'tableView',
                     title: 'Liste',
                     type: 'item',
-                    url: '/tableView/products',
+                    url: '/tableView/products?page=1',
                     icon: TocIcon,
                     target: false
                 },
@@ -34,7 +34,7 @@ const produits = {
                     title: 'Éléments',
                     type: 'item',
                     icon: GridViewIcon,
-                    url: 'listView/products',
+                    url: 'listView/products?page=1',
                     target: false
                 },
                 {

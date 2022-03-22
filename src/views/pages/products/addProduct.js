@@ -1,20 +1,17 @@
 // material-ui
 
-import Chip from '@mui/material/Chip';
 import * as React from 'react';
 import { useDropzone } from "react-dropzone";
 import LoadingButton from '@mui/lab/LoadingButton';
-
-
-
-
-
-
+import CategorieServices from "services/categories-services/CategorieServices"
+import PromotionServices from 'services/promotion-services/promotionServices';
+import { createBrowserHistory } from 'history';
 // material-ui
 import { useState, useEffect } from 'react';
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import {
+    Alert,
     Box,
     Button,
     FormControl,
@@ -35,11 +32,10 @@ import { Formik } from 'formik';
 import useScriptRef from 'hooks/useScriptRef';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import MenuItem from '@mui/material/MenuItem';
-
-
 // assets
 import MainCard from 'ui-component/cards/MainCard';
-
+import ProductServices from 'services/productServices/ProductServices';
+import Swal from 'sweetalert2';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -52,35 +48,10 @@ const MenuProps = {
     },
 };
 
-const categoriesNames = [
-    'Oliver Hansen',
-    'Van Henry',
-    'April Tucker',
-    'Ralph Hubbard',
-    'Omar Alexander',
-    'Carlos Abbott',
-    'Miriam Wagner',
-    'Bradley Wilkerson',
-    'Virginia Andrews',
-    'Kelly Snyder',
-];
 
-const promotionNames = [
-    '10',
-    '20',
-    '30',
-    '40',
-    '50',
 
-];
-function getStyles(name, personName, theme) {
-    return {
-        fontWeight:
-            personName.indexOf(name) === -1
-                ? theme.typography.fontWeightRegular
-                : theme.typography.fontWeightMedium,
-    };
-}
+
+
 
 const thumbsContainer = {
     display: "flex",
@@ -114,17 +85,18 @@ const img = {
 };
 
 
-
-
-
 export default function AddProduct({ ...others }) {
     const theme = useTheme();
-    const scriptedRef = useScriptRef();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
-    const [categorieName, setCategorieName] = React.useState([]);
-    const [promotionName, setPromotionName] = React.useState([]);
+    const [categorieName, setCategorieName] = React.useState(0);
+    const [promotionName, setPromotionName] = React.useState(0);
+    const [categoriesNames, setCategoriesNames] = React.useState([]);
     const [strength] = useState(0);
     const [level] = useState();
+    const [promotionNames, setPromotionNames] = useState([]);
+    const [message, setMessage] = useState(null);
+
+
     const handleChangeSelect = (event) => {
         const {
             target: { value },
@@ -133,6 +105,8 @@ export default function AddProduct({ ...others }) {
             // On autofill we get a stringified value.
             typeof value === 'string' ? value.split(',') : value,
         );
+
+
     };
     const handleChangeSelectPromotion = (event) => {
         const {
@@ -145,18 +119,22 @@ export default function AddProduct({ ...others }) {
     };
     // dropzone 
     const [files, setFiles] = useState([]);
-    const { getRootProps, getInputProps } = useDropzone({
+    const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
         accept: "image/*",
         onDrop: acceptedFiles => {
             setFiles(
                 acceptedFiles.map(file =>
                     Object.assign(file, {
-                        preview: URL.createObjectURL(file)
+                        preview: URL.createObjectURL(file),
+
                     })
                 )
             );
         }
     });
+
+
+    //console.log(formData.getAll('assets'))
 
     const thumbs = files.map(file => (
         <div style={thumb} key={file.name}>
@@ -167,16 +145,67 @@ export default function AddProduct({ ...others }) {
     ));
 
     useEffect(
-        () => () => {
-            // Make sure to revoke the data uris to avoid memory leaks
+        () => {
+
+            CategorieServices.getAll().then((res) => {
+                setCategoriesNames(res.data)
+            });
+            PromotionServices.getAll().then((res) => {
+                setPromotionNames(res.data)
+            })
+
+        }, [], () => {
             files.forEach(file => URL.revokeObjectURL(file.preview));
-        },
-        [files]
+        }, [files]
+
     );
     const [loading, setLoading] = React.useState(false);
 
     function handleClick() {
         setLoading(true);
+
+    }
+
+    const handleSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
+        if (acceptedFiles[0] == null) {
+            setMessage('Il faut ajouter au moin une image pour votre produit ! ')
+            setSubmitting(false);
+        }
+        else {
+            let formData = new FormData()
+            const fileObjects = acceptedFiles.map(file => {
+                console.log(file)
+                formData.append('assets[]', file, file.name)
+            })
+            ProductServices.addProduct(values.nom, values.prix, categorieName, values.description, promotionName, formData).then(
+                () => {
+
+                    Swal.fire({
+                        title: 'Bon travail!!',
+                        text: "Votre produit a été créé avec succès!",
+                        icon: 'success',
+                        showCancelButton: false,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Ok'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+
+                            const history = createBrowserHistory();
+                            history.push("/listView/products");
+                            window.location.reload();
+                        }
+                    })
+                    setMessage('');
+
+                    setSubmitting(false);
+                },
+                error => {
+                    const resMessage = error.message
+                    setMessage(resMessage);
+                    setSubmitting(false);
+                }
+            );
+        }
     }
 
 
@@ -188,37 +217,20 @@ export default function AddProduct({ ...others }) {
                 description: '',
                 prix: '',
                 promotion: '',
-                categorie: '',
+                categorie: { categorieName },
+                file: { files },
                 submit: null
             }}
             validationSchema={Yup.object().shape({
                 nom: Yup.string().max(255, 'Doit être un nom valide').min(2, 'Doit être un nom valide').required('Nom est requis'),
                 description: Yup.string().max(300, 'Doit être une description valide').min(5, 'La description doit contenir au moins 5 caractères').required('Description est requis'),
                 prix: Yup.number().min(0, 'le prix doit etre supérieur à 0 ').required('Prix est requis'),
-                promotion: Yup.string().min(2, 'promotion est requis').required('categorie est requis'),
-                categorie: Yup.string().min(2, 'categorie est requis').required('categorie est requis'),
             })}
-            onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-                try {
-                    if (scriptedRef.current) {
-                        setStatus({ success: true });
-                        setSubmitting(false);
-                    }
-                } catch (err) {
-                    console.error(err);
-                    if (scriptedRef.current) {
-                        setStatus({ success: false });
-                        setErrors({ submit: err.message });
-                        setSubmitting(false);
-                    }
-                }
-            }}
+            onSubmit={(values, { setErrors, setStatus, setSubmitting }) => handleSubmit(values, { setErrors, setStatus, setSubmitting })}
         >
             {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
                 <form noValidate onSubmit={handleSubmit} {...others}>
                     <Grid container spacing={matchDownSM ? 0 : 2}>
-
-
                     </Grid>
                     <FormControl fullWidth error={Boolean(touched.nom && errors.nom)} sx={{ ...theme.typography.customInput }}>
                         <InputLabel htmlFor="nom">Nom produit</InputLabel>
@@ -257,84 +269,58 @@ export default function AddProduct({ ...others }) {
                         )}
                     </FormControl>
 
-                    <FormControl fullWidth error={Boolean(touched.categorie && errors.categorie)} sx={{ ...theme.typography.customInput }}>
-
+                    <FormControl error={Boolean(touched.categorie && categorieName == 0)} fullWidth sx={{ ...theme.typography.customInput }}>
                         <Select
-
-                            id="demo-categorie"
-                            helperText="Sélectionner la catégorie"
-
+                            id="categorieName"
+                            name="categorieName"
                             value={categorieName}
                             onChange={handleChangeSelect}
                             input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-                            renderValue={(selected) => (
-                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                    {selected.map((value) => (
-                                        <Chip key={value} label={value} />
-                                    ))}
-                                </Box>
-                            )}
+
                             MenuProps={MenuProps}
 
                         >
-                            {categoriesNames.map((name) => (
+                            {categoriesNames?.map((name) => (
                                 <MenuItem
-                                    key={name}
-                                    value={name}
-                                    style={getStyles(name, categorieName, theme)}
+                                    key={name.id}
+                                    value={name.id}
                                 >
-                                    {name}
+                                    {name.nom}
                                 </MenuItem>
                             ))}
                         </Select>
                         <FormHelperText id="helpercat">
                             Sélectionner la catégorie
                         </FormHelperText>
-                        {touched.categorie && errors.categorie && (
-                            <FormHelperText error id="standard-weight-helper-text-categorie-register">
-                                {errors.categorie}
-                            </FormHelperText>
-                        )}
+
                     </FormControl>
 
-                    <FormControl fullWidth error={Boolean(touched.promotion && errors.promotion)} sx={{ ...theme.typography.customInput }}>
+                    <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
 
                         <Select
 
-                            id="demo-promotion"
-                            helperText="Sélectionner une promotion si le produit est soldé "
+                            id="promotionName"
 
                             value={promotionName}
                             onChange={handleChangeSelectPromotion}
                             input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-                            renderValue={(selected) => (
-                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                    {selected.map((value) => (
-                                        <Chip key={value} label={value} />
-                                    ))}
-                                </Box>
-                            )}
+
                             MenuProps={MenuProps}
 
                         >
-                            {promotionNames.map((name) => (
+                            {promotionNames?.map((name) => (
                                 <MenuItem
-                                    key={name}
-                                    value={name}
-                                    style={getStyles(name, promotionName, theme)}
+                                    key={name.id}
+                                    value={name.id}
                                 >
-                                    {name} %
+                                    {name.nom} {name.pourcentage} %
                                 </MenuItem>
                             ))}
                         </Select>
                         <FormHelperText id="helpercat">
                             Sélectionner la promotion
                         </FormHelperText>
-                        {touched.promotion && errors.promotion && (
-                            <FormHelperText error id="standard-weight-helper-text-promotion-register">
-                                {errors.promotion}
-                            </FormHelperText>
-                        )}
+
                     </FormControl>
 
                     <FormControl fullWidth error={Boolean(touched.description && errors.description)} sx={{ ...theme.typography.customInput }}>
@@ -357,8 +343,8 @@ export default function AddProduct({ ...others }) {
                         )}
                     </FormControl>
 
-                    <FormControl fullWidth error={Boolean(touched.description && errors.description)} sx={{ ...theme.typography.customInput }}>
-                        <section className="container" style={{ "width": "100%", "minHeight": 120, "border": "0.5px dashed #c0c0c0", "border-radius": "12px" }}>
+                    <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                        <section className="container" style={{ "width": "100%", "minHeight": 120, "border": "0.5px dashed #c0c0c0", "borderRadius": "12px" }}>
                             <div {...getRootProps({ className: "dropzone" })}>
                                 <input {...getInputProps()} />
                                 <p>Faites glisser et déposez des images ici, ou cliquez pour sélectionner des images</p>
@@ -399,6 +385,19 @@ export default function AddProduct({ ...others }) {
                     )}
                     <Grid container spacing={matchDownSM ? (0) : 2} direction="row-reverse" style={{ "marginTop": 30 }}>
 
+                        <Grid item xs={12} sm={12} >
+
+
+                            <Box sx={{ mt: 2 }}>
+
+                                {message && (
+                                    <Alert severity="error"  >{message}</Alert>
+
+                                )}
+                            </Box>
+
+                        </Grid>
+
                         <Grid item xs={12} sm={2} >
 
 
@@ -408,54 +407,38 @@ export default function AddProduct({ ...others }) {
                                     disabled={isSubmitting}
                                     fullWidth
                                     size="large"
-                                    type="submit"
+
                                     color="secondary"
-                                    onClick={handleClick}
-                                    loading={loading}
+                                    onClick={() => {
+                                        const history = createBrowserHistory();
+                                        history.push("/listView/products");
+                                        window.location.reload();
+                                    }}
                                     variant="outlined"
                                 >
                                     Annuler
                                 </Button>
                             </AnimateButton>
-
-
                         </Grid>
                         <Grid item xs={12} sm={2} >
-
-
                             <AnimateButton>
                                 <LoadingButton
                                     disableElevation
-                                    disabled={isSubmitting}
                                     fullWidth
                                     size="large"
                                     type="submit"
                                     color="primary"
-                                    onClick={handleClick}
-                                    loading={loading}
+                                    loading={isSubmitting}
                                     variant="contained"
                                 >
                                     Ajouter
                                 </LoadingButton>
                             </AnimateButton>
-
-
                         </Grid>
                     </Grid>
                 </form>
             )}
         </Formik>
 
-
-
-
-
-
     </MainCard >);
-
-
-
-
 };
-
-//export default listViewProducts;

@@ -23,6 +23,8 @@ import MainCard from 'ui-component/cards/MainCard';
 import { useEffect, useState } from 'react';
 import { Pagination } from '@mui/material';
 import GirdSkeleton from 'ui-component/cards/Skeleton/GirdSkeleton';
+import AuthService from 'services/auth-services/AuthService';
+import { createBrowserHistory } from 'history';
 
 
 
@@ -69,6 +71,8 @@ const rows = [
 
 export default function GirdViewPromotion() {
     const [open, setOpen] = React.useState(false);
+    const history = createBrowserHistory();
+
 
 
     const handleClose = () => {
@@ -84,95 +88,100 @@ export default function GirdViewPromotion() {
 
 
 
+    if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
 
 
-    return (
-        <>
-            <MainCard title="Liste des promotions">
+        return (
+            <>
+                <MainCard title="Liste des promotions">
 
 
-                <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                        <TableHead>
-                            <TableRow>
-                                <StyledTableCell>Banière</StyledTableCell>
-                                <StyledTableCell align="right">Nom</StyledTableCell>
-                                <StyledTableCell align="right">Pourcentage</StyledTableCell>
-                                <StyledTableCell align="right">Date Début</StyledTableCell>
-                                <StyledTableCell align="right">Date Fin</StyledTableCell>
-                                <StyledTableCell align="right">Description</StyledTableCell>
-                                <StyledTableCell align="right">Actions</StyledTableCell>
+                    <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>Banière</StyledTableCell>
+                                    <StyledTableCell align="right">Nom</StyledTableCell>
+                                    <StyledTableCell align="right">Pourcentage</StyledTableCell>
+                                    <StyledTableCell align="right">Date Début</StyledTableCell>
+                                    <StyledTableCell align="right">Date Fin</StyledTableCell>
+                                    <StyledTableCell align="right">Description</StyledTableCell>
+                                    <StyledTableCell align="right">Actions</StyledTableCell>
 
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {rows.map((row) => (<>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {rows.map((row) => (<>
 
-                                {isLoading ? (
-                                    <GirdSkeleton loading={isLoading}> </GirdSkeleton>
-                                ) : (
+                                    {isLoading ? (
+                                        <GirdSkeleton loading={isLoading}> </GirdSkeleton>
+                                    ) : (
 
 
-                                    <StyledTableRow key={row.baniere} >
-                                        <StyledTableCell align="right" scope="row">
-                                            <Avatar sx={{ width: 150, height: 100 }} src={`${process.env.PUBLIC_URL}/static/mock-images/products/` + row.baniere} variant="square" />
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">{row.nom}</StyledTableCell>
-                                        <StyledTableCell align="right">{row.pourcentage}dt</StyledTableCell>
-                                        <StyledTableCell align="right">{row.dateDebut}</StyledTableCell>
-                                        <StyledTableCell align="right">{row.dateFin}%</StyledTableCell>
-                                        <StyledTableCell align="right">{row.description}</StyledTableCell>
-                                        <StyledTableCell align="right" scope="row"  >
-                                            <IconButton aria-label="show" size="large" color="primary" href="/products/show" >
-                                                <VisibilityIcon />
-                                            </IconButton>
-                                            <IconButton aria-label="edit" size="large" color="success">
-                                                <EditIcon />
-                                            </IconButton>
-                                            <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true) }}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </StyledTableCell>
-                                    </StyledTableRow>
+                                        <StyledTableRow key={row.baniere} >
+                                            <StyledTableCell align="right" scope="row">
+                                                <Avatar sx={{ width: 150, height: 100 }} src={`${process.env.PUBLIC_URL}/static/mock-images/products/` + row.baniere} variant="square" />
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">{row.nom}</StyledTableCell>
+                                            <StyledTableCell align="right">{row.pourcentage}dt</StyledTableCell>
+                                            <StyledTableCell align="right">{row.dateDebut}</StyledTableCell>
+                                            <StyledTableCell align="right">{row.dateFin}%</StyledTableCell>
+                                            <StyledTableCell align="right">{row.description}</StyledTableCell>
+                                            <StyledTableCell align="right" scope="row"  >
+                                                <IconButton aria-label="show" size="large" color="primary" href="/products/show" >
+                                                    <VisibilityIcon />
+                                                </IconButton>
+                                                <IconButton aria-label="edit" size="large" color="success">
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true) }}>
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </StyledTableCell>
+                                        </StyledTableRow>
 
-                                )}
-                            </>
-                            ))}
-                        </TableBody>
-                    </Table>
-                    {
-                        open ? (<div>
+                                    )}
+                                </>
+                                ))}
+                            </TableBody>
+                        </Table>
+                        {
+                            open ? (<div>
 
-                            <Dialog
-                                open={open}
-                                onClose={handleClose}
-                                aria-labelledby="alert-dialog-title"
-                                aria-describedby="alert-dialog-description"
-                            >
-                                <DialogTitle id="alert-dialog-title">
-                                    {"Voulez-vous supprimer le produit"}
-                                </DialogTitle>
-                                <DialogContent>
-                                    <DialogContentText id="alert-dialog-description">
-                                        Let Google help apps determine location. This means sending anonymous
-                                        location data to Google, even when no apps are running.
-                                    </DialogContentText>
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={handleClose}>Annuler</Button>
-                                    <Button onClick={handleClose} autoFocus>
-                                        Confirmer
-                                    </Button>
-                                </DialogActions>
-                            </Dialog>
-                        </div>) : (null)}
-                    <Stack direction="row-reverse" marginTop={"2%"}>
-                        <Pagination color="primary" count={10} variant="outlined" />
-                    </Stack>
-                </TableContainer>
-            </MainCard>
+                                <Dialog
+                                    open={open}
+                                    onClose={handleClose}
+                                    aria-labelledby="alert-dialog-title"
+                                    aria-describedby="alert-dialog-description"
+                                >
+                                    <DialogTitle id="alert-dialog-title">
+                                        {"Voulez-vous supprimer le produit"}
+                                    </DialogTitle>
+                                    <DialogContent>
+                                        <DialogContentText id="alert-dialog-description">
+                                            Let Google help apps determine location. This means sending anonymous
+                                            location data to Google, even when no apps are running.
+                                        </DialogContentText>
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={handleClose}>Annuler</Button>
+                                        <Button onClick={handleClose} autoFocus>
+                                            Confirmer
+                                        </Button>
+                                    </DialogActions>
+                                </Dialog>
+                            </div>) : (null)}
+                        <Stack direction="row-reverse" marginTop={"2%"}>
+                            <Pagination color="primary" count={10} variant="outlined" />
+                        </Stack>
+                    </TableContainer>
+                </MainCard>
 
-        </>
+            </>
 
-    );
+        );
+    else {
+        history.push('/login');
+        window.location.reload();
+    }
 }

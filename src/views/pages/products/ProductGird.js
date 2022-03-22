@@ -25,8 +25,14 @@ import { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import ProductSort from 'ui-component/productsListView/ProductSort';
 import AddIcon from '@mui/icons-material/Add';
-import { Pagination } from '@mui/material';
+import { Pagination, Typography } from '@mui/material';
 import GirdSkeleton from 'ui-component/cards/Skeleton/GirdSkeleton';
+import AuthService from 'services/auth-services/AuthService';
+import { createBrowserHistory } from 'history';
+import ProductServices from 'services/productServices/ProductServices';
+import { useLocation } from 'react-router';
+import { IconBrandProducthunt } from '@tabler/icons';
+import { Box } from '@mui/system';
 
 
 
@@ -53,27 +59,45 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
+
 function createData(image, nom, prix, categorie, promotion, description) {
     return { image, nom, prix, categorie, promotion, description };
 }
 
-const rows = [
-    createData('product_1.jpg', 'product 1 ', 11, 'chaussure', '9', 'description'),
-    createData('product_2.jpg', 'product 2 ', 11, 'chaussure', '9', 'description'),
-    createData('product_3.jpg', 'product 3 ', 11, 'chaussure', '9', 'description'),
-    createData('product_4.jpg', 'product 4 ', 11, 'chaussure', '9', 'description'),
-    createData('product_5.jpg', 'product 5 ', 11, 'chaussure', '9', 'description'),
-    createData('product_6.jpg', 'product 6 ', 11, 'chaussure', '9', 'description'),
-    createData('product_7.jpg', 'product 7', 11, 'chaussure', '9', 'description'),
-    createData('product_8.jpg', 'product 8', 11, 'chaussure', '9', 'description'),
-    createData('product_9.jpg', 'product 9', 11, 'chaussure', '9', 'description'),
-    createData('product_10.jpg', 'product 10 ', 11, 'chaussure', '9', 'description'),
-];
 
 
 export default function ProductGird() {
-    const [open, setOpen] = React.useState(false);
+    const history = createBrowserHistory();
 
+    const [open, setOpen] = React.useState(false);
+    let query = useQuery();
+    const [listproducts, setListProducts] = useState([]);
+    const [numberPages, setNumberPages] = useState(0);
+    const [page, setPage] = React.useState(parseInt(query.get("page")));
+    const [isLoading, setLoading] = useState(true);
+
+
+
+    const handleChange = (event, value) => {
+        setPage(value);
+        const history = createBrowserHistory();
+        history.push("/tableView/products?page=" + value);
+        window.location.reload();
+    };
+
+    useEffect(
+        () => {
+            ProductServices.getAll(query.get("page")).then((res) => {
+
+                setListProducts(res.data[0]);
+                setNumberPages(res.data["pagination"])
+            });
+            setLoading(false);
+        }, [listproducts, numberPages, page]
+    );
 
     const handleClose = () => {
         setOpen(false);
@@ -109,127 +133,160 @@ export default function ProductGird() {
         resetForm();
     };
 
-    const [isLoading, setLoading] = useState(true);
-    useEffect(() => {
-        //setTimeout(() => { setLoading(false); }, 2000);
-        setLoading(false);
-    }, []);
 
 
 
+    if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
+        return (
+            <>
+                <MainCard title="Liste des produits">
+                    <Stack
+                        direction="row"
+                        flexWrap="wrap-reverse"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        sx={{ mb: 5 }}
+                    >
 
+                        <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
 
-    return (
-        <>
-            <MainCard title="Liste des produits">
-                <Stack
-                    direction="row"
-                    flexWrap="wrap-reverse"
-                    alignItems="center"
-                    justifyContent="flex-end"
-                    sx={{ mb: 5 }}
-                >
+                            <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
+                                <Button onClick={() => {
+                                    history.push('/products/add');
+                                    window.location.reload();
+                                }} variant="outlined" startIcon={<AddIcon />}>
+                                    Ajouter</Button>
+                            </Stack>
 
-                    <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
-
-                        <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
-                            <Button variant="outlined" startIcon={<AddIcon />}>
-                                Ajouter</Button>
+                            <ProductFilterSidebar
+                                formik={formik}
+                                isOpenFilter={openFilter}
+                                onResetFilter={handleResetFilter}
+                                onOpenFilter={handleOpenFilter}
+                                onCloseFilter={handleCloseFilter}
+                            />
+                            <ProductSort />
                         </Stack>
-
-                        <ProductFilterSidebar
-                            formik={formik}
-                            isOpenFilter={openFilter}
-                            onResetFilter={handleResetFilter}
-                            onOpenFilter={handleOpenFilter}
-                            onCloseFilter={handleCloseFilter}
-                        />
-                        <ProductSort />
                     </Stack>
-                </Stack>
 
-                <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                        <TableHead>
-                            <TableRow>
-                                <StyledTableCell>Image</StyledTableCell>
-                                <StyledTableCell align="right">Nom</StyledTableCell>
-                                <StyledTableCell align="right">Prix</StyledTableCell>
-                                <StyledTableCell align="right">Categorie</StyledTableCell>
-                                <StyledTableCell align="right">Promotion</StyledTableCell>
-                                <StyledTableCell align="right">Description</StyledTableCell>
-                                <StyledTableCell align="right">Actions</StyledTableCell>
+                    <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                            <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>Image</StyledTableCell>
+                                    <StyledTableCell align="right">Nom</StyledTableCell>
+                                    <StyledTableCell align="right">Prix</StyledTableCell>
+                                    <StyledTableCell align="right">Categorie</StyledTableCell>
+                                    <StyledTableCell align="right">Promotion</StyledTableCell>
+                                    <StyledTableCell align="right">Description</StyledTableCell>
+                                    <StyledTableCell align="right">Actions</StyledTableCell>
 
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {rows.map((row) => (<>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {listproducts?.map((product, index) => (<>
 
-                                {isLoading ? (
-                                    <GirdSkeleton loading={isLoading}> </GirdSkeleton>
-                                ) : (
+                                    {isLoading ? (
+                                        <GirdSkeleton key={index} loading={isLoading}> </GirdSkeleton>
+                                    ) : (
 
 
-                                    <StyledTableRow key={row.nom} >
-                                        <StyledTableCell align="right" scope="row">
-                                            <Avatar sx={{ width: 150, height: 100 }} src={`${process.env.PUBLIC_URL}/static/mock-images/products/` + row.image} variant="square" />
-                                        </StyledTableCell>
-                                        <StyledTableCell align="right">{row.nom}</StyledTableCell>
-                                        <StyledTableCell align="right">{row.prix}dt</StyledTableCell>
-                                        <StyledTableCell align="right">{row.categorie}</StyledTableCell>
-                                        <StyledTableCell align="right">{row.promotion}%</StyledTableCell>
-                                        <StyledTableCell align="right">{row.description}</StyledTableCell>
-                                        <StyledTableCell align="right" scope="row"  >
-                                            <IconButton aria-label="show" size="large" color="primary" href="/products/show" >
-                                                <VisibilityIcon />
-                                            </IconButton>
-                                            <IconButton aria-label="edit" size="large" color="success">
-                                                <EditIcon />
-                                            </IconButton>
-                                            <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true) }}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </StyledTableCell>
-                                    </StyledTableRow>
+                                        <StyledTableRow key={product.id} >
+                                            <StyledTableCell align="right" scope="row">
+                                                <Avatar sx={{ width: 150, height: 100 }} src={"http://localhost:8000/uploads/" + product.images[0].nom} variant="square" />
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">{product.nom}</StyledTableCell>
+                                            <StyledTableCell align="right"><Box sx={{ display: 'inline-flex' }} variant="subtitle1">
+                                                {product.promotion ? (
+                                                    <>
+                                                        <Typography
+                                                            component="span"
+                                                            variant="body1"
+                                                            sx={{
+                                                                color: 'text.disabled',
+                                                                textDecoration: 'line-through'
+                                                            }}
+                                                        >
+                                                            {product.prix} dt
 
-                                )}
-                            </>
-                            ))}
-                        </TableBody>
-                    </Table>
-                    {
-                        open ? (<div>
 
-                            <Dialog
-                                open={open}
-                                onClose={handleClose}
-                                aria-labelledby="alert-dialog-title"
-                                aria-describedby="alert-dialog-description"
-                            >
-                                <DialogTitle id="alert-dialog-title">
-                                    {"Voulez-vous supprimer le produit"}
-                                </DialogTitle>
-                                <DialogContent>
-                                    <DialogContentText id="alert-dialog-description">
-                                        Let Google help apps determine location. This means sending anonymous
-                                        location data to Google, even when no apps are running.
-                                    </DialogContentText>
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={handleClose}>Annuler</Button>
-                                    <Button onClick={handleClose} autoFocus>
-                                        Confirmer
-                                    </Button>
-                                </DialogActions>
-                            </Dialog>
-                        </div>) : (null)}
-                    <Stack direction="row-reverse" marginTop={"2%"}>
-                        <Pagination color="primary" count={10} variant="outlined" />
-                    </Stack>
-                </TableContainer>
-            </MainCard>
 
-        </>
+                                                        </Typography>
+                                                        &nbsp;
+                                                        {Math.trunc(product.prix - (product.prix * product.promotion.pourcentage / 100))} dt
+                                                    </>
+                                                ) : (
+                                                    <Typography
+                                                        component="span"
+                                                        variant="body1"
+                                                        sx={{
+                                                            color: 'text.disabled',
+                                                        }}
+                                                    >
+                                                        {product.prix} dt
 
-    );
+                                                    </Typography>
+                                                )}
+                                            </Box></StyledTableCell>
+                                            <StyledTableCell align="right">{product.categorie.nom}</StyledTableCell>
+                                            <StyledTableCell align="right">{product.promotion?.pourcentage}%</StyledTableCell>
+                                            <StyledTableCell align="right">{product.description}</StyledTableCell>
+                                            <StyledTableCell align="right" scope="row"  >
+                                                <IconButton aria-label="show" size="large" color="primary" href={"/products/show/" + product.id} >
+                                                    <VisibilityIcon />
+                                                </IconButton>
+                                                <IconButton aria-label="edit" size="large" color="success">
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true) }}>
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </StyledTableCell>
+                                        </StyledTableRow>
+
+                                    )}
+                                </>
+                                ))}
+                            </TableBody>
+                        </Table>
+                        {
+                            open ? (<div>
+
+                                <Dialog
+                                    open={open}
+                                    onClose={handleClose}
+                                    aria-labelledby="alert-dialog-title"
+                                    aria-describedby="alert-dialog-description"
+                                >
+                                    <DialogTitle id="alert-dialog-title">
+                                        {"Voulez-vous supprimer le produit"}
+                                    </DialogTitle>
+                                    <DialogContent>
+                                        <DialogContentText id="alert-dialog-description">
+                                            Let Google help apps determine location. This means sending anonymous
+                                            location data to Google, even when no apps are running.
+                                        </DialogContentText>
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={handleClose}>Annuler</Button>
+                                        <Button onClick={handleClose} autoFocus>
+                                            Confirmer
+                                        </Button>
+                                    </DialogActions>
+                                </Dialog>
+                            </div>) : (null)}
+                        <Stack direction="row-reverse" marginTop={"2%"}>
+                            <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
+                        </Stack>
+                    </TableContainer>
+                </MainCard>
+
+            </>
+
+        );
+    else {
+        history.push('/login');
+        window.location.reload();
+    }
+
 }

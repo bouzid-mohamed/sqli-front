@@ -55,7 +55,7 @@ const MainRoutes = {
             element: <AddProduct />
         },
         {
-            path: '/products/show',
+            path: '/products/show/:id',
             element: <ShowProduct />
         },
         {
@@ -125,3 +125,5 @@ const MainRoutes = {
 };
 
 export default MainRoutes;
+
+
