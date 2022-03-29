@@ -31,7 +31,6 @@ import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
 import ProductServices from 'services/productServices/ProductServices';
 import { useLocation } from 'react-router';
-import { IconBrandProducthunt } from '@tabler/icons';
 import { Box } from '@mui/system';
 
 
@@ -63,9 +62,7 @@ function useQuery() {
     return new URLSearchParams(useLocation().search);
 }
 
-function createData(image, nom, prix, categorie, promotion, description) {
-    return { image, nom, prix, categorie, promotion, description };
-}
+
 
 
 
@@ -94,9 +91,10 @@ export default function ProductGird() {
 
                 setListProducts(res.data[0]);
                 setNumberPages(res.data["pagination"])
+                setLoading(false);
+
             });
-            setLoading(false);
-        }, [listproducts, numberPages, page]
+        }, []
     );
 
     const handleClose = () => {
@@ -139,7 +137,7 @@ export default function ProductGird() {
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
         return (
             <>
-                <MainCard title="Liste des produits">
+                <MainCard title="Liste des produits" style={{ "height": "100%" }} >
                     <Stack
                         direction="row"
                         flexWrap="wrap-reverse"
@@ -170,85 +168,102 @@ export default function ProductGird() {
                     </Stack>
 
                     <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                            <TableHead>
-                                <TableRow>
-                                    <StyledTableCell>Image</StyledTableCell>
-                                    <StyledTableCell align="right">Nom</StyledTableCell>
-                                    <StyledTableCell align="right">Prix</StyledTableCell>
-                                    <StyledTableCell align="right">Categorie</StyledTableCell>
-                                    <StyledTableCell align="right">Promotion</StyledTableCell>
-                                    <StyledTableCell align="right">Description</StyledTableCell>
-                                    <StyledTableCell align="right">Actions</StyledTableCell>
-
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {listproducts?.map((product, index) => (<>
-
-                                    {isLoading ? (
-                                        <GirdSkeleton key={index} loading={isLoading}> </GirdSkeleton>
-                                    ) : (
+                        {isLoading ? (
 
 
-                                        <StyledTableRow key={product.id} >
-                                            <StyledTableCell align="right" scope="row">
-                                                <Avatar sx={{ width: 150, height: 100 }} src={"http://localhost:8000/uploads/" + product.images[0].nom} variant="square" />
-                                            </StyledTableCell>
-                                            <StyledTableCell align="right">{product.nom}</StyledTableCell>
-                                            <StyledTableCell align="right"><Box sx={{ display: 'inline-flex' }} variant="subtitle1">
-                                                {product.promotion ? (
-                                                    <>
-                                                        <Typography
-                                                            component="span"
-                                                            variant="body1"
-                                                            sx={{
-                                                                color: 'text.disabled',
-                                                                textDecoration: 'line-through'
-                                                            }}
-                                                        >
-                                                            {product.prix} dt
+                            <>
+                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((index) => (
+                                    <GirdSkeleton key={index} />
 
-
-
-                                                        </Typography>
-                                                        &nbsp;
-                                                        {Math.trunc(product.prix - (product.prix * product.promotion.pourcentage / 100))} dt
-                                                    </>
-                                                ) : (
-                                                    <Typography
-                                                        component="span"
-                                                        variant="body1"
-                                                        sx={{
-                                                            color: 'text.disabled',
-                                                        }}
-                                                    >
-                                                        {product.prix} dt
-
-                                                    </Typography>
-                                                )}
-                                            </Box></StyledTableCell>
-                                            <StyledTableCell align="right">{product.categorie.nom}</StyledTableCell>
-                                            <StyledTableCell align="right">{product.promotion?.pourcentage}%</StyledTableCell>
-                                            <StyledTableCell align="right">{product.description}</StyledTableCell>
-                                            <StyledTableCell align="right" scope="row"  >
-                                                <IconButton aria-label="show" size="large" color="primary" href={"/products/show/" + product.id} >
-                                                    <VisibilityIcon />
-                                                </IconButton>
-                                                <IconButton aria-label="edit" size="large" color="success">
-                                                    <EditIcon />
-                                                </IconButton>
-                                                <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true) }}>
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                            </StyledTableCell>
-                                        </StyledTableRow>
-
-                                    )}
-                                </>
                                 ))}
-                            </TableBody>
-                        </Table>
+
+                            </>
+                        ) : (
+                            <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                                <TableHead>
+                                    <TableRow>
+                                        <StyledTableCell>Image</StyledTableCell>
+                                        <StyledTableCell align="right">Nom</StyledTableCell>
+                                        <StyledTableCell align="right">Prix</StyledTableCell>
+                                        <StyledTableCell align="right">Categorie</StyledTableCell>
+                                        <StyledTableCell align="right">Promotion</StyledTableCell>
+                                        <StyledTableCell align="right">Actions</StyledTableCell>
+
+                                    </TableRow>
+                                </TableHead>
+
+
+
+                                <TableBody>
+
+
+
+                                    <>
+                                        {listproducts?.map((product, index) => (<>
+
+                                            <StyledTableRow key={index} >
+                                                <StyledTableCell align="right" scope="row">
+                                                    <Avatar sx={{ width: 150, height: 100 }} src={"http://localhost:8000/uploads/" + product.images[0].nom} variant="square" />
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">{product.nom}</StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <Box sx={{ display: 'inline-flex' }} variant="subtitle1">
+                                                        {product.promotion ? (
+                                                            <>
+                                                                <Typography
+                                                                    component="span"
+                                                                    variant="body1"
+                                                                    sx={{
+                                                                        color: 'text.disabled',
+                                                                        textDecoration: 'line-through'
+                                                                    }}
+                                                                >
+                                                                    {product.prix} dt
+
+
+
+                                                                </Typography>
+                                                                &nbsp;
+                                                                {Math.trunc(product.prix - (product.prix * product.promotion.pourcentage / 100))} dt
+                                                            </>
+                                                        ) : (
+                                                            <Typography
+                                                                component="span"
+                                                                variant="body1"
+                                                                sx={{
+                                                                    color: 'text.disabled',
+                                                                }}
+                                                            >
+                                                                {product.prix} dt
+
+                                                            </Typography>
+                                                        )}
+                                                    </Box></StyledTableCell>
+                                                <StyledTableCell align="right">{product.categorie.nom}</StyledTableCell>
+                                                <StyledTableCell align="right">{product.promotion?.pourcentage}%</StyledTableCell>
+                                                <StyledTableCell align="right" scope="row"  >
+                                                    <IconButton aria-label="show" size="large" color="primary" href={"/products/show/" + product.id} >
+                                                        <VisibilityIcon />
+                                                    </IconButton>
+                                                    <IconButton aria-label="edit" size="large" color="success">
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                    <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true) }}>
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </StyledTableCell>
+                                            </StyledTableRow>
+
+
+
+                                        </>
+                                        ))}
+                                    </>
+                                </TableBody>
+
+
+                            </Table>
+                        )}
                         {
                             open ? (<div>
 

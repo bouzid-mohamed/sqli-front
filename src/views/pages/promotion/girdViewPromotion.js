@@ -9,9 +9,9 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
+import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -25,10 +25,16 @@ import { Pagination } from '@mui/material';
 import GirdSkeleton from 'ui-component/cards/Skeleton/GirdSkeleton';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
+import promotionServices from 'services/promotion-services/promotionServices';
+import { useLocation } from 'react-router';
 
 
 
 
+
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -55,23 +61,26 @@ function createData(baniere, nom, purcentage, dateDebut, dateFin, description) {
     return { baniere, nom, purcentage, dateDebut, dateFin, description };
 }
 
-const rows = [
-    createData('product_1.jpg', 'promo 1 ', 11, '13/03/2022', '9', '13/04/2022'),
-    createData('product_2.jpg', 'promo 2 ', 11, '13/03/2022', '9', '13/04/2022'),
-    createData('product_3.jpg', 'promo 3 ', 11, '13/03/2022', '9', '13/04/2022'),
-    createData('product_4.jpg', 'promo 4 ', 11, '13/03/2022', '9', '13/04/2022'),
-    createData('product_5.jpg', 'promo 5 ', 11, '13/03/2022', '9', '13/04/2022'),
-    createData('product_6.jpg', 'promo 6 ', 11, '13/03/2022', '9', '13/04/2022'),
-    createData('product_7.jpg', 'promo 7', 11, '13/03/2022', '9', '13/04/2022'),
-    createData('product_8.jpg', 'promo 8', 11, '13/03/2022', '9', '13/04/2022'),
-    createData('product_9.jpg', 'promo 9', 11, '13/03/2022', '9', '13/04/2022'),
-    createData('product_10.jpg', 'promo 10 ', 11, '13/03/2022', '9', '13/04/2022'),
-];
+
 
 
 export default function GirdViewPromotion() {
+    let query = useQuery();
+    const [numberPages, setNumberPages] = useState(0);
     const [open, setOpen] = React.useState(false);
     const history = createBrowserHistory();
+    const [rows, setRows] = useState([]);
+    const [page, setPage] = React.useState(parseInt(query.get("page")));
+    const [isLoading, setIsloading] = useState(true);
+
+
+    const handleChange = (event, value) => {
+        setPage(value);
+        const history = createBrowserHistory();
+        history.push("/tableView/products?page=" + value);
+        window.location.reload();
+    };
+
 
 
 
@@ -80,11 +89,19 @@ export default function GirdViewPromotion() {
     };
 
 
-    const [isLoading, setLoading] = useState(true);
+
     useEffect(() => {
+
+        promotionServices.getAllList(query.get("page")).then((res) => {
+            setRows(res.data[0]);
+            setNumberPages(res.data["pagination"])
+            setIsloading(false);
+        })
         //setTimeout(() => { setLoading(false); }, 2000);
-        setLoading(false);
+
     }, []);
+
+
 
 
 
@@ -95,42 +112,70 @@ export default function GirdViewPromotion() {
             <>
                 <MainCard title="Liste des promotions">
 
+                    <Stack
+                        direction="row"
+                        flexWrap="wrap-reverse"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        sx={{ mb: 5 }}
+                    >
+
+                        <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
+
+                            <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
+                                <Button onClick={() => {
+                                    history.push('/promotion/add');
+                                    window.location.reload();
+                                }} variant="outlined" startIcon={<AddIcon />}>
+                                    Ajouter</Button>
+                            </Stack>
+
+
+                        </Stack>
+                    </Stack>
+
 
                     <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                            <TableHead>
-                                <TableRow>
-                                    <StyledTableCell>Banière</StyledTableCell>
-                                    <StyledTableCell align="right">Nom</StyledTableCell>
-                                    <StyledTableCell align="right">Pourcentage</StyledTableCell>
-                                    <StyledTableCell align="right">Date Début</StyledTableCell>
-                                    <StyledTableCell align="right">Date Fin</StyledTableCell>
-                                    <StyledTableCell align="right">Description</StyledTableCell>
-                                    <StyledTableCell align="right">Actions</StyledTableCell>
 
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rows.map((row) => (<>
-
-                                    {isLoading ? (
-                                        <GirdSkeleton loading={isLoading}> </GirdSkeleton>
-                                    ) : (
+                        {isLoading ? (
 
 
-                                        <StyledTableRow key={row.baniere} >
+                            <>
+                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((index) => (
+                                    <GirdSkeleton key={index} />
+
+                                ))}
+
+                            </>
+                        ) : (
+                            <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                                <TableHead>
+                                    <TableRow>
+                                        <StyledTableCell>Banière</StyledTableCell>
+                                        <StyledTableCell align="right">Nom</StyledTableCell>
+                                        <StyledTableCell align="right">Pourcentage</StyledTableCell>
+                                        <StyledTableCell align="right">Date Début</StyledTableCell>
+                                        <StyledTableCell align="right">Date Fin</StyledTableCell>
+                                        <StyledTableCell align="right">Actions</StyledTableCell>
+
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {rows.map((row) => (<>
+
+
+
+
+                                        <StyledTableRow key={row.id} >
                                             <StyledTableCell align="right" scope="row">
-                                                <Avatar sx={{ width: 150, height: 100 }} src={`${process.env.PUBLIC_URL}/static/mock-images/products/` + row.baniere} variant="square" />
+                                                <Avatar sx={{ width: 150, height: 100 }} src={`http://localhost:8000/uploads/` + row.banniere} variant="square" />
                                             </StyledTableCell>
                                             <StyledTableCell align="right">{row.nom}</StyledTableCell>
-                                            <StyledTableCell align="right">{row.pourcentage}dt</StyledTableCell>
+                                            <StyledTableCell align="right">{row.pourcentage}%</StyledTableCell>
                                             <StyledTableCell align="right">{row.dateDebut}</StyledTableCell>
-                                            <StyledTableCell align="right">{row.dateFin}%</StyledTableCell>
-                                            <StyledTableCell align="right">{row.description}</StyledTableCell>
+                                            <StyledTableCell align="right">{row.dateFin}</StyledTableCell>
                                             <StyledTableCell align="right" scope="row"  >
-                                                <IconButton aria-label="show" size="large" color="primary" href="/products/show" >
-                                                    <VisibilityIcon />
-                                                </IconButton>
+
                                                 <IconButton aria-label="edit" size="large" color="success">
                                                     <EditIcon />
                                                 </IconButton>
@@ -140,11 +185,12 @@ export default function GirdViewPromotion() {
                                             </StyledTableCell>
                                         </StyledTableRow>
 
-                                    )}
-                                </>
-                                ))}
-                            </TableBody>
-                        </Table>
+
+                                    </>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
                         {
                             open ? (<div>
 
@@ -172,7 +218,7 @@ export default function GirdViewPromotion() {
                                 </Dialog>
                             </div>) : (null)}
                         <Stack direction="row-reverse" marginTop={"2%"}>
-                            <Pagination color="primary" count={10} variant="outlined" />
+                            <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
                         </Stack>
                     </TableContainer>
                 </MainCard>

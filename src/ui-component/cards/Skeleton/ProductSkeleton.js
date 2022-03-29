@@ -16,39 +16,33 @@ const useStyles = makeStyles(() => ({
 
 
 function Media(props) {
-  const { loading = false } = props;
   const classes = useStyles();
 
 
-  if (loading === true)
 
-    return (
-      <Grid container wrap="nowrap" >
-        <Box sx={{ width: 367, marginRight: 0.5, my: 5 }}  >
-          <Skeleton variant="rectangular" width={367} height={378} className={classes.skeletonRadius} />
-          <Box sx={{ pt: 0.5 }}>
-            <Skeleton />
-            <Skeleton width="100%" />
-          </Box>
-
+  return (
+    <Grid container wrap="nowrap" >
+      <Box sx={{ width: 367, marginRight: 0.5, my: 5 }}  >
+        <Skeleton animation="wave" variant="rectangular" width={367} height={378} className={classes.skeletonRadius} />
+        <Box sx={{ pt: 0.5 }}>
+          <Skeleton animation="wave" height={60} />
         </Box>
-      </Grid>
-    );
-  return null;
+
+      </Box>
+    </Grid>
+  );
+
 }
 
-Media.propTypes = {
-  loading: PropTypes.bool,
-};
 
 
-export default function ProductSkeleton(props) {
-  const { loading } = props;
-  if (loading === true)
-    return (
-      <Box sx={{ overflow: 'hidden' }}>
-        <Media loading />
-      </Box>
-    );
-  return null;
+
+export default function ProductSkeleton() {
+
+  return (
+    <Box sx={{ overflow: 'hidden' }}>
+      <Media loading />
+    </Box>
+  );
+
 }

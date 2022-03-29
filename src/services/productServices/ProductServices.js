@@ -1,10 +1,12 @@
 import axios from 'axios';
+import { useParams } from 'react-router';
 import authHeader from 'services/auth-services/auth-header';
 
 const API_URL = 'http://localhost:8000/api/entreprise/';
 class ProductService {
 
-    //ajouter un compte client 
+
+    //ajouter un produit
     addProduct(nom, prix, categorie, description, promotion, bodyFormData) {
 
         bodyFormData.append('nom', nom)
@@ -27,6 +29,17 @@ class ProductService {
 
         return axios.get(API_URL + 'produit?page=' + value, { headers: authHeader() })
 
+    }
+
+    getAllNoPagination() {
+        console.log(axios.get(API_URL + 'produit/all', { headers: authHeader() }))
+
+        return axios.get(API_URL + 'produit/all', { headers: authHeader() })
+
+    }
+
+    show(id) {
+        return axios.get(API_URL + 'produit/show/' + id, { headers: authHeader() })
     }
 
 }

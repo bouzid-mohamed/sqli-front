@@ -5,13 +5,14 @@ import * as React from 'react';
 import LoadingButton from '@mui/lab/LoadingButton';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
-
+import ProductServices from 'services/productServices/ProductServices';
 
 // material-ui
 import { useState, useEffect } from 'react';
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import {
+    Alert,
     Box,
     Button,
     FormControl,
@@ -28,14 +29,16 @@ import {
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 
-// project imports
-import useScriptRef from 'hooks/useScriptRef';
-import AnimateButton from 'ui-component/extended/AnimateButton';
+// project imports import AnimateButton from 'ui-component/extended/AnimateButton';
 import MenuItem from '@mui/material/MenuItem';
+import StockServices from 'services/stock-services/stockServices';
+
 
 
 // assets
 import MainCard from 'ui-component/cards/MainCard';
+import Swal from 'sweetalert2';
+import AnimateButton from 'ui-component/extended/AnimateButton';
 
 
 const ITEM_HEIGHT = 48;
@@ -49,18 +52,7 @@ const MenuProps = {
     },
 };
 
-const categoriesNames = [
-    'Oliver Hansen',
-    'Van Henry',
-    'April Tucker',
-    'Ralph Hubbard',
-    'Omar Alexander',
-    'Carlos Abbott',
-    'Miriam Wagner',
-    'Bradley Wilkerson',
-    'Virginia Andrews',
-    'Kelly Snyder',
-];
+
 
 
 function getStyles(name, personName, theme) {
@@ -77,11 +69,11 @@ function getStyles(name, personName, theme) {
 export default function AddStock({ ...others }) {
     const history = createBrowserHistory();
     const theme = useTheme();
-    const scriptedRef = useScriptRef();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
     const [categorieName] = React.useState([]);
-    const [produitName, setProduitName] = React.useState([]);
-
+    const [produitName, setProduitName] = React.useState(0);
+    const [message, setMessage] = useState(null);
+    const [productsNames, setProductsNames] = useState([]);
     const [strength] = useState(0);
     const [level] = useState();
     const handleChangeSelect = (event) => {
@@ -92,31 +84,62 @@ export default function AddStock({ ...others }) {
             // On autofill we get a stringified value.
             typeof value === 'string' ? value.split(',') : value,
         );
+
+
     };
+    //ajouter une entreprise 
 
-    // dropzone 
-    const [files] = useState([]);
+    const handleSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
 
+        StockServices.addStock(produitName, values.couleur, values.taille, values.quantite).then(
+            () => {
 
+                Swal.fire({
+                    title: 'Bon travail!!',
+                    text: "Votre stock a été créé avec succès!",
+                    icon: 'success',
+                    showCancelButton: false,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Ok'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        const history = createBrowserHistory();
+                        history.push("/girdView/stock?page=1");
+                        window.location.reload();
+                    }
+                })
+                setMessage('');
+
+                setSubmitting(false);
+            },
+            error => {
+                const resMessage = error.message
+                setMessage(resMessage);
+                setSubmitting(false);
+            }
+        );
+    }
 
     useEffect(
-        () => () => {
+        () => {
             // Make sure to revoke the data uris to avoid memory leaks
-            files.forEach(file => URL.revokeObjectURL(file.preview));
-        },
-        [files]
+            ProductServices.getAllNoPagination().then((res) => {
+                setProductsNames(res.data)
+            })
+        }, []
     );
-    const [loading, setLoading] = React.useState(false);
 
-    function handleClick() {
-        setLoading(true);
-    }
+
+
+
+
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
         return (<MainCard >
 
             <Formik
                 initialValues={{
-                    produit: '',
+                    produit: { produitName },
                     couleur: '',
                     taille: '',
                     quantite: '',
@@ -124,25 +147,11 @@ export default function AddStock({ ...others }) {
                 }}
                 validationSchema={Yup.object().shape({
                     couleur: Yup.string().required('Couleur est requis'),
-                    produit: Yup.string().required('Produit est requis'),
                     quantite: Yup.number().min(0, 'La quantitée doit etre supérieur à 0 ').required('Quantitéest requis'),
                     taille: Yup.string().min(1, 'Taille est requis').required('Taille est requis'),
                 })}
-                onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-                    try {
-                        if (scriptedRef.current) {
-                            setStatus({ success: true });
-                            setSubmitting(false);
-                        }
-                    } catch (err) {
-                        console.error(err);
-                        if (scriptedRef.current) {
-                            setStatus({ success: false });
-                            setErrors({ submit: err.message });
-                            setSubmitting(false);
-                        }
-                    }
-                }}
+                onSubmit={(values, { setErrors, setStatus, setSubmitting }) => handleSubmit(values, { setErrors, setStatus, setSubmitting })}
+
             >
                 {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
                     <form noValidate onSubmit={handleSubmit} {...others}>
@@ -150,44 +159,31 @@ export default function AddStock({ ...others }) {
 
 
                         </Grid>
-                        <FormControl fullWidth error={Boolean(touched.produit && errors.produit)} sx={{ ...theme.typography.customInput }}>
+                        <FormControl fullWidth error={Boolean(touched.produit && produitName == 0)} sx={{ ...theme.typography.customInput }}>
 
                             <Select
-
-                                id="demo-produit"
-                                helperText="Sélectionner le produit"
-
+                                id="produitName"
+                                name="produitName"
                                 value={produitName}
                                 onChange={handleChangeSelect}
                                 input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-                                renderValue={(selected) => (
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                        {selected.map((value) => (
-                                            <Chip key={value} label={value} />
-                                        ))}
-                                    </Box>
-                                )}
+
                                 MenuProps={MenuProps}
 
                             >
-                                {categoriesNames.map((name) => (
+                                {productsNames.map((name) => (
                                     <MenuItem
-                                        key={name}
-                                        value={name}
-                                        style={getStyles(name, categorieName, theme)}
+                                        key={name.id}
+                                        value={name.id}
                                     >
-                                        {name}
+                                        {name.nom}
                                     </MenuItem>
                                 ))}
                             </Select>
-                            <FormHelperText id="helperproduit">
+                            <FormHelperText id="helpercat">
                                 Sélectionner le produit
                             </FormHelperText>
-                            {touched.produit && errors.produit && (
-                                <FormHelperText error id="standard-weight-helper-text-produit-register">
-                                    {errors.produit}
-                                </FormHelperText>
-                            )}
+
                         </FormControl>
 
 
@@ -279,6 +275,19 @@ export default function AddStock({ ...others }) {
                         )}
                         <Grid container spacing={matchDownSM ? (0) : 2} direction="row-reverse" style={{ "marginTop": 30 }}>
 
+                            <Grid item xs={12} sm={12} >
+
+
+                                <Box sx={{ mt: 2 }}>
+
+                                    {message && (
+                                        <Alert severity="error"  >{message}</Alert>
+
+                                    )}
+                                </Box>
+
+                            </Grid>
+
                             <Grid item xs={12} sm={2} >
 
 
@@ -288,49 +297,38 @@ export default function AddStock({ ...others }) {
                                         disabled={isSubmitting}
                                         fullWidth
                                         size="large"
-                                        type="submit"
+
                                         color="secondary"
-                                        onClick={handleClick}
-                                        loading={loading}
+                                        onClick={() => {
+                                            const history = createBrowserHistory();
+                                            history.push("/girdView/stock?page=1");
+                                            window.location.reload();
+                                        }}
                                         variant="outlined"
                                     >
                                         Annuler
                                     </Button>
                                 </AnimateButton>
-
-
                             </Grid>
                             <Grid item xs={12} sm={2} >
-
-
                                 <AnimateButton>
                                     <LoadingButton
                                         disableElevation
-                                        disabled={isSubmitting}
                                         fullWidth
                                         size="large"
                                         type="submit"
                                         color="primary"
-                                        onClick={handleClick}
-                                        loading={loading}
+                                        loading={isSubmitting}
                                         variant="contained"
                                     >
                                         Ajouter
                                     </LoadingButton>
                                 </AnimateButton>
-
-
                             </Grid>
                         </Grid>
                     </form>
                 )}
             </Formik>
-
-
-
-
-
-
         </MainCard >);
     else {
         history.push('/login');

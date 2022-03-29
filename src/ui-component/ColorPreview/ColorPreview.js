@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 // material
 import { alpha, styled } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
+import { useEffect } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -23,21 +24,21 @@ const IconStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 ColorPreview.propTypes = {
-    colors: PropTypes.array.isRequired,
     limit: PropTypes.number
 };
 
-export default function ColorPreview({ colors, limit = 3, ...other }) {
-    const showColor = colors.slice(0, limit);
-    const moreColor = colors.length - limit;
+export default function ColorPreview({ product, limit = 3, ...other }) {
+    const showColor = product.stoks?.slice(0, limit);
+    const moreColor = product.stoks?.length - limit;
+
 
     return (
         <RootStyle component="span" {...other}>
-            {showColor.map((color, index) => (
-                <IconStyle key={color + index} sx={{ bgcolor: color }} />
+            {showColor.map((s, index) => (
+                <IconStyle key={s.id + index} sx={{ bgcolor: s.couleur }} />
             ))}
 
-            {colors.length > limit && <Typography variant="subtitle2">{`+${moreColor}`}</Typography>}
+            {product.stoks?.length > limit && <Typography variant="subtitle2">{`+${moreColor}`}</Typography>}
         </RootStyle>
     );
 }

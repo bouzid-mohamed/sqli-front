@@ -8,6 +8,7 @@ import { useState } from 'react';
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import {
+    Alert,
     Box,
     Button,
     FormControl,
@@ -30,6 +31,8 @@ import AnimateButton from 'ui-component/extended/AnimateButton';
 
 // assets
 import MainCard from 'ui-component/cards/MainCard';
+import BonServices from 'services/bons-services/BonServices';
+import Swal from 'sweetalert2';
 
 export default function AddBon({ ...others }) {
     const history = createBrowserHistory();
@@ -39,19 +42,50 @@ export default function AddBon({ ...others }) {
     const [strength] = useState(0);
     const [level] = useState();
     const [loading, setLoading] = React.useState(false);
+    const [message, setMessage] = useState(null);
+
     function handleClick() {
         setLoading(true);
+    }
+
+    const handleSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
+
+        BonServices.addBon(values.code, values.reduction).then(
+            () => {
+
+                Swal.fire({
+                    title: 'Bon travail!!',
+                    text: "Votre bon a été créé avec succès!",
+                    icon: 'success',
+                    showCancelButton: false,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Ok'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        const history = createBrowserHistory();
+                        history.push("/girdView/bons?page=1");
+                        window.location.reload();
+                    }
+                })
+                setMessage('');
+
+                setSubmitting(false);
+            },
+            error => {
+                const resMessage = error.message
+                setMessage(resMessage);
+                setSubmitting(false);
+            }
+        );
     }
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
         return (<MainCard >
 
             <Formik
                 initialValues={{
-                    nom: '',
-                    description: '',
-                    prix: '',
-                    promotion: '',
-                    categorie: '',
+                    code: '',
+                    reduction: '',
                     submit: null
                 }}
                 validationSchema={Yup.object().shape({
@@ -59,27 +93,14 @@ export default function AddBon({ ...others }) {
                     reduction: Yup.number().min(0, 'la réduction doit etre supérieur à 0 ').required('Réduction est requis'),
 
                 })}
-                onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-                    try {
-                        if (scriptedRef.current) {
-                            setStatus({ success: true });
-                            setSubmitting(false);
-                        }
-                    } catch (err) {
-                        console.error(err);
-                        if (scriptedRef.current) {
-                            setStatus({ success: false });
-                            setErrors({ submit: err.message });
-                            setSubmitting(false);
-                        }
-                    }
-                }}
+                onSubmit={(values, { setErrors, setStatus, setSubmitting }) => handleSubmit(values, { setErrors, setStatus, setSubmitting })}
+
             >
                 {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
                     <form noValidate onSubmit={handleSubmit} {...others}>
                         <Grid container spacing={matchDownSM ? 0 : 2}>
                         </Grid>
-                        <FormControl fullWidth error={Boolean(touched.nom && errors.nom)} sx={{ ...theme.typography.customInput }}>
+                        <FormControl fullWidth error={Boolean(touched.code && errors.code)} sx={{ ...theme.typography.customInput }}>
                             <InputLabel htmlFor="code">Code Bon</InputLabel>
                             <OutlinedInput
                                 id="code"
@@ -139,17 +160,36 @@ export default function AddBon({ ...others }) {
                             </Box>
                         )}
                         <Grid container spacing={matchDownSM ? (0) : 2} direction="row-reverse" style={{ "marginTop": 30 }}>
+
+                            <Grid item xs={12} sm={12} >
+
+
+                                <Box sx={{ mt: 2 }}>
+
+                                    {message && (
+                                        <Alert severity="error"  >{message}</Alert>
+
+                                    )}
+                                </Box>
+
+                            </Grid>
+
                             <Grid item xs={12} sm={2} >
+
+
                                 <AnimateButton>
                                     <Button
                                         disableElevation
                                         disabled={isSubmitting}
                                         fullWidth
                                         size="large"
-                                        type="submit"
+
                                         color="secondary"
-                                        onClick={handleClick}
-                                        loading={loading}
+                                        onClick={() => {
+                                            const history = createBrowserHistory();
+                                            history.push("/girdView/bons?page=1");
+                                            window.location.reload();
+                                        }}
                                         variant="outlined"
                                     >
                                         Annuler
@@ -160,13 +200,11 @@ export default function AddBon({ ...others }) {
                                 <AnimateButton>
                                     <LoadingButton
                                         disableElevation
-                                        disabled={isSubmitting}
                                         fullWidth
                                         size="large"
                                         type="submit"
                                         color="primary"
-                                        onClick={handleClick}
-                                        loading={loading}
+                                        loading={isSubmitting}
                                         variant="contained"
                                     >
                                         Ajouter

@@ -28,6 +28,9 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TreeItem from '@mui/lab/TreeItem';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
+import CategorieServices from 'services/categories-services/CategorieServices';
+import { useLocation } from 'react-router';
+import AddIcon from '@mui/icons-material/Add';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -49,35 +52,46 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-function createData(nom, fils) {
-    return { nom, fils };
+
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
 }
 
-const rows = [
-    createData('CAT1', ['fils1', 'fils2']),
-    createData('CAT2', ['fils3', 'fils4']),
-    createData('CAT3', ['fils5', 'fils6']),
-    createData('CAT4', ['fils7', 'fils8']),
-    createData('CAT5', ['fils9', 'fils10']),
-    createData('CAT6', ['fils11', 'fils12']),
-    createData('CAT7', ['fils13', 'fils14']),
-    createData('CAT8', ['fils15', 'fils16']),
-    createData('CAT9', ['fils17', 'fils18']),
-    createData('CAT10', ['fils19', 'fils20']),
-];
+
 
 
 export default function GirdViewCategorie() {
+    let query = useQuery();
+
     const history = createBrowserHistory();
+    const a = () => {
+        return true;
+    }
     const [open, setOpen] = React.useState(false);
+    const [rows, setRows] = useState([]);
+    const [page, setPage] = React.useState(parseInt(query.get("page")));
+    const [isLoading, setIsloading] = useState(true);
+    const [numberPages, setNumberPages] = useState(0);
+    const handleChange = (event, value) => {
+        setPage(value);
+        const history = createBrowserHistory();
+        history.push("/tableView/bons?page=" + value);
+        window.location.reload();
+    };
+
     const handleClose = () => {
         setOpen(false);
     };
 
-    const [isLoading, setLoading] = useState(true);
+
     useEffect(() => {
-        //setTimeout(() => { setLoading(false); }, 2000);
-        setLoading(false);
+
+        CategorieServices.getAllPagination(query.get("page")).then((res) => {
+            setRows(res.data[0]);
+            setNumberPages(res.data["pagination"])
+            setIsloading(false);
+        })
+
     }, []);
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1) {
 
@@ -87,23 +101,33 @@ export default function GirdViewCategorie() {
 
 
                     <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                            <TableHead>
-                                <TableRow>
-                                    <StyledTableCell>Nom Ctaegorie</StyledTableCell>
-                                    <StyledTableCell align="left">Sous categorie</StyledTableCell>
-                                    <StyledTableCell align="right">Actions</StyledTableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rows.map((row) => (<>
-
-                                    {isLoading ? (
-                                        <GirdSkeleton loading={isLoading}> </GirdSkeleton>
-                                    ) : (
+                        {isLoading ? (
 
 
-                                        <StyledTableRow key={row.nom} >
+                            <>
+                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((index) => (
+                                    <GirdSkeleton key={index} />
+
+                                ))}
+
+                            </>
+                        ) : (
+                            <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                                <TableHead>
+                                    <TableRow>
+                                        <StyledTableCell>Nom Ctaegorie</StyledTableCell>
+                                        <StyledTableCell align="left">Famille</StyledTableCell>
+                                        <StyledTableCell align="right">Actions</StyledTableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {rows.map((row) => (<>
+
+
+
+
+
+                                        <StyledTableRow key={row.id} >
 
                                             <StyledTableCell >{row.nom}</StyledTableCell>
                                             <StyledTableCell align="right">
@@ -114,16 +138,25 @@ export default function GirdViewCategorie() {
                                                     sx={{ height: 80, flexGrow: 1, maxWidth: 120, overflowY: 'auto' }}
                                                 >
 
-                                                    <TreeItem nodeId="1" label={row.nom}>
-                                                        <TreeItem nodeId="2" label={row.fils[0]} >
-                                                            <TreeItem nodeId="3" label={row.fils[1]} ></TreeItem >
-                                                        </TreeItem >
+                                                    <TreeItem nodeId={Math.random().toString(36)} key={Math.random().toString(36).substr(2, 9)} label={row.nom}>
+
+                                                        {row.catFils[0] != null ? (
+                                                            row.catFils.map((fr) => (
+                                                                <TreeItem key={fr.id} nodeId={Math.random().toString(36)} label={fr.nom}>
+                                                                    {fr.catFils[0] != null ? (
+                                                                        fr.catFils.map((fr1) => (
+                                                                            <TreeItem key={fr1.id} nodeId={Math.random().toString(36)} label={fr1.nom} />
+                                                                        ))
+
+                                                                    ) : (null)}
+
+                                                                </TreeItem>
+
+                                                            ))
+
+                                                        ) : (null)}
                                                     </TreeItem>
-
-
                                                 </TreeView>
-
-
 
                                             </StyledTableCell>
 
@@ -138,11 +171,11 @@ export default function GirdViewCategorie() {
                                             </StyledTableCell>
                                         </StyledTableRow>
 
-                                    )}
-                                </>
-                                ))}
-                            </TableBody>
-                        </Table>
+                                    </>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
                         {
                             open ? (<div>
 
@@ -170,7 +203,7 @@ export default function GirdViewCategorie() {
                                 </Dialog>
                             </div>) : (null)}
                         <Stack direction="row-reverse" marginTop={"2%"}>
-                            <Pagination color="primary" count={10} variant="outlined" />
+                            <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
                         </Stack>
                     </TableContainer>
                 </MainCard>

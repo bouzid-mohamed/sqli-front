@@ -191,7 +191,7 @@ export default function AddProduct({ ...others }) {
                         if (result.isConfirmed) {
 
                             const history = createBrowserHistory();
-                            history.push("/listView/products");
+                            history.push("/listView/products?page=1");
                             window.location.reload();
                         }
                     })
@@ -281,12 +281,13 @@ export default function AddProduct({ ...others }) {
 
                         >
                             {categoriesNames?.map((name) => (
-                                <MenuItem
-                                    key={name.id}
-                                    value={name.id}
-                                >
-                                    {name.nom}
-                                </MenuItem>
+                                name.catFils[0] == null ? (
+                                    <MenuItem
+                                        key={name.id}
+                                        value={name.id}
+                                    >
+                                        {name.nom}
+                                    </MenuItem>) : (null)
                             ))}
                         </Select>
                         <FormHelperText id="helpercat">
@@ -411,7 +412,7 @@ export default function AddProduct({ ...others }) {
                                     color="secondary"
                                     onClick={() => {
                                         const history = createBrowserHistory();
-                                        history.push("/listView/products");
+                                        history.push("/listView/products?page=1");
                                         window.location.reload();
                                     }}
                                     variant="outlined"

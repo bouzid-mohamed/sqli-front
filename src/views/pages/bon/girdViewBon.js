@@ -10,7 +10,6 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -24,6 +23,10 @@ import { Pagination } from '@mui/material';
 import GirdSkeleton from 'ui-component/cards/Skeleton/GirdSkeleton';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
+import BonServices from 'services/bons-services/BonServices';
+import { useLocation } from 'react-router';
+import AddIcon from '@mui/icons-material/Add';
+
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -45,68 +48,98 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-function createData(code, reduction) {
-    return { code, reduction };
+
+
+
+
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
 }
-
-const rows = [
-    createData('AMD1066', '20'),
-    createData('ASQ555', '30'),
-    createData('GDFG88', '40'),
-    createData('CDFGT22', '50'),
-    createData('CDEDD4422', '60'),
-    createData('C55820', '70'),
-    createData('15kgd55', '80'),
-    createData('DSJFJDFK', '90'),
-    createData('DJGDFJ', '100'),
-    createData('FJGJFGJFG', '110'),
-];
-
-
 export default function GirdViewBon() {
+    let query = useQuery();
     const [open, setOpen] = React.useState(false);
+    const [rows, setRows] = useState([]);
+    const [page, setPage] = React.useState(parseInt(query.get("page")));
+    const [isLoading, setIsloading] = useState(true);
+    const [numberPages, setNumberPages] = useState(0);
     const history = createBrowserHistory();
     const handleClose = () => {
         setOpen(false);
     };
+    const handleChange = (event, value) => {
+        setPage(value);
+        const history = createBrowserHistory();
+        history.push("/tableView/bons?page=" + value);
+        window.location.reload();
+    };
 
-    const [isLoading, setLoading] = useState(true);
     useEffect(() => {
-        //setTimeout(() => { setLoading(false); }, 2000);
-        setLoading(false);
+
+        BonServices.getAll(query.get("page")).then((res) => {
+            setRows(res.data[0]);
+            setNumberPages(res.data["pagination"])
+            setIsloading(false);
+
+        })
+
     }, []);
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
         return (
             <>
                 <MainCard title="Liste des Bons">
+                    <Stack
+                        direction="row"
+                        flexWrap="wrap-reverse"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        sx={{ mb: 5 }}
+                    >
+
+                        <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
+
+                            <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
+                                <Button onClick={() => {
+                                    history.push('/bon/add');
+                                    window.location.reload();
+                                }} variant="outlined" startIcon={<AddIcon />}>
+                                    Ajouter</Button>
+                            </Stack>
+
+
+                        </Stack>
+                    </Stack>
 
 
                     <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                            <TableHead>
-                                <TableRow>
-                                    <StyledTableCell>Code</StyledTableCell>
-                                    <StyledTableCell align="right">Réduction</StyledTableCell>
-                                    <StyledTableCell align="right">Actions</StyledTableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {rows.map((row) => (<>
-
-                                    {isLoading ? (
-                                        <GirdSkeleton loading={isLoading}> </GirdSkeleton>
-                                    ) : (
+                        {isLoading ? (
 
 
-                                        <StyledTableRow key={row.nom} >
+                            <>
+                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((index) => (
+                                    <GirdSkeleton key={index} />
+
+                                ))}
+
+                            </>
+                        ) : (
+                            <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                                <TableHead>
+                                    <TableRow>
+                                        <StyledTableCell>Code</StyledTableCell>
+                                        <StyledTableCell align="right">Réduction</StyledTableCell>
+                                        <StyledTableCell align="right">Actions</StyledTableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {rows.map((row) => (<>
+
+                                        <StyledTableRow key={row.id} >
 
                                             <StyledTableCell >{row.code}</StyledTableCell>
                                             <StyledTableCell align="right">{row.reduction}dt</StyledTableCell>
 
                                             <StyledTableCell align="right" scope="row"  >
-                                                <IconButton aria-label="show" size="large" color="primary" href="/products/show" >
-                                                    <VisibilityIcon />
-                                                </IconButton>
+
                                                 <IconButton aria-label="edit" size="large" color="success">
                                                     <EditIcon />
                                                 </IconButton>
@@ -116,11 +149,11 @@ export default function GirdViewBon() {
                                             </StyledTableCell>
                                         </StyledTableRow>
 
-                                    )}
-                                </>
-                                ))}
-                            </TableBody>
-                        </Table>
+                                    </>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
                         {
                             open ? (<div>
 
@@ -148,7 +181,7 @@ export default function GirdViewBon() {
                                 </Dialog>
                             </div>) : (null)}
                         <Stack direction="row-reverse" marginTop={"2%"}>
-                            <Pagination color="primary" count={10} variant="outlined" />
+                            <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
                         </Stack>
                     </TableContainer>
                 </MainCard>

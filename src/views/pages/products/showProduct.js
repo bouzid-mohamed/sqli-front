@@ -17,16 +17,12 @@ import { useEffect } from 'react';
 export default function ShowProduct() {
     const history = createBrowserHistory();
     // the dynamic pieces of the URL.
-    let { id } = useParams();
 
-    useEffect(() => {
-        console.log(id)
-    })
 
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1) {
         return (
             <MainCard title="les détails du produit">
-                <ShowOne></ShowOne>
+                <ShowOne ></ShowOne>
             </MainCard>
 
         );

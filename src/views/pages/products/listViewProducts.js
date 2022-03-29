@@ -1,7 +1,7 @@
 // material-ui
 
 import { useFormik } from 'formik';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 // material
 import { Button, Pagination, Stack } from '@mui/material';
 import MainCard from 'ui-component/cards/MainCard';
@@ -15,6 +15,8 @@ import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
 import ProductServices from 'services/productServices/ProductServices';
 import { useLocation } from "react-router-dom";
+import ProductSkeleton from 'ui-component/cards/Skeleton/ProductSkeleton';
+
 
 
 // project imports
@@ -32,6 +34,8 @@ export default function ListViewProducts() {
     const [numberPages, setNumberPages] = useState(0);
     let query = useQuery();
     const [page, setPage] = React.useState(parseInt(query.get("page")));
+    const [isLoading, setLoading] = useState(true);
+
 
 
 
@@ -71,27 +75,19 @@ export default function ListViewProducts() {
 
     useEffect(
         () => {
-            setLoading
             ProductServices.getAll(query.get("page")).then((res) => {
 
                 setListProducts(res.data[0]);
                 setNumberPages(res.data["pagination"])
+                setLoading(false)
+
             })
-        }, [listproducts, numberPages, page]
+        }, [],
     );
-
-
-
 
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
         return (
-
-
-            <MainCard title="Liste des produits">
-
-
-
-
+            <MainCard title="Liste des produits" style={{ "height": "100%" }} >
                 <Stack
                     direction="row"
                     flexWrap="wrap-reverse"
@@ -119,8 +115,7 @@ export default function ListViewProducts() {
                         <ProductSort />
                     </Stack>
                 </Stack>
-
-                <ProductList products={listproducts} />
+                <ProductList products={listproducts} isLoading={isLoading} />
                 <ProductCartWidget />
                 <Stack direction="row-reverse" marginTop={"3%"}>
                     <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />

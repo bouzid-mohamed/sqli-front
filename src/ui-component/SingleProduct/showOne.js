@@ -8,6 +8,10 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { useEffect, useState } from 'react';
 import ShowProductSkeleton from 'ui-component/cards/Skeleton/ShowProductSkeleton';
+import ProductServices from 'services/productServices/ProductServices';
+import { useParams } from 'react-router';
+import categorieStock from 'menu-items/categorieStock';
+import { red } from '@mui/material/colors';
 
 
 
@@ -16,17 +20,27 @@ import ShowProductSkeleton from 'ui-component/cards/Skeleton/ShowProductSkeleton
 
 export default function ShowOne() {
     const [isLoading, setLoading] = useState(true);
+    const [product, setProduct] = useState(null);
+    const [images, setImages] = useState([]);
+
+    const params = useParams();
+
     useEffect(() => {
-        setTimeout(() => { setLoading(false); }, 2000);
-        //setLoading(false);
+        ProductServices.show(params.id).then((res) => {
+            setProduct(res.data[0]);
+            res.data[0].images.map((img) => {
+                images.push(img.nom)
+            })
+            setLoading(false)
+            console.log(res.data[0].stoks)
+
+
+        })
+        // setTimeout(() => { setLoading(false); }, 2000);
+
     }, []);
 
-    const images = [
 
-        'product_19.jpg',
-        'product_3.jpg',
-        'product_4.jpg',
-    ]
 
     return (
         <>
@@ -41,53 +55,71 @@ export default function ShowOne() {
                     <Box sx={{ display: 'flex', flexDirection: 'column' }} style={{ "maxWidth": "50%", "minWidth": "50%" }} sx={{ ml: 1 }}  >
                         <CardContent sx={{ flex: '1 0 auto' }}>
                             <Typography variant="subtitle1" color="text.secondary" component="div">
-                                Chaussure
+                                {product["categorie"].nom}
                             </Typography>
                             <Typography component="div" variant="h3">
-                                Nike Air Force 1 NDESTRUKT
+                                {product.nom}
                             </Typography>
                             <Typography color="text.secondary" variant="h3" color="text.primary" component="div" sx={{ mt: 3 }}>
-                                <span style={{ 'textDecoration': 'line-through' }} >250.00 Dt</span>
-                                <span style={{ 'marginLeft': '2%' }}  >150.00 Dt</span>
+
+                                {product.promotion ? (
+                                    <>
+                                        <span style={{ 'textDecoration': 'line-through' }} >{product.prix} dt</span>
+                                        <span style={{ 'marginLeft': '2%' }}  > {Math.trunc(product.prix - (product.prix * product.promotion.pourcentage / 100))} dt</span>
+                                    </>
+                                ) : (
+                                    <span  >{product.prix} dt</span>
+
+
+                                )}
+
 
                             </Typography>
 
                             <Typography variant="subtitle1" color="text.secondary" component="div" sx={{ mt: 3 }}>
-                                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                                Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                                {product.description}
                             </Typography>
-                            <Typography variant="h5" component="div" sx={{ mt: 3 }}>
-                                Sélectionnez la taille  :
-                                <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
-                                    <Button variant="outlined" href="#outlined-buttons">
-                                        L
-                                    </Button>
-                                    <Button variant="outlined" href="#outlined-buttons">
-                                        M
-                                    </Button>
-                                    <Button variant="outlined" href="#outlined-buttons">
-                                        S
-                                    </Button>
-                                    <Button variant="outlined" href="#outlined-buttons">
-                                        XL
-                                    </Button>
-                                </Stack>
-                            </Typography>
-                            <Typography variant="h5" component="div" sx={{ mt: 3 }}>
-                                Sélectionnez  le couleur :
-                                <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
-                                    <Button variant="contained" style={{ "backgroundColor": "blue", "color": "blue" }} >
-                                        .
-                                    </Button>
-                                    <Button variant="contained" style={{ "backgroundColor": "black", "color": "black" }} >
-                                        .
-                                    </Button>
-                                    <Button variant="contained" style={{ "backgroundColor": "green", "color": "green" }} >
-                                        .
-                                    </Button>
+                            {product.stoks[0] != null ? (
+                                <>
+                                    <Typography variant="h5" component="div" sx={{ mt: 3 }}>
+                                        Tailles  :
+                                        <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
 
-                                </Stack>
-                            </Typography>
+
+
+                                            {product.stoks.map((stok) => (
+
+                                                <Button key={stok.id} variant="outlined">
+                                                    {stok.taille}
+                                                </Button>
+
+
+
+                                            ))}
+                                        </Stack>
+
+
+                                    </Typography>
+                                    <Typography variant="h5" component="div" sx={{ mt: 3 }}>
+                                        Couleurs :
+                                        <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
+                                            {product.stoks.map((stok) => (
+                                                <Button key={stok.id} variant="contained" style={{ "backgroundColor": stok.couleur, "color": stok.couleur }} >
+                                                    .
+                                                </Button>
+
+                                            ))}
+
+
+                                        </Stack>
+                                    </Typography>
+                                </>
+                            ) : (
+                                <Typography variant="h3" component="div" sx={{ mt: 3 }} style={{ 'color': "red" }}>
+                                    Non disponible
+                                </Typography>
+                            )
+                            }
 
 
                         </CardContent>

@@ -9,18 +9,14 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider'
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
-
-
-
-
-
-
+import PromotionServices from 'services/promotion-services/promotionServices';
 
 // material-ui
 import { useState, useEffect } from 'react';
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import {
+    Alert,
     Box,
     Button,
     FormControl,
@@ -43,6 +39,7 @@ import AnimateButton from 'ui-component/extended/AnimateButton';
 
 // assets
 import MainCard from 'ui-component/cards/MainCard';
+import Swal from 'sweetalert2';
 
 
 
@@ -87,16 +84,20 @@ const img = {
 export default function AddPromotion({ ...others }) {
     const history = createBrowserHistory();
     const theme = useTheme();
-    const scriptedRef = useScriptRef();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
     const [strength] = useState(0);
     const [level] = useState();
     const [value, setValue] = React.useState([null, null]);
+    const [message, setMessage] = useState(null);
+    const [dd, setDd] = useState(null);
+    const [df, setDf] = useState(null);
+
+
 
 
     // dropzone 
     const [files, setFiles] = useState([]);
-    const { getRootProps, getInputProps } = useDropzone({
+    const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
         accept: "image/*",
         onDrop: acceptedFiles => {
 
@@ -131,6 +132,48 @@ export default function AddPromotion({ ...others }) {
         setLoading(true);
     }
 
+    const handleSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
+        if (acceptedFiles[0] == null) {
+            setMessage('Il faut ajouter une bannière pour votre promotion ! ')
+            setSubmitting(false);
+        }
+        else {
+            let formData = new FormData()
+            const fileObjects = acceptedFiles.map(file => {
+                console.log(file)
+                formData.append('assets', file, file.name)
+            })
+            PromotionServices.addPromotion(values.nom, values.description, dd, df, values.pourcentage, formData).then(
+                () => {
+
+                    Swal.fire({
+                        title: 'Bon travail!!',
+                        text: "Votre promotion a été créé avec succès!",
+                        icon: 'success',
+                        showCancelButton: false,
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Ok'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+
+                            const history = createBrowserHistory();
+                            history.push("/girdView/promotion");
+                            window.location.reload();
+                        }
+                    })
+                    setMessage('');
+
+                    setSubmitting(false);
+                },
+                error => {
+                    const resMessage = error.message
+                    setMessage(resMessage);
+                    setSubmitting(false);
+                }
+            );
+        }
+    }
+
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
         return (<MainCard >
 
@@ -139,8 +182,8 @@ export default function AddPromotion({ ...others }) {
                     nom: '',
                     description: '',
                     pourcentage: '',
-                    dateDebut: '',
-                    dateFin: '',
+                    dateDebut: null,
+                    dateFin: null,
                     submit: null,
 
 
@@ -149,24 +192,10 @@ export default function AddPromotion({ ...others }) {
                     nom: Yup.string().max(255, 'Doit être un nom valide').min(2, 'Doit être un nom valide').required('Nom est requis'),
                     description: Yup.string().max(300, 'Doit être une description valide').min(5, 'La description doit contenir au moins 5 caractères').required('Description est requis'),
                     pourcentage: Yup.number().min(0, 'la pourcentage  de promotion doit etre supérieur à 0 ').required('Pourcentage promotion est requis'),
-                    dateDebut: Yup.date().required('date début est requis'),
-                    dateFin: Yup.date().required('date fin  est requis'),
+
                 })}
-                onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-                    try {
-                        if (scriptedRef.current) {
-                            setStatus({ success: true });
-                            setSubmitting(false);
-                        }
-                    } catch (err) {
-                        console.error(err);
-                        if (scriptedRef.current) {
-                            setStatus({ success: false });
-                            setErrors({ submit: err.message });
-                            setSubmitting(false);
-                        }
-                    }
-                }}
+                onSubmit={(values, { setErrors, setStatus, setSubmitting }) => handleSubmit(values, { setErrors, setStatus, setSubmitting })}
+
             >
                 {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
                     <form noValidate onSubmit={handleSubmit} {...others}>
@@ -211,31 +240,32 @@ export default function AddPromotion({ ...others }) {
                             )}
                         </FormControl>
 
-                        <FormControl fullWidth error={Boolean(touched.dateDebut && errors.dateDebut)} sx={{ ...theme.typography.customInput }} >
+                        <FormControl fullWidth  >
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
                                 <DateRangePicker
+                                    dateDisplayFormat="d MMM yyyy"
                                     value={value}
                                     onChange={(newValue) => {
                                         setValue(newValue);
+                                        console.log(dd)
+
+
+
 
                                     }}
                                     renderInput={(startProps, endProps) => (
                                         <React.Fragment>
-                                            <TextField name="dateDebut" {...startProps} style={{ "width": "50%" }} />
+                                            <TextField name="dateDebut" value={dd} onChange={(event) => { setDd(event.target.value) }} {...startProps} style={{ "width": "50%" }} error={Boolean(touched.dateDebut && value[0] == null)} sx={{ ...theme.typography.customInput }} />
                                             <Box sx={{ mx: 2 }}> jusqu'a </Box>
-                                            <TextField name="dateFin"  {...endProps} style={{ "width": "50%" }} />
+                                            <TextField name="dateFin" value={df} onChange={(event) => setDf(event.target.value)}   {...endProps} style={{ "width": "50%" }} error={Boolean(touched.dateFin && value[1] == null)} sx={{ ...theme.typography.customInput }} />
                                         </React.Fragment>
                                     )}
                                 />
                             </LocalizationProvider>
-                            <FormHelperText id="helper-banière">
-                                Sélectionner la date de début du promotion
+
+                            <FormHelperText id="standard-weight-helper-text-dateDebut-register">
+                                Sélectionner la date début et fin du promotion
                             </FormHelperText>
-                            {touched.dateDebut && errors.dateDebut && (
-                                <FormHelperText error id="standard-weight-helper-text-dateDebut-register">
-                                    {errors.dateDebut}
-                                </FormHelperText>
-                            )}
                         </FormControl>
 
 
@@ -305,6 +335,19 @@ export default function AddPromotion({ ...others }) {
                         )}
                         <Grid container spacing={matchDownSM ? (0) : 2} direction="row-reverse" style={{ "marginTop": 30 }}>
 
+                            <Grid item xs={12} sm={12} >
+
+
+                                <Box sx={{ mt: 2 }}>
+
+                                    {message && (
+                                        <Alert severity="error"  >{message}</Alert>
+
+                                    )}
+                                </Box>
+
+                            </Grid>
+
                             <Grid item xs={12} sm={2} >
 
 
@@ -314,48 +357,38 @@ export default function AddPromotion({ ...others }) {
                                         disabled={isSubmitting}
                                         fullWidth
                                         size="large"
-                                        type="submit"
+
                                         color="secondary"
-                                        onClick={handleClick}
-                                        loading={loading}
+                                        onClick={() => {
+                                            const history = createBrowserHistory();
+                                            history.push("/girdView/promotion?page=1");
+                                            window.location.reload();
+                                        }}
                                         variant="outlined"
                                     >
                                         Annuler
                                     </Button>
                                 </AnimateButton>
-
-
                             </Grid>
                             <Grid item xs={12} sm={2} >
-
-
                                 <AnimateButton>
                                     <LoadingButton
                                         disableElevation
-                                        loading={isSubmitting}
                                         fullWidth
                                         size="large"
                                         type="submit"
                                         color="primary"
-                                        onClick={handleClick}
+                                        loading={isSubmitting}
                                         variant="contained"
-
                                     >
                                         Ajouter
                                     </LoadingButton>
                                 </AnimateButton>
-
-
                             </Grid>
                         </Grid>
                     </form>
                 )}
             </Formik>
-
-
-
-
-
 
         </MainCard >);
     else {
@@ -367,5 +400,3 @@ export default function AddPromotion({ ...others }) {
 
 
 };
-
-//export default listViewProducts;

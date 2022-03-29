@@ -14,7 +14,7 @@ export default function ImageCarousel(props) {
             {
                 images.map((image) =>
                     <div key={image}>
-                        <img src={`${process.env.PUBLIC_URL}/static/mock-images/products/` + image} alt="E-commerce" />
+                        <img src={`http://localhost:8000/uploads/` + image} alt="E-commerce" />
                     </div>
                 )}
 

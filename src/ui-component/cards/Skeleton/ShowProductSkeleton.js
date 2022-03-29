@@ -26,12 +26,12 @@ function Media(props) {
         return (
             <Grid container spacing={2} >
                 <Box sx={{ width: "50%", marginRight: 0.5, my: 5 }}  >
-                    <Skeleton variant="rectangular" width={"100%"} height={400} className={classes.skeletonRadius} />
+                    <Skeleton animation="wave" variant="rectangular" width={"100%"} height={400} className={classes.skeletonRadius} />
                     <Stack direction="row" spacing={2} sx={{ mt: 3, mr: -10 }}  >
-                        <Skeleton width={"20%"} height={200} />
-                        <Skeleton width={"20%"} height={200} />
-                        <Skeleton width={"20%"} height={200} />
-                        <Skeleton width={"20%"} height={200} />
+                        <Skeleton animation="wave" width={"20%"} height={200} />
+                        <Skeleton animation="wave" width={"20%"} height={200} />
+                        <Skeleton animation="wave" width={"20%"} height={200} />
+                        <Skeleton animation="wave" width={"20%"} height={200} />
 
                     </Stack>
 

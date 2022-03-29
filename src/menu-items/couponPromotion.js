@@ -25,7 +25,7 @@ const coupons = {
                     title: 'Liste',
                     type: 'item',
                     icon: TocIcon,
-                    url: 'girdView/bons',
+                    url: 'girdView/bons?page=1',
                     target: false
                 },
                 {
@@ -52,7 +52,7 @@ const coupons = {
                     title: 'Liste',
                     type: 'item',
                     icon: TocIcon,
-                    url: 'girdView/promotion',
+                    url: 'girdView/promotion?page=1',
                     target: false
                 },
                 {

@@ -25,7 +25,7 @@ const categorieStock = {
                     title: 'Liste',
                     type: 'item',
                     icon: TocIcon,
-                    url: 'girdView/categories',
+                    url: 'girdView/categories?page=1',
                     target: false
                 },
                 {
@@ -52,7 +52,7 @@ const categorieStock = {
                     title: 'Liste',
                     type: 'item',
                     icon: TocIcon,
-                    url: 'girdView/stock',
+                    url: 'girdView/stock?page=1',
                     target: false
                 },
                 {

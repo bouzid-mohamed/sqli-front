@@ -28,84 +28,79 @@ ShopProductCard.propTypes = {
     product: PropTypes.object
 };
 
-export default function ShopProductCard({ product }) {
-    const { name, cover, price, colors, status, priceSale } = product;
-    const [isLoading, setLoading] = useState(true);
-    useEffect(() => {
-        //setTimeout(() => { setLoading(false); }, 2000);
-        setLoading(false);
-    }, []);
+export default function ShopProductCard(props) {
+    const product = props.product;
+
+
 
     return (
         <>
-            {isLoading ? (
-                <ProductSkeleton loading={isLoading}></ProductSkeleton>
-            ) : (
-                <Card>
-                    <Box sx={{ pt: '100%', position: 'relative' }}>
-                        {(new Date(product.createdAt.timestamp)).getMonth() == (new Date()).getMonth && (
-                            <Label
-                                variant="filled"
-                                color={('sale' === 'sale' && 'error') || 'info'}
-                                sx={{
-                                    zIndex: 9,
-                                    top: 16,
-                                    right: 16,
-                                    position: 'absolute',
-                                    textTransform: 'uppercase'
-                                }}
-                            >
-                                new
-                            </Label>
-                        )}
-                        <ProductImgStyle alt={product.nom} src={"http://localhost:8000/uploads/" + product.images[0].nom} />
-                    </Box>
 
-                    <Stack spacing={2} sx={{ p: 3 }}>
-                        <Link to="#" color="inherit" underline="hover" component={RouterLink}>
-                            <Typography variant="subtitle2" noWrap>
+            <Card>
+                <Box sx={{ pt: '100%', position: 'relative' }}>
+                    {(1 == 1) && (
+                        <Label
+                            variant="filled"
+                            color={('sale' === 'sale' && 'error') || 'info'}
+                            sx={{
+                                zIndex: 9,
+                                top: 16,
+                                right: 16,
+                                position: 'absolute',
+                                textTransform: 'uppercase'
+                            }}
+                        >
+                            {product.nom}
+                        </Label>
+                    )}
+                    <ProductImgStyle alt={product.nom} src={"http://localhost:8000/uploads/" + product.images[0].nom} />
+                </Box>
 
-                            </Typography>
-                        </Link>
+                <Stack spacing={2} sx={{ p: 3 }}>
+                    <Link to="#" color="inherit" underline="hover" component={RouterLink}>
+                        <Typography variant="subtitle2" noWrap>
 
-                        <Stack direction="row" alignItems="center" justifyContent="space-between">
-                            <ColorPreview colors={["red", "green", "blue"]} />
-                            <Box sx={{ display: 'inline-flex' }} variant="subtitle1">
-                                {product.promotion ? (
-                                    <>
-                                        <Typography
-                                            component="span"
-                                            variant="body1"
-                                            sx={{
-                                                color: 'text.disabled',
-                                                textDecoration: 'line-through'
-                                            }}
-                                        >
-                                            {product.prix} dt
+                        </Typography>
+                    </Link>
 
-
-
-                                        </Typography>
-                                        &nbsp;
-                                        {Math.trunc(product.prix - (product.prix * product.promotion.pourcentage / 100))} dt
-                                    </>
-                                ) : (
+                    <Stack direction="row" alignItems="center" justifyContent="space-between">
+                        <ColorPreview product={product} />
+                        <Box sx={{ display: 'inline-flex' }} variant="subtitle1">
+                            {product.promotion ? (
+                                <>
                                     <Typography
                                         component="span"
                                         variant="body1"
                                         sx={{
                                             color: 'text.disabled',
+                                            textDecoration: 'line-through'
                                         }}
                                     >
                                         {product.prix} dt
 
+
+
                                     </Typography>
-                                )}
-                            </Box>
-                        </Stack>
+                                    &nbsp;
+                                    {Math.trunc(product.prix - (product.prix * product.promotion.pourcentage / 100))} dt
+                                </>
+                            ) : (
+                                <Typography
+                                    component="span"
+                                    variant="body1"
+                                    sx={{
+                                        color: 'text.disabled',
+                                    }}
+                                >
+                                    {product.prix} dt
+
+                                </Typography>
+                            )}
+                        </Box>
                     </Stack>
-                </Card>
-            )}
+                </Stack>
+            </Card>
+
         </>
     );
 }
