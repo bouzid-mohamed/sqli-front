@@ -10,8 +10,7 @@ import { useEffect, useState } from 'react';
 import ShowProductSkeleton from 'ui-component/cards/Skeleton/ShowProductSkeleton';
 import ProductServices from 'services/productServices/ProductServices';
 import { useParams } from 'react-router';
-import categorieStock from 'menu-items/categorieStock';
-import { red } from '@mui/material/colors';
+
 
 
 
@@ -21,16 +20,16 @@ import { red } from '@mui/material/colors';
 export default function ShowOne() {
     const [isLoading, setLoading] = useState(true);
     const [product, setProduct] = useState(null);
-    const [images, setImages] = useState([]);
+    const [images] = useState([]);
 
     const params = useParams();
 
     useEffect(() => {
         ProductServices.show(params.id).then((res) => {
             setProduct(res.data[0]);
-            res.data[0].images.map((img) => {
+            res.data[0].images.map((img) =>
                 images.push(img.nom)
-            })
+            )
             setLoading(false)
             console.log(res.data[0].stoks)
 

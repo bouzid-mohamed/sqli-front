@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
+
 // material
 import { Box, Card, Link, Typography, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -53,7 +55,12 @@ export default function ShopProductCard(props) {
                             {product.nom}
                         </Label>
                     )}
-                    <ProductImgStyle alt={product.nom} src={"http://localhost:8000/uploads/" + product.images[0].nom} />
+
+                    <ProductImgStyle style={{ cursor: 'pointer' }} onClick={() => {
+                        const history = createBrowserHistory();
+                        history.push("/products/show/" + product.id);
+                        window.location.reload();
+                    }} alt={product.nom} src={"http://localhost:8000/uploads/" + product.images[0].nom} />
                 </Box>
 
                 <Stack spacing={2} sx={{ p: 3 }}>

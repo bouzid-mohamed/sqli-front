@@ -1,6 +1,3 @@
-// material-ui
-
-import Chip from '@mui/material/Chip';
 import * as React from 'react';
 import LoadingButton from '@mui/lab/LoadingButton';
 import AuthService from 'services/auth-services/AuthService';
@@ -53,24 +50,10 @@ const MenuProps = {
 };
 
 
-
-
-function getStyles(name, personName, theme) {
-    return {
-        fontWeight:
-            personName.indexOf(name) === -1
-                ? theme.typography.fontWeightRegular
-                : theme.typography.fontWeightMedium,
-    };
-}
-
-
-
 export default function AddStock({ ...others }) {
     const history = createBrowserHistory();
     const theme = useTheme();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
-    const [categorieName] = React.useState([]);
     const [produitName, setProduitName] = React.useState(0);
     const [message, setMessage] = useState(null);
     const [productsNames, setProductsNames] = useState([]);

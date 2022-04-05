@@ -32,6 +32,8 @@ import { createBrowserHistory } from 'history';
 import ProductServices from 'services/productServices/ProductServices';
 import { useLocation } from 'react-router';
 import { Box } from '@mui/system';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -75,8 +77,7 @@ export default function ProductGird() {
     const [numberPages, setNumberPages] = useState(0);
     const [page, setPage] = React.useState(parseInt(query.get("page")));
     const [isLoading, setLoading] = useState(true);
-
-
+    const [idDelete, setIdDelete] = useState(0);
 
     const handleChange = (event, value) => {
         setPage(value);
@@ -84,11 +85,9 @@ export default function ProductGird() {
         history.push("/tableView/products?page=" + value);
         window.location.reload();
     };
-
     useEffect(
         () => {
             ProductServices.getAll(query.get("page")).then((res) => {
-
                 setListProducts(res.data[0]);
                 setNumberPages(res.data["pagination"])
                 setLoading(false);
@@ -115,21 +114,32 @@ export default function ProductGird() {
             setOpenFilter(false);
         }
     });
-
     const { resetForm, handleSubmit } = formik;
-
     const handleOpenFilter = () => {
         setOpenFilter(true);
     };
-
     const handleCloseFilter = () => {
         setOpenFilter(false);
     };
-
     const handleResetFilter = () => {
         handleSubmit();
         resetForm();
     };
+    const deleteProduct = () => {
+        setOpen(false);
+        setLoading(true);
+        ProductServices.deleteProduit(idDelete.id).then(() => {
+            ProductServices.getAll(query.get("page")).then((res) => {
+
+                setListProducts(res.data[0]);
+                setNumberPages(res.data["pagination"])
+                setLoading(false);
+                toast(idDelete.nom + " est supprimer avec succès");
+            });
+
+
+        })
+    }
 
 
 
@@ -199,7 +209,7 @@ export default function ProductGird() {
 
 
                                     <>
-                                        {listproducts?.map((product, index) => (<>
+                                        {listproducts?.map((product, index) => (
 
                                             <StyledTableRow key={index} >
                                                 <StyledTableCell align="right" scope="row">
@@ -240,15 +250,19 @@ export default function ProductGird() {
                                                         )}
                                                     </Box></StyledTableCell>
                                                 <StyledTableCell align="right">{product.categorie.nom}</StyledTableCell>
-                                                <StyledTableCell align="right">{product.promotion?.pourcentage}%</StyledTableCell>
+                                                {product.promotion != null ? (
+                                                    <StyledTableCell align="right">{product.promotion?.pourcentage} %</StyledTableCell>
+
+                                                ) : (<StyledTableCell align="right">Produit non soldés</StyledTableCell>
+                                                )}
                                                 <StyledTableCell align="right" scope="row"  >
                                                     <IconButton aria-label="show" size="large" color="primary" href={"/products/show/" + product.id} >
                                                         <VisibilityIcon />
                                                     </IconButton>
-                                                    <IconButton aria-label="edit" size="large" color="success">
+                                                    <IconButton aria-label="edit" size="large" color="success" href={"/products/edit/" + product.id}>
                                                         <EditIcon />
                                                     </IconButton>
-                                                    <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true) }}>
+                                                    <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true); setIdDelete(product) }}>
                                                         <DeleteIcon />
                                                     </IconButton>
                                                 </StyledTableCell>
@@ -256,7 +270,7 @@ export default function ProductGird() {
 
 
 
-                                        </>
+
                                         ))}
                                     </>
                                 </TableBody>
@@ -284,7 +298,7 @@ export default function ProductGird() {
                                     </DialogContent>
                                     <DialogActions>
                                         <Button onClick={handleClose}>Annuler</Button>
-                                        <Button onClick={handleClose} autoFocus>
+                                        <Button onClick={deleteProduct} autoFocus>
                                             Confirmer
                                         </Button>
                                     </DialogActions>
@@ -294,6 +308,7 @@ export default function ProductGird() {
                             <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
                         </Stack>
                     </TableContainer>
+                    <ToastContainer />
                 </MainCard>
 
             </>

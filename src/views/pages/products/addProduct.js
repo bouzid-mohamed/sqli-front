@@ -177,8 +177,11 @@ export default function AddProduct({ ...others }) {
                 console.log(file)
                 formData.append('assets[]', file, file.name)
             })
+            console.log(categorieName)
+            console.log(promotionName)
             ProductServices.addProduct(values.nom, values.prix, categorieName, values.description, promotionName, formData).then(
                 () => {
+
 
                     Swal.fire({
                         title: 'Bon travail!!',

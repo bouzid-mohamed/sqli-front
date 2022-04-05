@@ -1,4 +1,3 @@
-
 export default function getData() {
     fetch('../../data/data.json'
         , {

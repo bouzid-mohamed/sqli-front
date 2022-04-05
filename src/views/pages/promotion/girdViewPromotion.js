@@ -27,6 +27,8 @@ import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
 import promotionServices from 'services/promotion-services/promotionServices';
 import { useLocation } from 'react-router';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -57,9 +59,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-function createData(baniere, nom, purcentage, dateDebut, dateFin, description) {
-    return { baniere, nom, purcentage, dateDebut, dateFin, description };
-}
 
 
 
@@ -72,12 +71,14 @@ export default function GirdViewPromotion() {
     const [rows, setRows] = useState([]);
     const [page, setPage] = React.useState(parseInt(query.get("page")));
     const [isLoading, setIsloading] = useState(true);
+    const [idDelete, setIdDelete] = useState(0);
+
 
 
     const handleChange = (event, value) => {
         setPage(value);
         const history = createBrowserHistory();
-        history.push("/tableView/products?page=" + value);
+        history.push("/girdView/promotion?page=" + value);
         window.location.reload();
     };
 
@@ -100,6 +101,20 @@ export default function GirdViewPromotion() {
         //setTimeout(() => { setLoading(false); }, 2000);
 
     }, []);
+
+    const deletePromotion = () => {
+        setOpen(false);
+        setIsloading(true);
+        promotionServices.deletePromotion(idDelete.id).then(() => {
+            promotionServices.getAllList(query.get("page")).then((res) => {
+                setRows(res.data[0]);
+                setNumberPages(res.data["pagination"])
+                setIsloading(false);
+                toast(" promotion " + idDelete.nom + " est supprimer avec succès");
+            })
+
+        })
+    }
 
 
 
@@ -161,7 +176,7 @@ export default function GirdViewPromotion() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {rows.map((row) => (<>
+                                    {rows.map((row) => (
 
 
 
@@ -176,17 +191,17 @@ export default function GirdViewPromotion() {
                                             <StyledTableCell align="right">{row.dateFin}</StyledTableCell>
                                             <StyledTableCell align="right" scope="row"  >
 
-                                                <IconButton aria-label="edit" size="large" color="success">
+                                                <IconButton aria-label="edit" size="large" color="success" href={"/promotion/edit/" + row.id}>
                                                     <EditIcon />
                                                 </IconButton>
-                                                <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true) }}>
+                                                <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true); setIdDelete(row) }}>
                                                     <DeleteIcon />
                                                 </IconButton>
                                             </StyledTableCell>
                                         </StyledTableRow>
 
 
-                                    </>
+
                                     ))}
                                 </TableBody>
                             </Table>
@@ -211,7 +226,7 @@ export default function GirdViewPromotion() {
                                     </DialogContent>
                                     <DialogActions>
                                         <Button onClick={handleClose}>Annuler</Button>
-                                        <Button onClick={handleClose} autoFocus>
+                                        <Button onClick={deletePromotion} autoFocus>
                                             Confirmer
                                         </Button>
                                     </DialogActions>
@@ -221,6 +236,7 @@ export default function GirdViewPromotion() {
                             <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
                         </Stack>
                     </TableContainer>
+                    <ToastContainer />
                 </MainCard>
 
             </>

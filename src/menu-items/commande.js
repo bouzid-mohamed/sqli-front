@@ -15,7 +15,7 @@ const commandes = {
             id: 'commande',
             title: 'Commandes',
             type: 'item',
-            url: '/commandes',
+            url: '/girdView/commandes?page=1',
             icon: LocalShippingIcon,
             breadcrumbs: false
         }

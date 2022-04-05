@@ -20,12 +20,14 @@ import Button from '@mui/material/Button';
 import MainCard from 'ui-component/cards/MainCard';
 import { useEffect, useState } from 'react';
 import { Pagination } from '@mui/material';
-import GirdSkeleton from 'ui-component/cards/Skeleton/GirdSkeleton';
+import GirdSkeleton from 'ui-component/cards/Skeleton/NormalGirdSkeleton';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
 import BonServices from 'services/bons-services/BonServices';
 import { useLocation } from 'react-router';
 import AddIcon from '@mui/icons-material/Add';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -63,6 +65,8 @@ export default function GirdViewBon() {
     const [isLoading, setIsloading] = useState(true);
     const [numberPages, setNumberPages] = useState(0);
     const history = createBrowserHistory();
+    const [idDelete, setIdDelete] = useState(0);
+
     const handleClose = () => {
         setOpen(false);
     };
@@ -72,6 +76,22 @@ export default function GirdViewBon() {
         history.push("/tableView/bons?page=" + value);
         window.location.reload();
     };
+
+    const deleteBon = () => {
+        setOpen(false);
+        setIsloading(true);
+        BonServices.deleteBon(idDelete.id).then(() => {
+            BonServices.getAll(query.get("page")).then((res) => {
+                setRows(res.data[0]);
+                setNumberPages(res.data["pagination"])
+                setIsloading(false);
+                toast(" Bon " + idDelete.code + " est supprimer avec succès");
+
+
+            })
+
+        })
+    }
 
     useEffect(() => {
 
@@ -112,14 +132,11 @@ export default function GirdViewBon() {
 
                     <TableContainer component={Paper}>
                         {isLoading ? (
-
-
                             <>
                                 {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((index) => (
                                     <GirdSkeleton key={index} />
 
                                 ))}
-
                             </>
                         ) : (
                             <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -131,25 +148,22 @@ export default function GirdViewBon() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {rows.map((row) => (<>
-
+                                    {rows.map((row) => (
                                         <StyledTableRow key={row.id} >
-
                                             <StyledTableCell >{row.code}</StyledTableCell>
                                             <StyledTableCell align="right">{row.reduction}dt</StyledTableCell>
 
-                                            <StyledTableCell align="right" scope="row"  >
-
-                                                <IconButton aria-label="edit" size="large" color="success">
+                                            <StyledTableCell key={Math.floor(Math.random())} align="right" scope="row"  >
+                                                <IconButton aria-label="edit" size="large" color="success" href={"/bon/edit/" + row.id}>
                                                     <EditIcon />
                                                 </IconButton>
-                                                <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true) }}>
+                                                <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true); setIdDelete(row) }}>
                                                     <DeleteIcon />
                                                 </IconButton>
                                             </StyledTableCell>
                                         </StyledTableRow>
 
-                                    </>
+
                                     ))}
                                 </TableBody>
                             </Table>
@@ -174,7 +188,7 @@ export default function GirdViewBon() {
                                     </DialogContent>
                                     <DialogActions>
                                         <Button onClick={handleClose}>Annuler</Button>
-                                        <Button onClick={handleClose} autoFocus>
+                                        <Button onClick={deleteBon} autoFocus>
                                             Confirmer
                                         </Button>
                                     </DialogActions>
@@ -184,6 +198,7 @@ export default function GirdViewBon() {
                             <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
                         </Stack>
                     </TableContainer>
+                    <ToastContainer />
                 </MainCard>
 
             </>

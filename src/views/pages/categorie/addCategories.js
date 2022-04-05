@@ -29,7 +29,6 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 
 // project imports
-import useScriptRef from 'hooks/useScriptRef';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import MenuItem from '@mui/material/MenuItem';
 
@@ -56,7 +55,7 @@ export default function AddCtegorie({ ...others }) {
     const history = createBrowserHistory();
     const theme = useTheme();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
-    const [filsName, setFilsName] = React.useState(0);
+    const [filsName] = React.useState(0);
     const [pereName, setPereName] = React.useState(0);
     const [message, setMessage] = useState(null);
     const [categoriesNames, setCategoriesNames] = useState([]);
@@ -66,15 +65,7 @@ export default function AddCtegorie({ ...others }) {
 
     const [strength] = useState(0);
     const [level] = useState();
-    const handleChangeSelect = (event) => {
-        const {
-            target: { value },
-        } = event;
-        setFilsName(
-            // On autofill we get a stringified value.
-            typeof value === 'string' ? value.split(',') : value,
-        );
-    };
+
     const handleChangeSelectPere = (event) => {
         const {
             target: { value },
@@ -85,7 +76,7 @@ export default function AddCtegorie({ ...others }) {
         );
     };
 
-    const handleSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
+    const handleSubmit = (values, { setErrors, setSubmitting }) => {
 
         if (pereName === filsName && filsName != 0) {
             setErrors({ fils: "La catégorie et la sous-catégorie doivent être différentes ", pere: "La catégorie et la sous-catégorie doivent être différentes " });
@@ -131,18 +122,6 @@ export default function AddCtegorie({ ...others }) {
             })
         }, []
     );
-
-
-
-
-
-
-
-    const [loading, setLoading] = React.useState(false);
-
-    function handleClick() {
-        setLoading(true);
-    }
 
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
 

@@ -27,6 +27,10 @@ import { createBrowserHistory } from 'history';
 import StockServices from 'services/stock-services/stockServices';
 import { useLocation } from 'react-router';
 import { Box } from '@mui/system';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import AddIcon from '@mui/icons-material/Add';
+
 
 
 
@@ -67,6 +71,8 @@ export default function StockGird() {
     const [page, setPage] = React.useState(parseInt(query.get("page")));
     const [isLoading, setIsloading] = useState(true);
     const [numberPages, setNumberPages] = useState(0);
+    const [idDelete, setIdDelete] = useState(0);
+
 
 
     const handleClose = () => {
@@ -80,6 +86,22 @@ export default function StockGird() {
         history.push("/tableView/stok?page=" + value);
         window.location.reload();
     };
+
+    const deleteStock = () => {
+        setOpen(false);
+        setIsloading(true);
+        StockServices.deleteStock(idDelete.id).then(() => {
+            StockServices.getAll(query.get("page")).then((res) => {
+                setRows(res.data[0]);
+                setNumberPages(res.data["pagination"])
+                setIsloading(false);
+                toast(" stock " + idDelete.taille + " " + idDelete.quantite + " est supprimer avec succès");
+
+            })
+
+
+        })
+    }
 
     useEffect(() => {
 
@@ -96,6 +118,28 @@ export default function StockGird() {
         return (
             <>
                 <MainCard title="Liste des produits">
+
+                    <Stack
+                        direction="row"
+                        flexWrap="wrap-reverse"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        sx={{ mb: 5 }}
+                    >
+
+                        <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
+
+                            <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
+                                <Button onClick={() => {
+                                    history.push('/stock/add');
+                                    window.location.reload();
+                                }} variant="outlined" startIcon={<AddIcon />}>
+                                    Ajouter</Button>
+                            </Stack>
+
+
+                        </Stack>
+                    </Stack>
 
 
                     <TableContainer component={Paper}>
@@ -125,12 +169,8 @@ export default function StockGird() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {rows.map((row) => (<>
-
-
-
-
-                                        <StyledTableRow key={row.nom} >
+                                    {rows.map((row) => (
+                                        <StyledTableRow key={row.id} >
                                             <StyledTableCell align="right" scope="row">
                                                 <Avatar sx={{ width: 150, height: 100 }} src={"http://localhost:8000/uploads/" + row.produit?.images[0]?.nom} variant="square" />
                                             </StyledTableCell>
@@ -181,17 +221,16 @@ export default function StockGird() {
 
                                             <StyledTableCell align="right" scope="row"  >
 
-                                                <IconButton aria-label="edit" size="large" color="success">
+                                                <IconButton aria-label="edit" size="large" color="success" href={"/stock/edit/" + row.id}>
                                                     <EditIcon />
                                                 </IconButton>
-                                                <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true) }}>
+                                                <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true); setIdDelete(row) }}>
                                                     <DeleteIcon />
                                                 </IconButton>
                                             </StyledTableCell>
                                         </StyledTableRow>
 
 
-                                    </>
                                     ))}
                                 </TableBody>
                             </Table>
@@ -216,7 +255,7 @@ export default function StockGird() {
                                     </DialogContent>
                                     <DialogActions>
                                         <Button onClick={handleClose}>Annuler</Button>
-                                        <Button onClick={handleClose} autoFocus>
+                                        <Button onClick={deleteStock} autoFocus>
                                             Confirmer
                                         </Button>
                                     </DialogActions>
@@ -226,6 +265,8 @@ export default function StockGird() {
                             <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
                         </Stack>
                     </TableContainer>
+                    <ToastContainer />
+
                 </MainCard>
 
             </>

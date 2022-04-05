@@ -10,13 +10,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import MainCard from 'ui-component/cards/MainCard';
 import { useEffect, useState } from 'react';
@@ -30,7 +24,28 @@ import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
 import CategorieServices from 'services/categories-services/CategorieServices';
 import { useLocation } from 'react-router';
-import AddIcon from '@mui/icons-material/Add';
+import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+
+
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    pt: 2,
+    px: 4,
+    pb: 3,
+};
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -59,28 +74,77 @@ function useQuery() {
 
 
 
+function ChildModal(props) {
+    const [open, setOpen] = React.useState(false);
 
+    const handleClose = () => {
+        setOpen(false);
+        props.onclose();
+    }
+    const confirm = () => {
+        setOpen(false);
+        props.onclose();
+        props.onConfirm();
+    }
+    useEffect(() => {
+        setOpen(props.open)
+    }, [props.open])
+
+    return (
+        <React.Fragment>
+            <Modal
+                hideBackdrop
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="child-modal-title"
+                aria-describedby="child-modal-description"
+            >
+                <Box sx={{ ...style, width: "50%" }}>
+                    <h2 id="child-modal-title">voulez vous vraiment supprimer la categorie {props.catDelete?.nom}</h2>
+                    <p id="child-modal-description">
+                        La suppression d'une catégorie supprimera tous ses produits !
+
+                    </p>
+                    <Button onClick={confirm}>Confirmer</Button>
+                    <Button onClick={handleClose}>Annuler</Button>
+
+                </Box>
+            </Modal>
+        </React.Fragment>
+    );
+}
 export default function GirdViewCategorie() {
     let query = useQuery();
 
     const history = createBrowserHistory();
-    const a = () => {
-        return true;
-    }
+
     const [open, setOpen] = React.useState(false);
+    const [openChild, setOpenChild] = React.useState(false);
+
     const [rows, setRows] = useState([]);
     const [page, setPage] = React.useState(parseInt(query.get("page")));
     const [isLoading, setIsloading] = useState(true);
     const [numberPages, setNumberPages] = useState(0);
+    const [idDelete, setIdDelete] = useState(0);
+    const [catDelete, setCatDelete] = useState(null);
+
+
     const handleChange = (event, value) => {
         setPage(value);
         const history = createBrowserHistory();
-        history.push("/tableView/bons?page=" + value);
+        history.push("/girdView/categories?page=" + value);
         window.location.reload();
     };
 
+    const handleOpen = () => {
+        setOpen(true);
+    };
     const handleClose = () => {
         setOpen(false);
+    };
+
+    const handleCloseChild = () => {
+        setOpenChild(false);
     };
 
 
@@ -93,6 +157,30 @@ export default function GirdViewCategorie() {
         })
 
     }, []);
+
+    const deleteCategorie = () => {
+        setOpen(false);
+        setIsloading(true);
+        CategorieServices.deleteCategorie(catDelete.id).then(() => {
+            CategorieServices.getAllPagination(query.get("page")).then((res) => {
+                setRows(res.data[0]);
+                setNumberPages(res.data["pagination"])
+                setIsloading(false);
+                toast(" categorie " + catDelete.nom + " " + "est supprimer avec succès");
+
+            })
+
+
+        })
+    }
+
+    const handleCatDelete = (cat) => {
+        setCatDelete(cat);
+        setOpenChild(true);
+        console.log(cat.id)
+
+
+    }
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1) {
 
         return (
@@ -121,14 +209,8 @@ export default function GirdViewCategorie() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {rows.map((row) => (<>
-
-
-
-
-
+                                    {rows.map((row) => (
                                         <StyledTableRow key={row.id} >
-
                                             <StyledTableCell >{row.nom}</StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <TreeView
@@ -165,13 +247,13 @@ export default function GirdViewCategorie() {
                                                 <IconButton aria-label="edit" size="large" color="success">
                                                     <EditIcon />
                                                 </IconButton>
-                                                <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true) }}>
+                                                <IconButton aria-label="delete" size="large" color="error" onClick={() => { handleOpen(); setIdDelete(row) }}>
                                                     <DeleteIcon />
                                                 </IconButton>
                                             </StyledTableCell>
                                         </StyledTableRow>
 
-                                    </>
+
                                     ))}
                                 </TableBody>
                             </Table>
@@ -179,33 +261,52 @@ export default function GirdViewCategorie() {
                         {
                             open ? (<div>
 
-                                <Dialog
+                                <Modal
                                     open={open}
                                     onClose={handleClose}
-                                    aria-labelledby="alert-dialog-title"
-                                    aria-describedby="alert-dialog-description"
+                                    aria-labelledby="parent-modal-title"
+                                    aria-describedby="parent-modal-description"
                                 >
-                                    <DialogTitle id="alert-dialog-title">
-                                        {"Voulez-vous supprimer ce bon"}
-                                    </DialogTitle>
-                                    <DialogContent>
-                                        <DialogContentText id="alert-dialog-description">
-                                            Let Google help apps determine location. This means sending anonymous
-                                            location data to Google, even when no apps are running.
-                                        </DialogContentText>
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <Button onClick={handleClose}>Annuler</Button>
-                                        <Button onClick={handleClose} autoFocus>
-                                            Confirmer
-                                        </Button>
-                                    </DialogActions>
-                                </Dialog>
+                                    <Box sx={{ ...style, width: "35%" }} >
+                                        <Grid
+                                            container
+                                            direction="column"
+                                            alignItems="flex-start"
+                                        >
+                                            <h2 id="parent-modal-title">Choisissez la catégorie que vous souhaitez supprimer : </h2>
+
+                                            <Button color="error" key={Math.random().toString(36).substr(2, 9)} onClick={() => { handleCatDelete(idDelete) }}>{idDelete.nom}</Button>
+
+                                            {idDelete.catFils[0] != null ? (
+                                                idDelete.catFils.map((fr) => (
+                                                    <>
+                                                        <Button color="error" key={fr.id} onClick={(id) => { handleCatDelete(fr) }}>{fr.nom}</Button>
+
+                                                        {fr.catFils[0] != null ? (
+                                                            fr.catFils.map((fr1) => (
+                                                                <Button color="error" key={fr1.id} onClick={() => { handleCatDelete(fr1) }}>{fr1.nom}</Button>
+
+                                                            ))
+
+                                                        ) : (null)}
+
+
+
+                                                    </>))
+
+                                            ) : (null)}
+
+                                            <ChildModal open={openChild} onclose={handleCloseChild} onConfirm={deleteCategorie} catDelete={catDelete} />
+                                        </Grid>
+                                    </Box>
+                                </Modal>
                             </div>) : (null)}
                         <Stack direction="row-reverse" marginTop={"2%"}>
                             <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
                         </Stack>
                     </TableContainer>
+                    <ToastContainer />
+
                 </MainCard>
 
             </>

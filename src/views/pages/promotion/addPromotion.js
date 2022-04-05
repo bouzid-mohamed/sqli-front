@@ -10,6 +10,7 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider'
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
 import PromotionServices from 'services/promotion-services/promotionServices';
+import Moment from 'moment';
 
 // material-ui
 import { useState, useEffect } from 'react';
@@ -143,7 +144,9 @@ export default function AddPromotion({ ...others }) {
                 console.log(file)
                 formData.append('assets', file, file.name)
             })
-            PromotionServices.addPromotion(values.nom, values.description, dd, df, values.pourcentage, formData).then(
+
+
+            PromotionServices.addPromotion(values.nom, values.description, Moment(value[0]).format().toString(), Moment(value[0]).format().toString(), values.pourcentage, formData).then(
                 () => {
 
                     Swal.fire({
@@ -244,20 +247,19 @@ export default function AddPromotion({ ...others }) {
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
                                 <DateRangePicker
                                     dateDisplayFormat="d MMM yyyy"
+
                                     value={value}
                                     onChange={(newValue) => {
                                         setValue(newValue);
-                                        console.log(dd)
-
 
 
 
                                     }}
                                     renderInput={(startProps, endProps) => (
                                         <React.Fragment>
-                                            <TextField name="dateDebut" value={dd} onChange={(event) => { setDd(event.target.value) }} {...startProps} style={{ "width": "50%" }} error={Boolean(touched.dateDebut && value[0] == null)} sx={{ ...theme.typography.customInput }} />
+                                            <TextField name="dateDebut" {...startProps} style={{ "width": "50%" }} error={Boolean(touched.dateDebut && value[0] == null)} sx={{ ...theme.typography.customInput }} />
                                             <Box sx={{ mx: 2 }}> jusqu'a </Box>
-                                            <TextField name="dateFin" value={df} onChange={(event) => setDf(event.target.value)}   {...endProps} style={{ "width": "50%" }} error={Boolean(touched.dateFin && value[1] == null)} sx={{ ...theme.typography.customInput }} />
+                                            <TextField name="dateFin"    {...endProps} style={{ "width": "50%" }} error={Boolean(touched.dateFin && value[1] == null)} sx={{ ...theme.typography.customInput }} />
                                         </React.Fragment>
                                     )}
                                 />

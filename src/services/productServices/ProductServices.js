@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { useParams } from 'react-router';
 import authHeader from 'services/auth-services/auth-header';
 
 const API_URL = 'http://localhost:8000/api/entreprise/';
@@ -40,6 +39,46 @@ class ProductService {
 
     show(id) {
         return axios.get(API_URL + 'produit/show/' + id, { headers: authHeader() })
+    }
+    //delete produit
+    deleteProduit(id) {
+        return axios
+            .put(API_URL + "produit/delete/" + id, {
+
+            }, { headers: authHeader() })
+            .then(response => {
+                return response.data;
+            });
+    }
+
+    //delete image
+    deleteImage(id) {
+        return axios
+            .put(API_URL + "produit/delete/image/" + id, {
+
+            }, { headers: authHeader() })
+            .then(response => {
+                return response.data;
+            });
+    }
+
+    //ajouter un produit
+    updateProduct(id, nom, prix, categorie, description, promotion, bodyFormData) {
+
+        bodyFormData.append('nom', nom)
+        bodyFormData.append('description', description)
+        bodyFormData.append('categorie', categorie)
+        bodyFormData.append('promotion', promotion)
+
+        bodyFormData.append('prix', prix)
+
+        return axios
+            .post(API_URL + "produit/updateProduit/" + id,
+
+                bodyFormData, { headers: authHeader() })
+            .then(response => {
+                return response.data;
+            });
     }
 
 }

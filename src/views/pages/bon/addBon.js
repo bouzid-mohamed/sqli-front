@@ -1,4 +1,3 @@
-import * as React from 'react';
 import LoadingButton from '@mui/lab/LoadingButton';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
@@ -25,7 +24,6 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 
 // project imports
-import useScriptRef from 'hooks/useScriptRef';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 
 
@@ -37,18 +35,14 @@ import Swal from 'sweetalert2';
 export default function AddBon({ ...others }) {
     const history = createBrowserHistory();
     const theme = useTheme();
-    const scriptedRef = useScriptRef();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
     const [strength] = useState(0);
     const [level] = useState();
-    const [loading, setLoading] = React.useState(false);
     const [message, setMessage] = useState(null);
 
-    function handleClick() {
-        setLoading(true);
-    }
 
-    const handleSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
+
+    const handleSubmit = (values, { setSubmitting }) => {
 
         BonServices.addBon(values.code, values.reduction).then(
             () => {

@@ -16,9 +16,34 @@ class BonServices {
                 return response.data;
             });
     }
+    //modifier un bon 
+    updateBon(code, reduction, id) {
+
+        return axios
+            .post(API_URL + "/updatebon/" + id, {
+                code, reduction
+            }, { headers: authHeader() })
+            .then(response => {
+                return response.data;
+            });
+    }
 
     getAll(value) {
-        return axios.get(API_URL + '/all?page=' + value, { headers: authHeader() })
+        return axios.get(API_URL + '/list/all?page=' + value, { headers: authHeader() })
+    }
+    //delete stock
+    deleteBon(id) {
+        return axios
+            .put(API_URL + "/deletebon/" + id, {
+
+            }, { headers: authHeader() })
+            .then(response => {
+                return response.data;
+            });
+    }
+
+    show(id) {
+        return axios.get(API_URL + '/' + id, { headers: authHeader() })
     }
 }
 export default new BonServices();

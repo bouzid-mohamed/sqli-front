@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 // material
 import { alpha, styled } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
-import { useEffect } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -24,7 +23,9 @@ const IconStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 ColorPreview.propTypes = {
-    limit: PropTypes.number
+    limit: PropTypes.number,
+    product: PropTypes.object
+
 };
 
 export default function ColorPreview({ product, limit = 3, ...other }) {

@@ -20,5 +20,16 @@ class CategorieServices {
                 return response.data;
             });
     }
+
+    //delete categorie
+    deleteCategorie(id) {
+        return axios
+            .put(API_URL + "categories/deleteCategorie/" + id, {
+
+            }, { headers: authHeader() })
+            .then(response => {
+                return response.data;
+            });
+    }
 }
 export default new CategorieServices();
