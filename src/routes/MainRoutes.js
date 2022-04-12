@@ -11,6 +11,9 @@ const AddPromotion = Loadable(lazy(() => import('views/pages/promotion/addPromot
 const EditPromotion = Loadable(lazy(() => import('views/pages/promotion/editPromotion')));
 
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
+const DashboardPost = Loadable(lazy(() => import('views/dashboard/Default/DashboardPost')));
+const AddPost = Loadable(lazy(() => import('views/pages/postes/addPost')));
+
 
 // utilities routing
 const UtilsTypography = Loadable(lazy(() => import('views/utilities/Typography')));
@@ -38,6 +41,12 @@ const EditStock = Loadable(lazy(() => import('views/pages/stock/editStock')));
 const GirdViewCategorie = Loadable(lazy(() => import('views/pages/categorie/girdViewCategorie')));
 const AddCtegorie = Loadable(lazy(() => import('views/pages/categorie/addCategories')));
 const GirdViewCommandes = Loadable(lazy(() => import('views/pages/commandes/girdViewCommande')));
+const PostGirdViewCommandes = Loadable(lazy(() => import('views/pages/commandes/postGirdViewCommande')));
+const AddLivreur = Loadable(lazy(() => import('views/pages/livreur/addLivreur')));
+const ListLivreur = Loadable(lazy(() => import('views/pages/livreur/listLivreur')));
+
+
+
 
 
 
@@ -52,6 +61,7 @@ const MainRoutes = {
             path: '/',
             element: <DashboardDefault />
         },
+
         {
             path: '/tableView/products',
             element: <ProductGird />
@@ -113,6 +123,10 @@ const MainRoutes = {
             element: <GirdViewCommandes />
         },
         {
+            path: 'post/girdView/commandes',
+            element: <PostGirdViewCommandes />
+        },
+        {
             path: '/girdView/categories',
             element: <GirdViewCategorie />
         },
@@ -126,6 +140,22 @@ const MainRoutes = {
         {
             path: '/dashboard/default',
             element: <DashboardDefault />
+        },
+        {
+            path: '/post',
+            element: <DashboardPost />
+        },
+        {
+            path: '/post/add',
+            element: <AddPost />
+        },
+        {
+            path: '/post/livreur/add',
+            element: <AddLivreur />
+        },
+        {
+            path: '/post/livreur/list',
+            element: <ListLivreur />
         },
         {
             path: '/utils/util-typography',

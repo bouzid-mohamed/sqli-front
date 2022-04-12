@@ -3,11 +3,16 @@ import authHeader from 'services/auth-services/auth-header';
 const API_URL = 'http://localhost:8000/api/entreprise/commande/';
 const API_URL1 = 'http://localhost:8000/api/';
 
+
 class CommandesServices {
 
     // get all commandes d une entreprise
     getAll(value) {
         return axios.get(API_URL + 'getAll?page=' + value, { headers: authHeader() })
+    }
+    //get all commande with role poste
+    getAllRolePoste(value) {
+        return axios.get(API_URL1 + 'poste/commande/getAllPoste?page=' + value, { headers: authHeader() })
     }
     // changer les etats d une commande
     ConfirmerCommande(id) {
@@ -39,6 +44,27 @@ class CommandesServices {
             });
     }
 
+    ConfirmationPoste(id) {
+        return axios
+            .post(API_URL1 + "poste/commande/confirmationposte/" + id, {
+
+            }, { headers: authHeader() })
+            .then(response => {
+                return response.data;
+            });
+    }
+
+
+    //affecter un livreur a une commande
+    affecterLivreur(id, livreur) {
+        return axios
+            .post(API_URL1 + "poste/commande/affecterLivreur/" + id, {
+                livreur
+            }, { headers: authHeader() })
+            .then(response => {
+                return response.data;
+            });
+    }
 
 }
 export default new CommandesServices();

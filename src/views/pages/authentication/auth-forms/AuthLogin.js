@@ -71,8 +71,15 @@ const FirebaseLogin = ({ ...others }) => {
         AuthService.login(values.email, values.password).then(
             () => {
                 const history = createBrowserHistory();
-                history.push("/");
-                window.location.reload();
+                if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1) {
+
+                    history.push("/");
+                    window.location.reload();
+                } else if (AuthService.getCurrentUser().roles.indexOf("ROLE_POSTE") > -1) {
+                    history.push("/post");
+                    window.location.reload();
+                }
+
             },
             error => {
                 const resMessage =

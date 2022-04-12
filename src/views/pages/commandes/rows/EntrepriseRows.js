@@ -10,10 +10,17 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { Avatar, Button, Menu } from '@mui/material';
+import { Avatar, Button, Chip, Menu } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 import Swal from 'sweetalert2';
+import FiberNewIcon from '@mui/icons-material/FiberNew';
+import CheckIcon from '@mui/icons-material/Check';
+import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
+import CancelIcon from '@mui/icons-material/Cancel';
+import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
 
 
 const ITEM_HEIGHT = 48;
@@ -53,65 +60,105 @@ export default function Row(props) {
                 <TableCell align="right">{row.gouvernerat}</TableCell>
                 <TableCell align="right">{row.delegation}</TableCell>
                 <TableCell align="right">{row.prix}</TableCell>
-                <TableCell align="right">{row.status}</TableCell>
+                <TableCell align="right">{(row.status === 'nouvelle') ? (
+                    <Chip icon={<FiberNewIcon />} label="Nouvelle" color="success" variant="outlined" />
+                )
+                    : (null)}
+                    {(row.status === 'confirmationClient') ? (
+                        <Chip icon={<CheckIcon />} label="Confirmée par le client" color="primary" variant="outlined" />
+                    )
+                        : (null)}
+
+                    {(row.status === 'confirmationPoste') ? (
+                        <Chip icon={<AssuredWorkloadIcon />} label="Confirmée par la poste" color="primary" />
+                    )
+                        : (null)}
+                    {(row.status === 'affectationPoste') ? (
+                        <Chip icon={<AssignmentTurnedInIcon />} label="Affectée a la poste" color="success" />
+                    )
+                        : (null)}
+                    {(row.status === 'finie') ? (
+                        <Chip icon={<ThumbUpOffAltIcon />} label="Finie" color="success" />
+                    )
+                        : (null)}
+                    {(row.status === 'annulee') ? (
+                        <Chip icon={<CancelIcon style={{ color: "white" }} />} label="Annulée" style={{ backgroundColor: "red", color: "white" }} />
+                    )
+                        : (null)}
+
+                    {(row.status === 'affecterLivreur') ? (
+                        <Chip icon={<DeliveryDiningIcon />} label="Affecter à un livreur " color="success" />
+                    )
+                        : (null)}</TableCell>
                 <TableCell align="right">
-                    <div>
-                        <IconButton
+                    {(row.status === ('confirmationClient' && 'affectationPoste' && 'nouvelle')) ? (
+                        <div>
+                            <IconButton
+                                aria-label="more"
+                                id="long-button"
+                                aria-controls={open ? 'long-menu' : undefined}
+                                aria-expanded={open ? 'true' : undefined}
+                                aria-haspopup="true"
+                                onClick={handleClick}
+                            >
+                                <SettingsApplicationsIcon color="primary" fontSize="large" />
+                            </IconButton>
+                            <Menu
+                                id="long-menu"
+                                MenuListProps={{
+                                    'aria-labelledby': 'long-button',
+                                }}
+                                anchorEl={anchorEl}
+                                open={openA}
+                                onClose={handleClose}
+                                PaperProps={{
+                                    style: {
+                                        maxHeight: ITEM_HEIGHT * 4.5,
+                                        width: '20ch',
+                                    },
+                                }}
+                            >
+                                {(row.status === 'confirmationClient') ? (
+                                    <div>
+                                        <MenuItem onClick={() => { props.handleaffecterposte(row) }}>
+                                            Affectation Poste
+                                        </MenuItem>
+                                        <MenuItem onClick={() => { props.handleAnnulee(row) }}>
+                                            Annulée
+                                        </MenuItem></div>)
+                                    : (null)}
+
+                                {(row.status === 'affectationPoste') ? (
+                                    <div>
+
+                                        <MenuItem onClick={() => { props.handleAnnulee(row) }}>
+                                            Annulée
+                                        </MenuItem></div>)
+                                    : (null)}
+                                {(row.status === 'nouvelle') ? (
+                                    <div>
+
+                                        <MenuItem onClick={() => { props.handleConfirmation(row) }}>
+                                            Confirmer
+                                        </MenuItem></div>)
+                                    : (null)}
+
+
+                            </Menu>
+                        </div>
+                    )
+                        : <IconButton
                             aria-label="more"
                             id="long-button"
                             aria-controls={open ? 'long-menu' : undefined}
                             aria-expanded={open ? 'true' : undefined}
                             aria-haspopup="true"
                             onClick={handleClick}
-                        >
-                            <SettingsApplicationsIcon color="primary" fontSize="large" />
-                        </IconButton>
-                        <Menu
-                            id="long-menu"
-                            MenuListProps={{
-                                'aria-labelledby': 'long-button',
-                            }}
-                            anchorEl={anchorEl}
-                            open={openA}
-                            onClose={handleClose}
-                            PaperProps={{
-                                style: {
-                                    maxHeight: ITEM_HEIGHT * 4.5,
-                                    width: '20ch',
-                                },
-                            }}
-                        >
-                            {(row.status === 'confirmationClient') ? (
-                                <div>
-                                    <MenuItem onClick={() => { props.handleaffecterposte(row) }}>
-                                        Affectation Poste
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { props.handleAnnulee(row) }}>
-                                        Annulée
-                                    </MenuItem></div>)
-                                : (null)}
+                            disabled>
 
-                            {(row.status === 'affectationPoste') ? (
-                                <div>
+                            <SettingsApplicationsIcon fontSize="large" />
+                        </IconButton>}
 
-                                    <MenuItem onClick={() => { props.handleAnnulee(row) }}>
-                                        Annulée
-                                    </MenuItem></div>)
-                                : (null)}
-                            {(row.status === 'nouvelle') ? (
-                                <div>
-
-                                    <MenuItem onClick={() => { props.handleConfirmation(row) }}>
-                                        Confirmer
-                                    </MenuItem></div>)
-                                : (null)}
-
-
-
-
-
-                        </Menu>
-                    </div>
                 </TableCell>
             </TableRow>
             <TableRow>

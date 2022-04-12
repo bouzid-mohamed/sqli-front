@@ -244,9 +244,7 @@ export default function GirdViewCategorie() {
 
                                             <StyledTableCell align="right" scope="row"  >
 
-                                                <IconButton aria-label="edit" size="large" color="success">
-                                                    <EditIcon />
-                                                </IconButton>
+
                                                 <IconButton aria-label="delete" size="large" color="error" onClick={() => { handleOpen(); setIdDelete(row) }}>
                                                     <DeleteIcon />
                                                 </IconButton>

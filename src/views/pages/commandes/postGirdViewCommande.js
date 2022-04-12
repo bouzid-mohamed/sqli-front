@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import MainCard from 'ui-component/cards/MainCard';
 import commandeServices from 'services/commande-services/CommandeServices';
 import { useLocation } from 'react-router';
-import Row from './rows/EntrepriseRows'
+import Row from './rows/postrows'
 import GirdSkeleton from 'ui-component/cards/Skeleton/NormalGirdSkeleton';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
@@ -18,6 +18,10 @@ import Swal from 'sweetalert2';
 import CommandeServices from 'services/commande-services/CommandeServices';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+
+import ConfirmationDialogRaw from './affecterLivreur/ConfirmationDialogRaw';
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -29,52 +33,66 @@ export default function CollapsibleTable() {
     const [numberPages, setNumberPages] = React.useState(0);
     const [isLoading, setIsloading] = React.useState(true);
     const [page, setPage] = React.useState(parseInt(query.get("page")));
-    const [open, setOpen] = React.useState(false);
-    const handleChange = (event, value) => {
-        setPage(value);
+    const [openForm, setOpenForm] = React.useState(false);
+    const [value, setValue] = React.useState(-1);
+    const [openAlert, setOpenAlert] = React.useState(false);
+    const [commande, setCommande] = React.useState(0);
+
+
+    const handleChange = (event, v) => {
+        setPage(v);
         const history = createBrowserHistory();
-        history.push("/girdView/commandes?page=" + value);
+        history.push("/girdView/commandes?page=" + v);
         window.location.reload();
     };
     React.useEffect(() => {
-        commandeServices.getAll(query.get("page")).then((res) => {
+        commandeServices.getAllRolePoste(query.get("page")).then((res) => {
             setRows(res.data[0]);
-            console.log(res.data[0])
             setNumberPages(res.data["pagination"])
             setIsloading(false);
         })
     }, []);
 
     // etat commande vers confirmer
-    const handleConfirmation = (row) => {
-        Swal.fire({
-            title: 'Êtes-vous sûr?',
-            text: "Vous voulez modifier l'état de cette commande ",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ok, Modifier!',
-            cancelButtonText: 'Annuler'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                setIsloading(true);
-                CommandeServices.ConfirmerCommande(row.id).then(() => {
-                    CommandeServices.getAll(query.get("page")).then((res) => {
-                        setRows(res.data[0]);
-                        setNumberPages(res.data["pagination"])
-                        setIsloading(false);
-                        toast(" la état du commande du  " + row.client.nom + ' ' + row.client.prenom + " " + "est modifiée");
-
-                    })
-                })
-            }
-        })
-
+    const handleAffecterLivreur = (row) => {
+        setOpenForm(true);
+        setCommande(row)
     }
 
+    const handleOk = () => {
+        if (value === -1)
+            setOpenAlert(true)
+        else {
+            setOpenForm(false);
+            Swal.fire({
+                title: 'Êtes-vous sûr?',
+                text: "Vous voulez modifier l'état de cette commande ",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ok, Modifier!',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setIsloading(true);
+                    CommandeServices.affecterLivreur(commande.id, value).then(() => {
+                        CommandeServices.getAllRolePoste(query.get("page")).then((res) => {
+                            setRows(res.data[0]);
+                            setNumberPages(res.data["pagination"])
+                            setIsloading(false);
+                            toast(" la état du commande du  " + commande.client.nom + ' ' + commande.client.prenom + " est modifiée");
+
+                        })
+                    })
+                }
+            })
+        }
+
+    };
+
     // etat commande vers affecterPoste
-    const handleaffecterposte = (row) => {
+    const handleConfirmationposte = (row) => {
         Swal.fire({
             title: 'Êtes-vous sûr?',
             text: "Vous voulez modifier l'état de cette commande ",
@@ -87,12 +105,12 @@ export default function CollapsibleTable() {
         }).then((result) => {
             if (result.isConfirmed) {
                 setIsloading(true);
-                CommandeServices.AffecterPoste(row.id).then(() => {
-                    CommandeServices.getAll(query.get("page")).then((res) => {
+                CommandeServices.ConfirmationPoste(row.id).then(() => {
+                    CommandeServices.getAllRolePoste(query.get("page")).then((res) => {
                         setRows(res.data[0]);
                         setNumberPages(res.data["pagination"])
                         setIsloading(false);
-                        toast(" la état du commande du  " + row.client.nom + ' ' + row.client.prenom + " " + "est modifiée");
+                        toast(" la état du commande du  " + row.client.nom + ' ' + row.client.prenom + " est modifiée");
 
                     })
                 })
@@ -120,7 +138,7 @@ export default function CollapsibleTable() {
                         setRows(res.data[0]);
                         setNumberPages(res.data["pagination"])
                         setIsloading(false);
-                        toast(" la état du commande du  " + row.client.nom + ' ' + row.client.prenom + " " + "est modifiée");
+                        toast(" la état du commande du  " + row.client.nom + ' ' + row.client.prenom + "est modifiée");
 
                     })
                 })
@@ -128,19 +146,21 @@ export default function CollapsibleTable() {
         })
 
     }
+    const changeValue = (v) => {
+        setValue(v)
+    }
 
 
+    const handleCloseForm = (newValue) => {
+        setOpenForm(false);
 
-    const handleClickOpen = () => {
-        setOpen(true);
+        if (newValue) {
+            setValue(newValue);
+        }
     };
 
-    const handleClose = () => {
-        setOpen(false);
-    };
 
-
-    if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
+    if (AuthService.getCurrentUser().roles.indexOf("ROLE_POSTE") > -1)
         return (
             <MainCard
                 title="Liste des Commandes"
@@ -158,6 +178,7 @@ export default function CollapsibleTable() {
                                 <TableHead style={{ backgroundColor: "#5a33aa" }}>
                                     <TableRow>
                                         <TableCell />
+                                        <TableCell style={{ color: '#ffffff' }}>id</TableCell>
                                         <TableCell style={{ color: '#ffffff' }}>Nom</TableCell>
                                         <TableCell style={{ color: '#ffffff' }} align="right">Email</TableCell>
                                         <TableCell style={{ color: '#ffffff' }} align="right">Num tel</TableCell>
@@ -171,7 +192,7 @@ export default function CollapsibleTable() {
                                 </TableHead>
                                 <TableBody>
                                     {rows?.map((row) => (
-                                        <Row key={row.id} row={row} handleaffecterposte={handleaffecterposte} handleConfirmation={handleConfirmation} handleAnnulee={handleAnnulee} />
+                                        <Row key={row.id} row={row} handleConfirmationposte={handleConfirmationposte} handleAffecterLivreur={() => handleAffecterLivreur(row)} handleAnnulee={handleAnnulee} />
                                     ))}
                                 </TableBody>
                             </Table>
@@ -181,7 +202,25 @@ export default function CollapsibleTable() {
                         <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
                     </Stack>
                 </TableContainer>
+                {openForm ? (<Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+                    <List component="div" role="group">
+
+
+                        <ConfirmationDialogRaw
+                            id="ringtone-menu"
+                            keepMounted
+                            open={openForm}
+                            onClose={handleCloseForm}
+                            value={value}
+                            handleOk={handleOk}
+                            openAlert={openAlert}
+                            setVal={changeValue}
+                        />
+                    </List>
+                </Box>) : (null)}
+
                 <ToastContainer />
+
 
             </MainCard>
         );
