@@ -14,6 +14,10 @@ class CommandesServices {
     getAllRolePoste(value) {
         return axios.get(API_URL1 + 'poste/commande/getAllPoste?page=' + value, { headers: authHeader() })
     }
+    //get all commande with role poste
+    getAllRoleLivreur(value) {
+        return axios.get(API_URL1 + 'livreur/commande/getAllLivreur?page=' + value, { headers: authHeader() })
+    }
     // changer les etats d une commande
     ConfirmerCommande(id) {
         return axios
@@ -28,6 +32,27 @@ class CommandesServices {
     AffecterPoste(id) {
         return axios
             .post(API_URL + "affecterposte/" + id, {
+
+            }, { headers: authHeader() })
+            .then(response => {
+                return response.data;
+            });
+    }
+    //etat finie 
+    finirCommande(id) {
+        return axios
+            .post(API_URL1 + "livreur/commande/finirCommande/" + id, {
+
+            }, { headers: authHeader() })
+            .then(response => {
+                return response.data;
+            });
+    }
+
+    //retour commande
+    retourCommande(id) {
+        return axios
+            .post(API_URL1 + "livreur/commande/retourCommande/" + id, {
 
             }, { headers: authHeader() })
             .then(response => {

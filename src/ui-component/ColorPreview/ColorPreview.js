@@ -35,7 +35,7 @@ export default function ColorPreview({ product, limit = 3, ...other }) {
 
     return (
         <RootStyle component="span" {...other}>
-            {showColor.map((s, index) => (
+            {showColor?.map((s, index) => (
                 <IconStyle key={s.id + index} sx={{ bgcolor: s.couleur }} />
             ))}
 

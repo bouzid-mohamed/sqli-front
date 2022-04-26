@@ -4,7 +4,8 @@ const API_URL = 'http://localhost:8000/api/';
 class LivreurServices {
     //liste livreur pour une poste
     getAll() {
-        return axios.get(API_URL + 'poste/livreurs', { headers: authHeader() })
+        return axios.get(API_URL + 'poste/Listlivreurs', { headers: authHeader() })
+
     }
 
     //ajouter un compte livreur

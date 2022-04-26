@@ -11,6 +11,8 @@ import Breadcrumbs from 'ui-component/extended/Breadcrumbs';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import PostSidebar from './Sidebar/postsideBar';
+import LivreursideBar from './Sidebar/livreursideBar';
+
 
 import Customization from '../Customization';
 import navigation from 'menu-items';
@@ -148,7 +150,42 @@ const MainLayout = () => {
                 <Customization />
             </Box>
         );
+
     }
-};
+    else if (AuthService.getCurrentUser().roles.indexOf("ROLE_LIVREUR") > -1) {
+        return (
+            <Box sx={{ display: 'flex' }}>
+                <CssBaseline />
+                {/* header */}
+                <AppBar
+                    enableColorOnDark
+                    position="fixed"
+                    color="inherit"
+                    elevation={0}
+                    sx={{
+                        bgcolor: theme.palette.background.default,
+                        transition: leftDrawerOpened ? theme.transitions.create('width') : 'none'
+                    }}
+                >
+                    <Toolbar>
+                        <Header handleLeftDrawerToggle={handleLeftDrawerToggle} />
+                    </Toolbar>
+                </AppBar>
+
+                {/* drawer */}
+                <LivreursideBar drawerOpen={leftDrawerOpened} drawerToggle={handleLeftDrawerToggle} />
+
+                {/* main content */}
+                <Main theme={theme} open={leftDrawerOpened}>
+                    {/* breadcrumb */}
+                    <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
+                    <Outlet />
+                </Main>
+                <Customization />
+            </Box>
+        );
+
+    }
+}
 
 export default MainLayout;

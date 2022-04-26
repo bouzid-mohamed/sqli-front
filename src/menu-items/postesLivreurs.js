@@ -23,7 +23,7 @@ const postesLivreurs = {
                     title: 'Liste',
                     type: 'item',
                     icon: TocIcon,
-                    url: 'girdView/promotion?page=1',
+                    url: '/post/list?page=1',
                     target: false
                 },
                 {

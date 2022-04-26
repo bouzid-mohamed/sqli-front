@@ -78,6 +78,9 @@ const FirebaseLogin = ({ ...others }) => {
                 } else if (AuthService.getCurrentUser().roles.indexOf("ROLE_POSTE") > -1) {
                     history.push("/post");
                     window.location.reload();
+                } else if (AuthService.getCurrentUser().roles.indexOf("ROLE_LIVREUR") > -1) {
+                    history.push("/livreur");
+                    window.location.reload();
                 }
 
             },

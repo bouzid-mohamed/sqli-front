@@ -72,7 +72,7 @@ export default function AddStock({ ...others }) {
     };
     //ajouter une entreprise 
 
-    const handleSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
+    const handleSubmit = (values, { setSubmitting }) => {
 
         StockServices.addStock(produitName, values.couleur, values.taille, values.quantite).then(
             () => {
@@ -142,7 +142,7 @@ export default function AddStock({ ...others }) {
 
 
                         </Grid>
-                        <FormControl fullWidth error={Boolean(touched.produit && produitName == 0)} sx={{ ...theme.typography.customInput }}>
+                        <FormControl fullWidth error={Boolean(touched.produit && produitName === 0)} sx={{ ...theme.typography.customInput }}>
 
                             <Select
                                 id="produitName"

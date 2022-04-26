@@ -12,9 +12,8 @@ const EditPromotion = Loadable(lazy(() => import('views/pages/promotion/editProm
 
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard/Default')));
 const DashboardPost = Loadable(lazy(() => import('views/dashboard/Default/DashboardPost')));
+const DashboardLivreur = Loadable(lazy(() => import('views/dashboard/Default/DashboardLivreur')));
 const AddPost = Loadable(lazy(() => import('views/pages/postes/addPost')));
-
-
 // utilities routing
 const UtilsTypography = Loadable(lazy(() => import('views/utilities/Typography')));
 const UtilsColor = Loadable(lazy(() => import('views/utilities/Color')));
@@ -42,8 +41,11 @@ const GirdViewCategorie = Loadable(lazy(() => import('views/pages/categorie/gird
 const AddCtegorie = Loadable(lazy(() => import('views/pages/categorie/addCategories')));
 const GirdViewCommandes = Loadable(lazy(() => import('views/pages/commandes/girdViewCommande')));
 const PostGirdViewCommandes = Loadable(lazy(() => import('views/pages/commandes/postGirdViewCommande')));
+const LivreurGirdViewCommandes = Loadable(lazy(() => import('views/pages/commandes/livreurGirdViewCommande')));
 const AddLivreur = Loadable(lazy(() => import('views/pages/livreur/addLivreur')));
 const ListLivreur = Loadable(lazy(() => import('views/pages/livreur/listLivreur')));
+const GirdViewPost = Loadable(lazy(() => import('views/pages/postes/GirdViewPost')));
+
 
 
 
@@ -127,6 +129,10 @@ const MainRoutes = {
             element: <PostGirdViewCommandes />
         },
         {
+            path: 'livreur/girdView/commandes',
+            element: <LivreurGirdViewCommandes />
+        },
+        {
             path: '/girdView/categories',
             element: <GirdViewCategorie />
         },
@@ -146,6 +152,10 @@ const MainRoutes = {
             element: <DashboardPost />
         },
         {
+            path: '/livreur',
+            element: <DashboardLivreur />
+        },
+        {
             path: '/post/add',
             element: <AddPost />
         },
@@ -156,6 +166,10 @@ const MainRoutes = {
         {
             path: '/post/livreur/list',
             element: <ListLivreur />
+        },
+        {
+            path: '/post/list',
+            element: <GirdViewPost />
         },
         {
             path: '/utils/util-typography',

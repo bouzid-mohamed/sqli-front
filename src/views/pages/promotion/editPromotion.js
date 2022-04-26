@@ -90,7 +90,6 @@ export default function EditPromotion({ ...others }) {
     const [files, setFiles] = useState([]);
     const params = useParams();
     const [loadcirular, setLoadcirular] = useState(true);
-    const [promotion, setPromotion] = useState(true);
 
     const formikRef = React.useRef();
     const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
@@ -124,7 +123,6 @@ export default function EditPromotion({ ...others }) {
 
 
             PromotionServices.show(params.id).then((res) => {
-                setPromotion(res.data[0]);
                 setLoadcirular(false);
                 var dt = Moment(res.data[0].dateDebut).format('dd MMM yyyy');
                 var dt1 = Moment(res.data[0].dateFin).format('dd MMM yyyy');
@@ -157,13 +155,7 @@ export default function EditPromotion({ ...others }) {
 
     );
 
-    const [loading, setLoading] = React.useState(false);
-
-    function handleClick() {
-        setLoading(true);
-    }
-
-    const handleSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
+    const handleSubmit = (values, { setSubmitting }) => {
         let formData = new FormData();
         if (files[0].name != null) {
             const fileObjects = acceptedFiles.map(file => {

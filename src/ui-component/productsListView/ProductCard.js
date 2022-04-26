@@ -6,12 +6,10 @@ import { createBrowserHistory } from 'history';
 import { Box, Card, Link, Typography, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
 // utils
-import { fCurrency } from '../../views/utilities/FormatNumber';
 //
 import Label from '../label/Label';
 import ColorPreview from '../ColorPreview/ColorPreview';
-import { useEffect, useState } from 'react';
-import ProductSkeleton from 'ui-component/cards/Skeleton/ProductSkeleton';
+
 
 
 // ----------------------------------------------------------------------
@@ -72,6 +70,7 @@ export default function ShopProductCard(props) {
 
                     <Stack direction="row" alignItems="center" justifyContent="space-between">
                         <ColorPreview product={product} />
+
                         <Box sx={{ display: 'inline-flex' }} variant="subtitle1">
                             {product.promotion ? (
                                 <>

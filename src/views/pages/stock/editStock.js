@@ -58,7 +58,7 @@ export default function EditStock({ ...others }) {
     const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
     const [produitName, setProduitName] = React.useState(0);
     const [message, setMessage] = useState(null);
-    const [stock, setStock] = useState(null);
+
     const [productsNames, setProductsNames] = useState([]);
     const [strength] = useState(0);
     const [level] = useState();
@@ -80,8 +80,7 @@ export default function EditStock({ ...others }) {
     };
     //ajouter une entreprise 
 
-    const handleSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
-
+    const handleSubmit = (values, { setSubmitting }) => {
         StockServices.updateStock(produitName, values.couleur, values.taille, values.quantite, params.id).then(
             () => {
 
@@ -119,7 +118,6 @@ export default function EditStock({ ...others }) {
                 setProductsNames(res.data)
             });
             StockServices.show(params.id).then((res) => {
-                setStock(res.data[0]);
                 setLoadcirular(false);
                 if (formikRef.current) {
                     setProduitName(res.data[0].produit.id)
@@ -175,7 +173,7 @@ export default function EditStock({ ...others }) {
 
 
                                 </Grid>
-                                <FormControl fullWidth error={Boolean(touched.produit && produitName == 0)} sx={{ ...theme.typography.customInput }}>
+                                <FormControl fullWidth error={Boolean(touched.produit && produitName === 0)} sx={{ ...theme.typography.customInput }}>
 
                                     <Select
                                         id="produitName"
