@@ -19,6 +19,7 @@ import {
     Typography,
     RadioGroup,
     FormControlLabel,
+    CircularProgress,
 
 } from '@mui/material';
 //
@@ -29,8 +30,13 @@ import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import React from 'react';
 import CategorieServices from 'services/categories-services/CategorieServices';
+import { useLocation } from 'react-router';
+import { PriceCheck } from '@mui/icons-material';
 
 // ----------------------------------------------------------------------
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
 export const FILTER_PRICE_OPTIONS = [
     { value: '1', label: 'Prix : bas-élevé' },
     { value: '2', label: 'Prix: élevé-bas' },
@@ -44,7 +50,7 @@ ShopFilterSidebar.propTypes = {
     formik: PropTypes.object
 };
 const commonStyles = {
-    color: 'red',
+    color: 'green',
     ml: 4,
 
 };
@@ -73,31 +79,40 @@ export default function ShopFilterSidebar({
     const [rows, setRows] = React.useState([]);
     const [isLoading, setIsloading] = React.useState(true);
     const [list, setList] = React.useState([]);
+    const [pChecked, setPChecked] = React.useState(0);
+
+    let query = useQuery();
+
     const [price, setPrice] = React.useState(0);
     const handleClick = () => {
         setOpen(!open);
     };
     React.useEffect(() => {
+        //console.log((query.get("filter")))
+        if (query.get("filter")) {
+            var myArray = query.get("filter").split(',');
+            myArray.filter((e) => {
+                list.push(parseInt(e))
+            })
+        }
+        if (query.get("order")) {
+            setPChecked(query.get("order"))
+        }
         CategorieServices.getAll().then((res) => {
             setRows(res.data);
             setIsloading(false);
-            res.data.filter((r) => {
-                list.push(r.id); console.log(r.id);
-
-            })
 
         })
-
     }, []);
     const handleChangeParent = (e) => {
-        if (list.indexOf(e.target.value) > -1) {
-            list.splice(list.indexOf(e.target.value))
+        if (e.target.checked) {
+            list.push(e.target.value)
             console.log(list + 'splice' + e.target.value)
 
         }
         else {
-            list.push(e.target.value)
-
+            list.splice(list.indexOf(e.target.value))
+            console.log(list + 'splice' + e.target.value)
         }
     }
     const handleChangePrice = (e) => {
@@ -108,8 +123,11 @@ export default function ShopFilterSidebar({
             setPrice(1)
         }
     }
+
     return (
         <>
+
+
             <Button
                 disableRipple
                 color="inherit"
@@ -118,7 +136,6 @@ export default function ShopFilterSidebar({
             >
                 Filtres&nbsp;
             </Button>
-
             <FormikProvider value={formik} >
                 <Form autoComplete="off" noValidate>
                     <Drawer
@@ -142,18 +159,16 @@ export default function ShopFilterSidebar({
                                 <CloseRoundedIcon width={20} height={20} />
                             </IconButton>
                         </Stack>
-
                         <Divider />
-
-                        <Scrollbar style={{ overflowY: 'scroll' }}>
-
+                        {isLoading ? (<Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '25%' }}>
+                            <CircularProgress />
+                        </Box>) : (<><Scrollbar style={{ overflowY: 'scroll' }}>
                             <Stack spacing={3} sx={{ p: 3 }}>
                                 <div>
                                     <Typography variant="subtitle1" gutterBottom >
                                         Categorie
                                     </Typography>
                                     <FormGroup >
-
                                         {rows.map((item, index) => (
                                             item.catPere == null ? (
                                                 <Box key={index} sx={{ ...commonStyles2, borderColor: '#9e9e9e' }}  >
@@ -166,7 +181,8 @@ export default function ShopFilterSidebar({
                                                                 {...getFieldProps('gender')}
                                                                 value={item.id}
                                                                 onChange={handleChangeParent}
-                                                                defaultChecked={true}
+                                                                defaultChecked={list.indexOf(item.id) > -1}
+
                                                             />
 
                                                         }
@@ -185,7 +201,7 @@ export default function ShopFilterSidebar({
                                                                                     {...getFieldProps('gender')}
                                                                                     value={fils.id}
                                                                                     onChange={handleChangeParent}
-                                                                                    defaultChecked={true}
+                                                                                    defaultChecked={list.indexOf(fils.id) > -1}
                                                                                 />
                                                                             }
                                                                             label={fils.nom}
@@ -200,7 +216,8 @@ export default function ShopFilterSidebar({
                                                                                             {...getFieldProps('gender')}
                                                                                             value={f.id}
                                                                                             onChange={handleChangeParent}
-                                                                                            defaultChecked={true}
+                                                                                            defaultChecked={list.indexOf(f.id) > -1}
+
                                                                                         />
                                                                                     }
                                                                                     label={f.nom}
@@ -229,47 +246,39 @@ export default function ShopFilterSidebar({
                                         Prix
                                     </Typography>
                                     <RadioGroup {...getFieldProps('priceRange')}>
-                                        {FILTER_PRICE_OPTIONS.map((item, index) => (
-                                            <FormControlLabel
-                                                key={index}
-                                                value={item.value}
+                                        {FILTER_PRICE_OPTIONS.map((o) => (
+                                            < FormControlLabel
+                                                key={o.value}
+                                                value={o.value}
                                                 control={<Radio />}
-                                                label={item.label}
+                                                label={o.label}
                                                 onChange={handleChangePrice}
+
+
                                             />
                                         ))}
+
+
                                     </RadioGroup>
                                 </div>
-
-
                             </Stack>
-                        </Scrollbar>
-                        <Box sx={{ p: 3 }}>
-                            <Button
-                                sx={{ mb: 2 }}
-                                fullWidth
-                                size="large"
-                                type="submit"
-                                color="primary"
-                                variant="outlined"
+                        </Scrollbar>   <Box sx={{ p: 3 }}>
+                                <Button
+                                    sx={{ mb: 2 }}
+                                    fullWidth
+                                    size="large"
+                                    type="submit"
+                                    color="primary"
+                                    variant="outlined"
+                                    href={price === 0 ? 'products?page=1&filter=' + list : 'products?page=1&filter=' + list + '&order=' + price}
+                                    startIcon={<FilterAltIcon />}
+                                >
+                                    Filtrer
+                                </Button>
 
-                                href={'http://localhost:3000/listView/products?page=1?filter=' + list}
-                                startIcon={<FilterAltIcon />}
-                            >
-                                Filtrer
-                            </Button>
-                            <Button
-                                fullWidth
-                                size="large"
-                                type="submit"
-                                color="inherit"
-                                variant="outlined"
-                                onClick={onResetFilter}
-                                startIcon={<ClearRoundedIcon />}
-                            >
-                                Tout effacer
-                            </Button>
-                        </Box>
+                            </Box></>)}
+
+
                     </Drawer>
                 </Form>
             </FormikProvider>

@@ -24,10 +24,10 @@ class ProductService {
             });
     }
 
-    getAll(value) {
+    getAll(value, filter, order) {
 
-        return axios.get(API_URL + 'produit?page=' + value, { headers: authHeader() })
 
+        return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter + '&order=' + order, { headers: authHeader() })
     }
 
     getAllNoPagination() {

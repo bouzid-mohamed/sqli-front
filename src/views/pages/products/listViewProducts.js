@@ -69,14 +69,12 @@ export default function ListViewProducts() {
     };
 
     const handleResetFilter = () => {
-        handleSubmit();
         resetForm();
     };
 
     useEffect(
         () => {
-            ProductServices.getAll(query.get("page")).then((res) => {
-
+            ProductServices.getAll(query.get("page"), query.getAll("filter"), query.get('order')).then((res) => {
                 setListProducts(res.data[0]);
                 setNumberPages(res.data["pagination"])
                 setLoading(false)
