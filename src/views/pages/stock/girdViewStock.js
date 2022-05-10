@@ -73,6 +73,7 @@ export default function StockGird() {
     const [isLoading, setIsloading] = useState(true);
     const [numberPages, setNumberPages] = useState(0);
     const [idDelete, setIdDelete] = useState(0);
+    const [searchValue, setSearchValue] = useState('');
 
 
 
@@ -84,7 +85,12 @@ export default function StockGird() {
     const handleChange = (event, value) => {
         setPage(value);
         const history = createBrowserHistory();
-        history.push("/girdView/stock?page=" + value);
+        if (query.get('search') != null) {
+            history.push("/girdView/stock?page=" + value + "&search=" + searchValue);
+        } else {
+            history.push("/girdView/stock?page=" + value);
+
+        }
         window.location.reload();
     };
 
@@ -104,7 +110,22 @@ export default function StockGird() {
         })
     }
 
+    const handleSearchChange = (e) => {
+        setSearchValue(e.target.value)
+    }
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const history = createBrowserHistory();
+            history.push("/girdView/stock?page=1&search=" + searchValue);
+            window.location.reload();
+        }
+    }
+
     useEffect(() => {
+        if (query.get('search') != null) {
+            setSearchValue(query.get('search'))
+        }
 
         StockServices.getAll(query.get("page"), query.get("search")).then((res) => {
             setRows(res.data[0]);
@@ -164,13 +185,13 @@ export default function StockGird() {
                                     inputProps={{
                                         'aria-label': 'Rechercher'
                                     }}
-                                // value={searchValue}
-                                //onChange={handleSearchChange}
-                                //onKeyDown={handleKeyDown}
+                                    value={searchValue}
+                                    onChange={handleSearchChange}
+                                    onKeyDown={handleKeyDown}
 
 
                                 />
-                                <IconButton onClick={event => window.location.href = "/girdView/categories?page=1&search=" //+ searchValue
+                                <IconButton onClick={event => window.location.href = "/girdView/stock?page=1" + searchValue
                                 }
 
                                     aria-label="search">
@@ -230,9 +251,6 @@ export default function StockGird() {
                                                                 }}
                                                             >
                                                                 {row.produit?.prix} dt
-
-
-
                                                             </Typography>
                                                             &nbsp;
                                                             {Math.trunc(row.produit?.prix - (row.produit?.prix * row.produit?.promotion?.pourcentage / 100))} dt
