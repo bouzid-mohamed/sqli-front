@@ -18,7 +18,7 @@ function Media() {
 
         <Grid container wrap="nowrap" scope="row" >
             <Box sx={{ my: 2 }}   >
-                <Skeleton animation="wave" variant="rectangular" sx={{ width: 150, height: 100 }} className={classes.skeletonRadius} />
+                <Skeleton animation="wave" variant="rectangular" sx={{ width: 200, height: 150 }} className={classes.skeletonRadius} />
             </Box>
             <Typography animation="wave" sx={{ my: 2, ml: 30 }} variant="caption" component="div" style={{ 'width': "100%" }}   >
                 <Skeleton />

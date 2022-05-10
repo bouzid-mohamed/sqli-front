@@ -183,7 +183,7 @@ export default function GirdViewPromotion() {
 
                                         <StyledTableRow key={row.id} >
                                             <StyledTableCell align="right" scope="row">
-                                                <Avatar sx={{ width: 150, height: 100 }} src={`http://localhost:8000/uploads/` + row.banniere} variant="square" />
+                                                <Avatar sx={{ width: 200, height: 150 }} src={`http://localhost:8000/uploads/` + row.banniere} variant="square" />
                                             </StyledTableCell>
                                             <StyledTableCell align="right">{row.nom}</StyledTableCell>
                                             <StyledTableCell align="right">{row.pourcentage}%</StyledTableCell>

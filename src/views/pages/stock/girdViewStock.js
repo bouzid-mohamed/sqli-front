@@ -20,7 +20,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import MainCard from 'ui-component/cards/MainCard';
 import { useEffect, useState } from 'react';
-import { Pagination, Typography } from '@mui/material';
+import { Divider, InputBase, Pagination, Typography } from '@mui/material';
 import GirdSkeleton from 'ui-component/cards/Skeleton/GirdSkeleton';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
@@ -30,6 +30,7 @@ import { Box } from '@mui/system';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
 
 
 
@@ -68,7 +69,7 @@ export default function StockGird() {
     let query = useQuery();
     const [open, setOpen] = React.useState(false);
     const [rows, setRows] = useState([]);
-    const [page, setPage] = React.useState(parseInt(query.get("page")));
+    const [page, setPage] = React.useState(query.get("page") != null ? parseInt(query.get("page")) : 1);
     const [isLoading, setIsloading] = useState(true);
     const [numberPages, setNumberPages] = useState(0);
     const [idDelete, setIdDelete] = useState(0);
@@ -83,7 +84,7 @@ export default function StockGird() {
     const handleChange = (event, value) => {
         setPage(value);
         const history = createBrowserHistory();
-        history.push("/tableView/stok?page=" + value);
+        history.push("/girdView/stock?page=" + value);
         window.location.reload();
     };
 
@@ -105,7 +106,7 @@ export default function StockGird() {
 
     useEffect(() => {
 
-        StockServices.getAll(query.get("page")).then((res) => {
+        StockServices.getAll(query.get("page"), query.get("search")).then((res) => {
             setRows(res.data[0]);
             setNumberPages(res.data["pagination"])
             setIsloading(false);
@@ -141,6 +142,47 @@ export default function StockGird() {
                         </Stack>
                     </Stack>
 
+                    <Stack
+                        direction="row"
+                        flexWrap="wrap-reverse"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        sx={{ mb: 5 }}
+
+                    >
+
+
+                        <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
+                            <Paper style={{ 'border': "1px solid #5e35b1" }}
+                                component="form"
+                                sx={{ display: 'flex', alignItems: 'center', width: 400 }}
+                            >
+
+                                <InputBase
+                                    sx={{ ml: 1, flex: 1 }}
+                                    placeholder="Rechercher"
+                                    inputProps={{
+                                        'aria-label': 'Rechercher'
+                                    }}
+                                // value={searchValue}
+                                //onChange={handleSearchChange}
+                                //onKeyDown={handleKeyDown}
+
+
+                                />
+                                <IconButton onClick={event => window.location.href = "/girdView/categories?page=1&search=" //+ searchValue
+                                }
+
+                                    aria-label="search">
+                                    <SearchIcon />
+                                </IconButton>
+                                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+
+                            </Paper>
+                        </Stack>
+
+                    </Stack>
+
 
                     <TableContainer component={Paper}>
                         {isLoading ? (
@@ -172,7 +214,7 @@ export default function StockGird() {
                                     {rows.map((row) => (
                                         <StyledTableRow key={row.id} >
                                             <StyledTableCell align="right" scope="row">
-                                                <Avatar sx={{ width: 150, height: 100 }} src={"http://localhost:8000/uploads/" + row.produit?.images[0]?.nom} variant="square" />
+                                                <Avatar sx={{ width: 200, height: 150 }} src={"http://localhost:8000/uploads/" + row.produit?.images[0]?.nom} variant="square" />
                                             </StyledTableCell>
                                             <StyledTableCell align="right">{row.produit?.nom}</StyledTableCell>
                                             <StyledTableCell align="right">
@@ -210,7 +252,7 @@ export default function StockGird() {
                                                 </Box>
 
                                             </StyledTableCell>
-                                            <StyledTableCell align="right"></StyledTableCell>
+                                            <StyledTableCell align="right">    {row.produit?.categorie.nom}</StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <Button variant="contained" style={{ "backgroundColor": row.couleur, "color": row.couleur }} >
                                                     .

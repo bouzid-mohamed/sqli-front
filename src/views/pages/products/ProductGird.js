@@ -25,7 +25,7 @@ import { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import ProductSort from 'ui-component/productsListView/ProductSort';
 import AddIcon from '@mui/icons-material/Add';
-import { Pagination, Typography } from '@mui/material';
+import { Divider, InputBase, Pagination, TextField, Typography } from '@mui/material';
 import GirdSkeleton from 'ui-component/cards/Skeleton/GirdSkeleton';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
@@ -33,8 +33,10 @@ import ProductServices from 'services/productServices/ProductServices';
 import { useLocation } from 'react-router';
 import { Box } from '@mui/system';
 import { ToastContainer, toast } from 'react-toastify';
+import ReactImageZoom from 'react-image-zoom';
 import 'react-toastify/dist/ReactToastify.css';
-
+import SearchIcon from '@mui/icons-material/Search';
+import { makeStyles } from "@material-ui/core/styles";
 
 
 
@@ -75,25 +77,43 @@ export default function ProductGird() {
     let query = useQuery();
     const [listproducts, setListProducts] = useState([]);
     const [numberPages, setNumberPages] = useState(0);
-    const [page, setPage] = React.useState(parseInt(query.get("page")));
+    const [page, setPage] = React.useState(query.get("page") != null ? parseInt(query.get("page")) : 1);
     const [isLoading, setLoading] = useState(true);
     const [idDelete, setIdDelete] = useState(0);
+    const [filter, setFilter] = React.useState([]);
+    const [searchValue, setSearchValue] = useState('');
 
     const handleChange = (event, value) => {
-        setPage(value);
+        if (query.get('filter')) {
+            var myArray = query.get("filter").split(',');
+            myArray.filter((e) => {
+                filter.push(parseInt(e))
+            })
+        }
         const history = createBrowserHistory();
-        history.push("/tableView/products?page=" + value);
+        if (filter[0] != null) {
+            history.push("/tableView/products?page=" + value + '&filter=' + filter);
+        } else if (query.get('search') != null) {
+            history.push("/tableView/products?page=" + value + "&search=" + searchValue);
+        }
+        else {
+            history.push("/tableView/products?page=" + value);
+        }
         window.location.reload();
     };
     useEffect(
         () => {
-            ProductServices.getAll(query.get("page")).then((res) => {
+
+            if (query.get('search') != null) {
+                setSearchValue(query.get('search'))
+            }
+            ProductServices.getAll(query.get("page"), query.getAll("filter"), query.get('order'), query.get('search')).then((res) => {
                 setListProducts(res.data[0]);
                 setNumberPages(res.data["pagination"])
-                setLoading(false);
+                setLoading(false)
 
-            });
-        }, []
+            })
+        }, [],
     );
 
     const handleClose = () => {
@@ -141,7 +161,17 @@ export default function ProductGird() {
         })
     }
 
-
+    const handleSearchChange = (e) => {
+        setSearchValue(e.target.value)
+    }
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const history = createBrowserHistory();
+            history.push("/tableView/products?page=1&search=" + searchValue);
+            window.location.reload();
+        }
+    }
 
 
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
@@ -159,10 +189,7 @@ export default function ProductGird() {
                         <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
 
                             <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
-                                <Button onClick={() => {
-                                    history.push('/products/add');
-                                    window.location.reload();
-                                }} variant="outlined" startIcon={<AddIcon />}>
+                                <Button href={'/products/add'} variant="outlined" startIcon={<AddIcon />}>
                                     Ajouter</Button>
                             </Stack>
 
@@ -176,6 +203,45 @@ export default function ProductGird() {
                             <ProductSort />
                         </Stack>
                     </Stack>
+
+                    <Stack
+                        direction="row"
+                        flexWrap="wrap-reverse"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        sx={{ mb: 2 }}
+                    >
+
+                        <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
+                            <Paper style={{ 'border': "1px solid #5e35b1" }}
+                                component="form"
+                                sx={{ display: 'flex', alignItems: 'center', width: 400 }}
+                            >
+
+                                <InputBase
+                                    sx={{ ml: 1, flex: 1 }}
+                                    placeholder="Rechercher"
+                                    inputProps={{
+                                        'aria-label': 'Rechercher'
+                                    }}
+                                    value={searchValue}
+                                    onChange={handleSearchChange}
+                                    onKeyDown={handleKeyDown}
+
+
+                                />
+                                <IconButton onClick={event => window.location.href = "/tableView/products?page=1&search=" + searchValue}
+
+                                    aria-label="search">
+                                    <SearchIcon />
+                                </IconButton>
+                                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+
+                            </Paper>
+                        </Stack>
+
+                    </Stack>
+
 
                     <TableContainer component={Paper}>
                         {isLoading ? (
@@ -192,7 +258,7 @@ export default function ProductGird() {
                             <Table sx={{ minWidth: 700 }} aria-label="customized table">
                                 <TableHead>
                                     <TableRow>
-                                        <StyledTableCell>Image</StyledTableCell>
+                                        <StyledTableCell align="left">Image</StyledTableCell>
                                         <StyledTableCell align="right">Nom</StyledTableCell>
                                         <StyledTableCell align="right">Prix</StyledTableCell>
                                         <StyledTableCell align="right">Categorie</StyledTableCell>
@@ -212,8 +278,15 @@ export default function ProductGird() {
                                         {listproducts?.map((product, index) => (
 
                                             <StyledTableRow key={index} >
-                                                <StyledTableCell align="right" scope="row">
-                                                    <Avatar sx={{ width: 150, height: 100 }} src={"http://localhost:8000/uploads/" + product.images[0].nom} variant="square" />
+                                                <StyledTableCell align="left" scope="row">
+
+                                                    <ReactImageZoom
+                                                        style={{ zIndex: '50' }}
+                                                        width={200}
+                                                        height={150}
+                                                        scale={2}
+                                                        img={"http://localhost:8000/uploads/" + product.images[0].nom}
+                                                    />
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">{product.nom}</StyledTableCell>
                                                 <StyledTableCell align="right">

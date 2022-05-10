@@ -24,10 +24,13 @@ class ProductService {
             });
     }
 
-    getAll(value, filter, order) {
-
-
-        return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter + '&order=' + order, { headers: authHeader() })
+    getAll(value, filter, order, search) {
+        if (value === null)
+            value = 1;
+        if (search === null) {
+            return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter + '&order=' + order, { headers: authHeader() })
+        } else
+            return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter + '&order=' + order + '&search=' + search, { headers: authHeader() })
     }
 
     getAllNoPagination() {

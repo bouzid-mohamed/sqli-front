@@ -7,8 +7,15 @@ class CategorieServices {
         return axios.get(API_URL + 'categories', { headers: authHeader() })
     }
 
-    getAllPagination(value) {
-        return axios.get(API_URL + 'categories/all?page=' + value, { headers: authHeader() })
+    getAllPagination(value, search) {
+        if (value === null)
+            value = 1;
+        if (search === null) {
+            return axios.get(API_URL + 'categories/all?page=' + value, { headers: authHeader() })
+        } else {
+            return axios.get(API_URL + 'categories/all?page=' + value + '&search=' + search, { headers: authHeader() })
+
+        }
     }
     //ajouter une categorie
     addCategorie(nom, categoriePere, categorieFils) {

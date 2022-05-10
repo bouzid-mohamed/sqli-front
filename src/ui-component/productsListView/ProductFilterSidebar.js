@@ -27,11 +27,9 @@ import {
 import Scrollbar from '../Scrollbar';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
-import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import React from 'react';
 import CategorieServices from 'services/categories-services/CategorieServices';
 import { useLocation } from 'react-router';
-import { PriceCheck } from '@mui/icons-material';
 
 // ----------------------------------------------------------------------
 function useQuery() {
@@ -75,20 +73,15 @@ export default function ShopFilterSidebar({
     formik
 }) {
     const { values, getFieldProps, handleChange } = formik;
-    const [open, setOpen] = React.useState(true);
     const [rows, setRows] = React.useState([]);
     const [isLoading, setIsloading] = React.useState(true);
     const [list, setList] = React.useState([]);
     const [pChecked, setPChecked] = React.useState(0);
-
+    const [ch, setch] = React.useState([]);
     let query = useQuery();
-
     const [price, setPrice] = React.useState(0);
-    const handleClick = () => {
-        setOpen(!open);
-    };
+
     React.useEffect(() => {
-        //console.log((query.get("filter")))
         if (query.get("filter")) {
             var myArray = query.get("filter").split(',');
             myArray.filter((e) => {
@@ -98,21 +91,89 @@ export default function ShopFilterSidebar({
         if (query.get("order")) {
             setPChecked(query.get("order"))
         }
+        var i = 0;
         CategorieServices.getAll().then((res) => {
-            setRows(res.data);
+            var a = [];
+            res.data.filter((c) => {
+
+                if (c.catPere == null) {
+                    c.num = i;
+                    if (list.indexOf(parseInt(c.id)) > -1) {
+                        ch.push(true)
+                    }
+                    else {
+                        ch.push(false)
+                    }
+                    i = i + 1;
+                    var a1 = [];
+                    if (c.catFils[0] != null) {
+                        c.catFils.filter((fils1) => {
+                            fils1.num = i;
+                            if (list.indexOf(parseInt(fils1.id)) > -1) {
+                                ch.push(true)
+                            }
+                            else {
+                                ch.push(false)
+                            }
+
+                            i = i + 1;
+                            var a2 = [];
+                            if (fils1.catFils[0] != null) {
+                                fils1.catFils.filter((fils2) => {
+                                    fils2.num = i;
+                                    if (list.indexOf(parseInt(fils2.id)) > -1) {
+                                        ch.push(true)
+                                    }
+                                    else {
+                                        ch.push(false)
+                                    }
+
+                                    i = i + 1;
+                                    a2.push(fils2)
+                                })
+                                fils1.catFils = a2
+
+                            }
+                            a1.push(fils1)
+                        })
+                        c.catFils = a1
+
+                    }
+                    c.catFils = a1
+                    a.push(c)
+                }
+
+            })
+            setRows(a);
             setIsloading(false);
 
         })
     }, []);
-    const handleChangeParent = (e) => {
-        if (e.target.checked) {
+    const handleChangeParent = (e, item) => {
+
+        if (ch[item.num] === false) {
+            const updatedArray = [...ch];
+            updatedArray[item.num] = true;
+            //  setch(updatedArray);
             list.push(e.target.value)
-            console.log(list + 'splice' + e.target.value)
+            if (item.catFils[0] != null) {
+                item.catFils.map((enfant) => {
+                    updatedArray[enfant.num] = true;
+                    if (enfant.catFils[0] != null) {
+                        enfant.catFils.map((enfant2) => {
+                            updatedArray[enfant2.num] = true;
+                        })
+                    }
+                })
+            }
+            setch(updatedArray);
 
         }
         else {
+            const updatedArray = [...ch];
+            updatedArray[item.num] = false;
+            setch(updatedArray);
             list.splice(list.indexOf(e.target.value))
-            console.log(list + 'splice' + e.target.value)
         }
     }
     const handleChangePrice = (e) => {
@@ -180,8 +241,10 @@ export default function ShopFilterSidebar({
                                                             < Checkbox
                                                                 {...getFieldProps('gender')}
                                                                 value={item.id}
-                                                                onChange={handleChangeParent}
-                                                                defaultChecked={list.indexOf(item.id) > -1}
+                                                                onChange={(e, i) => handleChangeParent(e, item)}
+                                                                // defaultChecked={list.indexOf(item.id) > -1}
+                                                                checked={ch[item.num]}
+
 
                                                             />
 
@@ -200,8 +263,11 @@ export default function ShopFilterSidebar({
                                                                                 < Checkbox
                                                                                     {...getFieldProps('gender')}
                                                                                     value={fils.id}
-                                                                                    onChange={handleChangeParent}
-                                                                                    defaultChecked={list.indexOf(fils.id) > -1}
+                                                                                    onChange={(e, item) => handleChangeParent(e, fils)}
+                                                                                    //  defaultChecked={list.indexOf(fils.id) > -1}
+
+                                                                                    checked={ch[fils.num]}
+
                                                                                 />
                                                                             }
                                                                             label={fils.nom}
@@ -215,8 +281,11 @@ export default function ShopFilterSidebar({
                                                                                         < Checkbox
                                                                                             {...getFieldProps('gender')}
                                                                                             value={f.id}
-                                                                                            onChange={handleChangeParent}
-                                                                                            defaultChecked={list.indexOf(f.id) > -1}
+                                                                                            onChange={(e, item) => handleChangeParent(e, f)}
+                                                                                            //  defaultChecked={list.indexOf(f.id) > -1}
+
+                                                                                            checked={ch[f.num]}
+
 
                                                                                         />
                                                                                     }

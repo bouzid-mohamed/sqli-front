@@ -14,7 +14,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import Button from '@mui/material/Button';
 import MainCard from 'ui-component/cards/MainCard';
 import { useEffect, useState } from 'react';
-import { Pagination } from '@mui/material';
+import { Divider, InputBase, Pagination } from '@mui/material';
 import GirdSkeleton from 'ui-component/cards/Skeleton/GirdSkeleton';
 import TreeView from '@mui/lab/TreeView';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -30,6 +30,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import SearchIcon from '@mui/icons-material/Search';
+import AddIcon from '@mui/icons-material/Add';
 
 
 
@@ -122,17 +124,23 @@ export default function GirdViewCategorie() {
     const [openChild, setOpenChild] = React.useState(false);
 
     const [rows, setRows] = useState([]);
-    const [page, setPage] = React.useState(parseInt(query.get("page")));
+    const [page, setPage] = React.useState(query.get("page") != null ? parseInt(query.get("page")) : 1);
     const [isLoading, setIsloading] = useState(true);
     const [numberPages, setNumberPages] = useState(0);
     const [idDelete, setIdDelete] = useState(0);
     const [catDelete, setCatDelete] = useState(null);
+    const [searchValue, setSearchValue] = useState('');
 
 
     const handleChange = (event, value) => {
         setPage(value);
         const history = createBrowserHistory();
-        history.push("/girdView/categories?page=" + value);
+        if (query.get('search') != null) {
+            history.push("/girdView/categories?page=" + value + "&search=" + searchValue);
+        } else {
+            history.push("/girdView/categories?page=" + value);
+        }
+
         window.location.reload();
     };
 
@@ -149,8 +157,10 @@ export default function GirdViewCategorie() {
 
 
     useEffect(() => {
-
-        CategorieServices.getAllPagination(query.get("page")).then((res) => {
+        if (query.get('search') != null) {
+            setSearchValue(query.get('search'))
+        }
+        CategorieServices.getAllPagination(query.get("page"), query.get("search")).then((res) => {
             setRows(res.data[0]);
             setNumberPages(res.data["pagination"])
             setIsloading(false);
@@ -181,11 +191,78 @@ export default function GirdViewCategorie() {
 
 
     }
+    const handleSearchChange = (e) => {
+        setSearchValue(e.target.value)
+    }
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const history = createBrowserHistory();
+            history.push("/girdView/categories?page=1&search=" + searchValue);
+            window.location.reload();
+        }
+    }
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1) {
 
         return (
             <>
                 <MainCard title="Liste des Categories">
+                    <Stack
+                        direction="row"
+                        flexWrap="wrap-reverse"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        sx={{ mb: 5 }}
+
+                    >
+
+
+                        <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
+                            <Button href={'/categorie/add'} variant="outlined" startIcon={<AddIcon />}>
+                                Ajouter</Button>
+                        </Stack>
+
+                    </Stack>
+                    <Stack
+                        direction="row"
+                        flexWrap="wrap-reverse"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        sx={{ mb: 5 }}
+
+                    >
+
+
+                        <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
+                            <Paper style={{ 'border': "1px solid #5e35b1" }}
+                                component="form"
+                                sx={{ display: 'flex', alignItems: 'center', width: 400 }}
+                            >
+
+                                <InputBase
+                                    sx={{ ml: 1, flex: 1 }}
+                                    placeholder="Rechercher"
+                                    inputProps={{
+                                        'aria-label': 'Rechercher'
+                                    }}
+                                    value={searchValue}
+                                    onChange={handleSearchChange}
+                                    onKeyDown={handleKeyDown}
+
+
+                                />
+                                <IconButton onClick={event => window.location.href = "/girdView/categories?page=1&search=" + searchValue
+                                }
+
+                                    aria-label="search">
+                                    <SearchIcon />
+                                </IconButton>
+                                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+
+                            </Paper>
+                        </Stack>
+
+                    </Stack>
 
 
                     <TableContainer component={Paper}>
