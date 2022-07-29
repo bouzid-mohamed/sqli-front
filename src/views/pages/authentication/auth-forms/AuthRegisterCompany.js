@@ -109,7 +109,7 @@ const FirebaseRegisterCompany = ({ ...others }) => {
     //ajouter une entreprise 
 
     const handleSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
-        CompanyServices.addCompany(values.email, values.password, gouv, values.delegation, values.numTel).then(
+        CompanyServices.addCompany(values.email, values.password, gouv, values.delegation, values.numTel, values.nom).then(
             () => {
 
                 Swal.fire({
@@ -199,11 +199,13 @@ const FirebaseRegisterCompany = ({ ...others }) => {
                     password: '',
                     numTel: '',
                     delegation: '',
+                    nom: '',
                     submit: null
                 }}
                 validationSchema={Yup.object().shape({
                     email: Yup.string().email('Doit être un email valide').max(255).required('Email est requis'),
                     password: Yup.string().max(255).required('Mot de passe est requis'),
+                    nom: Yup.string().max(255).min(2, 'Nom entreprise doit contenir au moin 2 caractères').required('Nom est requis'),
                     numTel: Yup.number().min(10000000, 'Numéro de téléphone incoreect').max(99999999, 'Numéro de téléphone incoreect').required('Numéro de téléphone est requis'),
                     delegation: Yup.string().required('Délégation est requis'),
                 })}
@@ -265,6 +267,23 @@ const FirebaseRegisterCompany = ({ ...others }) => {
                                 </FormControl>
                             </Grid>
                         </Grid>
+                        <FormControl fullWidth error={Boolean(touched.nom && errors.nom)} sx={{ ...theme.typography.customInput }}>
+                            <InputLabel htmlFor="nomEntreprise">Nom entreprise</InputLabel>
+                            <OutlinedInput
+                                id="nomEntreprise"
+                                type="text"
+                                value={values.nom}
+                                name="nom"
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                                inputProps={{}}
+                            />
+                            {touched.nom && errors.nom && (
+                                <FormHelperText error id="standard-weight-helper-text-nom-register">
+                                    {errors.nom}
+                                </FormHelperText>
+                            )}
+                        </FormControl>
                         <FormControl fullWidth error={Boolean(touched.numTel && errors.numTel)} sx={{ ...theme.typography.customInput }}>
                             <InputLabel htmlFor="numTel">Numéro de Tél</InputLabel>
                             <OutlinedInput

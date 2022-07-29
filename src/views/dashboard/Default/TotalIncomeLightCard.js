@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 
 // material-ui
 import { useTheme, styled } from '@mui/material/styles';
-import { Avatar, Box, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
+import { Avatar, Badge, Box, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 
 // project imports
 import MainCard from 'ui-component/cards/MainCard';
@@ -10,6 +10,7 @@ import TotalIncomeCard from 'ui-component/cards/Skeleton/TotalIncomeCard';
 
 // assets
 import StorefrontTwoToneIcon from '@mui/icons-material/StorefrontTwoTone';
+import NumberFormat from 'react-number-format';
 
 // styles
 const CardWrapper = styled(MainCard)(({ theme }) => ({
@@ -39,7 +40,7 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
 
 // ==============================|| DASHBOARD - TOTAL INCOME LIGHT CARD ||============================== //
 
-const TotalIncomeLightCard = ({ isLoading }) => {
+const TotalIncomeLightCard = ({ isLoading, annulee, nbrAnnule }) => {
     const theme = useTheme();
 
     return (
@@ -52,17 +53,21 @@ const TotalIncomeLightCard = ({ isLoading }) => {
                         <List sx={{ py: 0 }}>
                             <ListItem alignItems="center" disableGutters sx={{ py: 0 }}>
                                 <ListItemAvatar>
-                                    <Avatar
-                                        variant="rounded"
-                                        sx={{
-                                            ...theme.typography.commonAvatar,
-                                            ...theme.typography.largeAvatar,
-                                            backgroundColor: theme.palette.warning.light,
-                                            color: theme.palette.warning.dark
-                                        }}
-                                    >
-                                        <StorefrontTwoToneIcon fontSize="inherit" />
-                                    </Avatar>
+                                    <Badge badgeContent={nbrAnnule} color="primary" sx={{ mr: 4 }}>
+
+                                        <Avatar
+                                            variant="rounded"
+                                            sx={{
+                                                ...theme.typography.commonAvatar,
+                                                ...theme.typography.largeAvatar,
+                                                backgroundColor: theme.palette.warning.light,
+                                                color: theme.palette.warning.dark
+                                            }}
+                                        >
+                                            <StorefrontTwoToneIcon fontSize="inherit" />
+                                        </Avatar>
+                                    </Badge>
+
                                 </ListItemAvatar>
                                 <ListItemText
                                     sx={{
@@ -70,16 +75,20 @@ const TotalIncomeLightCard = ({ isLoading }) => {
                                         mt: 0.45,
                                         mb: 0.45
                                     }}
-                                    primary={<Typography variant="h4">$203k</Typography>}
+                                    primary={
+                                        <Typography variant="h4" >
+                                            <NumberFormat
+                                                value={annulee}
+                                                thousandSeparator="."
+                                                decimalSeparator=","
+                                                prefix="Dt "
+                                                displayType={'text'}
+                                            />
+                                        </Typography>
+                                    }
                                     secondary={
-                                        <Typography
-                                            variant="subtitle2"
-                                            sx={{
-                                                color: theme.palette.grey[500],
-                                                mt: 0.5
-                                            }}
-                                        >
-                                            Total Income
+                                        <Typography variant="subtitle2" sx={{ mt: 0.25 }}>
+                                            Total Annulée
                                         </Typography>
                                     }
                                 />
@@ -93,7 +102,9 @@ const TotalIncomeLightCard = ({ isLoading }) => {
 };
 
 TotalIncomeLightCard.propTypes = {
-    isLoading: PropTypes.bool
+    isLoading: PropTypes.bool,
+    annulee: PropTypes.number,
+    nbrAnnule: PropTypes.number
 };
 
 export default TotalIncomeLightCard;

@@ -22,31 +22,40 @@ const chartData = {
             width: 3
         },
         yaxis: {
-            min: 0,
-            max: 100
+            show: false,
+
+            forceNiceScale: true,
+            style: {
+                color: 'blue'
+
+            }
+
         },
+        xaxis: {
+            type: 'category',
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        },
+
         tooltip: {
             theme: 'dark',
             fixed: {
                 enabled: false
             },
             x: {
-                show: false
+                show: true,
             },
             y: {
-                title: 'Total Order'
+                show: false,
+
+                title: 'Total Order',
             },
             marker: {
                 show: false
             }
         }
     },
-    series: [
-        {
-            name: 'series1',
-            data: [45, 66, 41, 89, 25, 44, 9, 54]
-        }
-    ]
+
+
 };
 
 export default chartData;

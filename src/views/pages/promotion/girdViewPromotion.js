@@ -21,7 +21,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import MainCard from 'ui-component/cards/MainCard';
 import { useEffect, useState } from 'react';
-import { Pagination } from '@mui/material';
+import { Divider, InputBase, Pagination } from '@mui/material';
 import GirdSkeleton from 'ui-component/cards/Skeleton/GirdSkeleton';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
@@ -29,6 +29,7 @@ import promotionServices from 'services/promotion-services/promotionServices';
 import { useLocation } from 'react-router';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SearchIcon from '@mui/icons-material/Search';
 
 
 
@@ -72,13 +73,18 @@ export default function GirdViewPromotion() {
     const [page, setPage] = React.useState(parseInt(query.get("page")));
     const [isLoading, setIsloading] = useState(true);
     const [idDelete, setIdDelete] = useState(0);
+    const [searchValue, setSearchValue] = useState('');
 
 
 
     const handleChange = (event, value) => {
         setPage(value);
-        const history = createBrowserHistory();
-        history.push("/girdView/promotion?page=" + value);
+        if (query.get('search') != null) {
+            history.push("/girdView/promotion?page=" + value + "&search=" + searchValue);
+        } else {
+            history.push("/girdView/promotion?page=" + value);
+
+        }
         window.location.reload();
     };
 
@@ -92,8 +98,11 @@ export default function GirdViewPromotion() {
 
 
     useEffect(() => {
+        if (query.get('search') != null) {
+            setSearchValue(query.get('search'))
+        }
 
-        promotionServices.getAllList(query.get("page")).then((res) => {
+        promotionServices.getAllList(query.get("page"), query.get("search")).then((res) => {
             setRows(res.data[0]);
             setNumberPages(res.data["pagination"])
             setIsloading(false);
@@ -106,7 +115,11 @@ export default function GirdViewPromotion() {
         setOpen(false);
         setIsloading(true);
         promotionServices.deletePromotion(idDelete.id).then(() => {
-            promotionServices.getAllList(query.get("page")).then((res) => {
+            if (query.get('search') != null) {
+                setSearchValue(query.get('search'))
+            }
+
+            promotionServices.getAllList(query.get("page"), query.get("search")).then((res) => {
                 setRows(res.data[0]);
                 setNumberPages(res.data["pagination"])
                 setIsloading(false);
@@ -114,6 +127,19 @@ export default function GirdViewPromotion() {
             })
 
         })
+    }
+
+    const handleSearchChange = (e) => {
+        setSearchValue(e.target.value)
+    }
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const history = createBrowserHistory();
+            history.push("/girdView/promotion?page=1&search=" + searchValue);
+            window.location.reload();
+        }
     }
 
 
@@ -138,15 +164,52 @@ export default function GirdViewPromotion() {
                         <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
 
                             <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
-                                <Button onClick={() => {
-                                    history.push('/promotion/add');
-                                    window.location.reload();
-                                }} variant="outlined" startIcon={<AddIcon />}>
+                                <Button href={'/promotion/add'} variant="outlined" startIcon={<AddIcon />}>
                                     Ajouter</Button>
                             </Stack>
 
 
                         </Stack>
+                    </Stack>
+
+                    <Stack
+                        direction="row"
+                        flexWrap="wrap-reverse"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        sx={{ mb: 5 }}
+
+                    >
+
+
+                        <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
+                            <Paper style={{ 'border': "1px solid #5e35b1" }}
+                                component="form"
+                                sx={{ display: 'flex', alignItems: 'center', width: 400 }}
+                            >
+
+                                <InputBase
+                                    sx={{ ml: 1, flex: 1 }}
+                                    placeholder="Rechercher"
+                                    inputProps={{
+                                        'aria-label': 'Rechercher'
+                                    }}
+                                    value={searchValue}
+                                    onChange={handleSearchChange}
+                                    onKeyDown={handleKeyDown}
+
+
+                                />
+                                <IconButton onClick={event => window.location.href = "/girdView/promotion?page=1&search=" + searchValue
+                                }
+                                    aria-label="search">
+                                    <SearchIcon />
+                                </IconButton>
+                                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+
+                            </Paper>
+                        </Stack>
+
                     </Stack>
 
 

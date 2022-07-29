@@ -28,8 +28,18 @@ class BonServices {
             });
     }
 
-    getAll(value) {
-        return axios.get(API_URL + '/list/all?page=' + value, { headers: authHeader() })
+    getAll(value, search) {
+        if (value === null)
+            value = 1;
+        if (search === null) {
+            return axios.get(API_URL + '/list/all?page=' + value, { headers: authHeader() })
+        } else {
+            return axios.get(API_URL + '/list/all?page=' + value + '&search=' + search, { headers: authHeader() })
+
+        }
+
+
+
     }
     //delete stock
     deleteBon(id) {

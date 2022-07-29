@@ -21,7 +21,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import MainCard from 'ui-component/cards/MainCard';
 import { useEffect, useState } from 'react';
-import { Pagination } from '@mui/material';
+import { Divider, InputBase, Pagination } from '@mui/material';
 import GirdSkeleton from 'ui-component/cards/Skeleton/GirdSkeleton';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
@@ -29,6 +29,7 @@ import postServices from 'services/post-services/postServices';
 import { useLocation } from 'react-router';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SearchIcon from '@mui/icons-material/Search';
 
 
 
@@ -70,16 +71,36 @@ export default function GirdViewPromotion() {
     const [rows, setRows] = useState([]);
     const [page, setPage] = React.useState(parseInt(query.get("page")));
     const [isLoading, setIsloading] = useState(true);
+    const [searchValue, setSearchValue] = React.useState('');
 
     const handleChange = (event, value) => {
         setPage(value);
         const history = createBrowserHistory();
-        history.push("/post/list?page=" + value);
+        if (query.get('search') != null) {
+            history.push("/post/list?page=" + value + "&search=" + searchValue);
+        } else {
+            history.push("/post/list?page=" + value);
+        }
         window.location.reload();
     };
+    const handleSearchChange = (e) => {
+        setSearchValue(e.target.value)
+    }
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const history = createBrowserHistory();
+            history.push("/post/list?page=1&search=" + searchValue);
+            window.location.reload();
+        }
+    }
+
 
     useEffect(() => {
-        postServices.getAll(query.get("page")).then((res) => {
+        if (query.get('search') != null) {
+            setSearchValue(query.get('search'))
+        }
+        postServices.getAll(query.get("page"), query.get("search")).then((res) => {
             setRows(res.data[0]);
             setNumberPages(res.data["pagination"])
             setIsloading(false);
@@ -99,7 +120,9 @@ export default function GirdViewPromotion() {
 
         return (
             <>
-                <MainCard title="Liste des promotions">
+                <MainCard title="Liste des postes">
+
+
 
                     <Stack
                         direction="row"
@@ -120,7 +143,45 @@ export default function GirdViewPromotion() {
                         </Stack>
                     </Stack>
 
+                    <Stack
+                        direction="row"
+                        flexWrap="wrap-reverse"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        sx={{ mb: 5 }}
 
+                    >
+
+
+                        <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
+                            <Paper style={{ 'border': "1px solid #5e35b1" }}
+                                component="form"
+                                sx={{ display: 'flex', alignItems: 'center', width: 400 }}
+                            >
+
+                                <InputBase
+                                    sx={{ ml: 1, flex: 1 }}
+                                    placeholder="Rechercher"
+                                    inputProps={{
+                                        'aria-label': 'Rechercher'
+                                    }}
+                                    value={searchValue}
+                                    onChange={handleSearchChange}
+                                    onKeyDown={handleKeyDown}
+
+
+                                />
+                                <IconButton onClick={event => window.location.href = "/post/list?page=1&search=" + searchValue
+                                }
+                                    aria-label="search">
+                                    <SearchIcon />
+                                </IconButton>
+                                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+
+                            </Paper>
+                        </Stack>
+
+                    </Stack>
                     <TableContainer component={Paper}>
 
                         {isLoading ? (
@@ -158,7 +219,7 @@ export default function GirdViewPromotion() {
                                                 <Avatar sx={{ width: 150, height: 100 }} src={`http://localhost:8000/uploads/` + row.photo} variant="square" />
                                             </StyledTableCell>
                                             <StyledTableCell align="right">{row.gouvernerat}</StyledTableCell>
-                                            <StyledTableCell align="right">{row.delegation}%</StyledTableCell>
+                                            <StyledTableCell align="right">{row.delegation}</StyledTableCell>
                                             <StyledTableCell align="right">{row.numTel}</StyledTableCell>
                                             <StyledTableCell align="right">{row.email}</StyledTableCell>
                                         </StyledTableRow>

@@ -69,7 +69,8 @@ export default function ShopProductCard(props) {
                     </Link>
 
                     <Stack direction="row" alignItems="center" justifyContent="space-between">
-                        <ColorPreview product={product} />
+                        {product?.stoks[0] != null ? (<>                        <ColorPreview product={product} />
+                        </>) : (null)}
 
                         <Box sx={{ display: 'inline-flex' }} variant="subtitle1">
                             {product.promotion ? (

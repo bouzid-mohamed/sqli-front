@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
-
+import { useEffect, useState } from 'react';
+import AuthService from 'services/auth-services/AuthService';
 // material-ui
 import { styled, useTheme } from '@mui/material/styles';
 import {
@@ -81,7 +82,19 @@ LinearProgressWithLabel.propTypes = {
 
 const MenuCard = () => {
     const theme = useTheme();
+    const [user, setUser] = useState(null)
+    useEffect(
+        () => {
+            AuthService.show().then((res) => {
+                setUser(res.data);
+                // setLoading(false)
+                console.log(res.data);
 
+            })
+
+        }, [],
+
+    );
     return (
         <CardStyle>
             <CardContent sx={{ p: 2 }}>
@@ -100,7 +113,7 @@ const MenuCard = () => {
                                     marginRight: '12px',
                                 }}
 
-                                src="https://th.bing.com/th/id/R.2fabdfcf1d58bccd68f399d081f0e056?rik=yhXxfS6SzxMdxg&riu=http%3a%2f%2fwww.tunisietravail.net%2fuploads%2flogo_entreprise%2fmg-magasin-generale-tunisie.jpg&ehk=pHvNMlHCoRQ74XRhnrrqcZb85Prj2b%2fq%2fjp2N%2bguvjs%3d&risl=&pid=ImgRaw&r=0&sres=1&sresct=1"
+                                src={user != null ? "http://localhost:8000/uploads/" + user?.photo : null}
                             >
 
                             </Avatar>
@@ -109,7 +122,10 @@ const MenuCard = () => {
                             sx={{ mt: 0 }}
                             primary={
                                 <Typography variant="subtitle1" sx={{ color: theme.palette.primary[800] }}>
-                                    Magasin général
+                                    {AuthService.getCurrentUser().roles.indexOf("ROLE_POSTE") > -1 ? (<>La poste</>) : AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1 ? (
+                                        user?.nom
+                                    ) : (user?.nom + ' ' + user?.prenom)}
+
                                 </Typography>
                             }
                             secondary={<Typography variant="caption"> 28/23 GB</Typography>}

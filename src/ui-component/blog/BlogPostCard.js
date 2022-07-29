@@ -2,14 +2,13 @@ import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
 // material
 import { alpha, styled } from '@mui/material/styles';
-import { Box, Link, Card, Grid, Avatar, Typography, CardContent } from '@mui/material';
+import { Box, Card, Grid, Avatar, CardContent, IconButton } from '@mui/material';
 // utils
-import { fDate } from '../../utils/formatTime';
-import { fShortenNumber } from '../../utils/formatNumber';
+
 //
 import SvgIconStyle from './SvgIconStyle';
-import ElevatorIcon from '@mui/icons-material/Elevator';
-import { deepPurple } from '@mui/material/colors';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 // ----------------------------------------------------------------------
 
 const CardMediaStyle = styled('div')({
@@ -56,19 +55,15 @@ const CoverImgStyle = styled('img')({
 
 BlogPostCard.propTypes = {
   post: PropTypes.object.isRequired,
-  index: PropTypes.number
+  index: PropTypes.number,
+  deleteLivreur: PropTypes.func
 };
 
-export default function BlogPostCard({ post, index }) {
+export default function BlogPostCard({ post, index, deleteLivreur }) {
   const { photo, nom, id, numTel, prenom, email, typePermis } = post;
   const latestPostLarge = index === 0;
   const latestPost = index === 1 || index === 2;
 
-  const POST_INFO = [
-    { number: nom, icon: 'eva:message-circle-fill' },
-    { number: 10, icon: 'eva:eye-fill' },
-    { number: 11, icon: 'eva:share-fill' }
-  ];
 
   return (
     <Grid item xs={12} sm={latestPostLarge ? 12 : 6} md={latestPostLarge ? 6 : 3}>
@@ -77,6 +72,7 @@ export default function BlogPostCard({ post, index }) {
           sx={{
             ...((latestPostLarge || latestPost) && {
               pt: 'calc(100% * 4 / 3)',
+
               '&:after': {
                 top: 0,
                 content: "''",
@@ -89,7 +85,7 @@ export default function BlogPostCard({ post, index }) {
             ...(latestPostLarge && {
               pt: {
                 xs: 'calc(100% * 4 / 3)',
-                sm: 'calc(100% * 3 / 4.66)'
+                sm: 'calc(100% * 3 / 4.66)',
               }
             })
           }}
@@ -120,6 +116,7 @@ export default function BlogPostCard({ post, index }) {
               })
             }}
           > {typePermis}</AvatarStyle>
+
 
           <CoverImgStyle alt={"Ecommmerce"} src={"http://localhost:8000/uploads/" + photo} />
         </CardMediaStyle>
@@ -183,12 +180,18 @@ export default function BlogPostCard({ post, index }) {
                 })
               }}
             >
-              Permis type : {typePermis}
+              <IconButton style={{ color: '#ef5350' }} aria-label="delete" onClick={deleteLivreur}>
+                <DeleteIcon />
+              </IconButton>
             </Box>
 
+
+
           </InfoStyle>
+
+
         </CardContent>
       </Card>
-    </Grid>
+    </Grid >
   );
 }

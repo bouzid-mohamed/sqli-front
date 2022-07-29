@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 
 // material-ui
 import { styled, useTheme } from '@mui/material/styles';
-import { Avatar, Box, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
+import { Avatar, Badge, Box, List, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
 
 // project imports
 import MainCard from 'ui-component/cards/MainCard';
@@ -10,6 +10,8 @@ import TotalIncomeCard from 'ui-component/cards/Skeleton/TotalIncomeCard';
 
 // assets
 import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
+import { prototype } from 'apexcharts';
+import NumberFormat from 'react-number-format';
 
 // styles
 const CardWrapper = styled(MainCard)(({ theme }) => ({
@@ -41,7 +43,7 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
 
 // ==============================|| DASHBOARD - TOTAL INCOME DARK CARD ||============================== //
 
-const TotalIncomeDarkCard = ({ isLoading }) => {
+const TotalIncomeDarkCard = ({ isLoading, retour, nbrRetour }) => {
     const theme = useTheme();
 
     return (
@@ -54,17 +56,20 @@ const TotalIncomeDarkCard = ({ isLoading }) => {
                         <List sx={{ py: 0 }}>
                             <ListItem alignItems="center" disableGutters sx={{ py: 0 }}>
                                 <ListItemAvatar>
-                                    <Avatar
-                                        variant="rounded"
-                                        sx={{
-                                            ...theme.typography.commonAvatar,
-                                            ...theme.typography.largeAvatar,
-                                            backgroundColor: theme.palette.primary[800],
-                                            color: '#fff'
-                                        }}
-                                    >
-                                        <TableChartOutlinedIcon fontSize="inherit" />
-                                    </Avatar>
+                                    <Badge badgeContent={nbrRetour} color="secondary" sx={{ mr: 4 }}>
+
+                                        <Avatar
+                                            variant="rounded"
+                                            sx={{
+                                                ...theme.typography.commonAvatar,
+                                                ...theme.typography.largeAvatar,
+                                                backgroundColor: theme.palette.primary[800],
+                                                color: '#fff'
+                                            }}
+                                        >
+                                            <TableChartOutlinedIcon fontSize="inherit" />
+                                        </Avatar>
+                                    </Badge>
                                 </ListItemAvatar>
                                 <ListItemText
                                     sx={{
@@ -74,12 +79,18 @@ const TotalIncomeDarkCard = ({ isLoading }) => {
                                     }}
                                     primary={
                                         <Typography variant="h4" sx={{ color: '#fff' }}>
-                                            $203k
+                                            <NumberFormat
+                                                value={retour}
+                                                thousandSeparator="."
+                                                decimalSeparator=","
+                                                prefix="Dt "
+                                                displayType={'text'}
+                                            />
                                         </Typography>
                                     }
                                     secondary={
                                         <Typography variant="subtitle2" sx={{ color: 'primary.light', mt: 0.25 }}>
-                                            Total Income
+                                            Total Retour
                                         </Typography>
                                     }
                                 />
@@ -93,7 +104,9 @@ const TotalIncomeDarkCard = ({ isLoading }) => {
 };
 
 TotalIncomeDarkCard.propTypes = {
-    isLoading: PropTypes.bool
+    isLoading: PropTypes.bool,
+    retour: PropTypes.number,
+    nbrRetour: PropTypes.number
 };
 
 export default TotalIncomeDarkCard;

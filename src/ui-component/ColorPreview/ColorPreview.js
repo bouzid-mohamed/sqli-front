@@ -29,7 +29,7 @@ ColorPreview.propTypes = {
 };
 
 export default function ColorPreview({ product, limit = 3, ...other }) {
-    const showColor = product.stoks?.slice(0, limit);
+    const showColor = product?.stoks?.slice(0, limit);
     const moreColor = product.stoks?.length - limit;
 
 

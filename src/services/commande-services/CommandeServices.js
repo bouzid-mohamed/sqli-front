@@ -7,16 +7,35 @@ const API_URL1 = 'http://localhost:8000/api/';
 class CommandesServices {
 
     // get all commandes d une entreprise
-    getAll(value) {
-        return axios.get(API_URL + 'getAll?page=' + value, { headers: authHeader() })
+    getAll(value, search) {
+        if (value === null)
+            value = 1;
+        if (search === null) {
+            return axios.get(API_URL + 'getAll?page=' + value, { headers: authHeader() })
+        } else {
+            return axios.get(API_URL + 'getAll?page=' + value + '&search=' + search, { headers: authHeader() })
+        }
+
     }
     //get all commande with role poste
-    getAllRolePoste(value) {
-        return axios.get(API_URL1 + 'poste/commande/getAllPoste?page=' + value, { headers: authHeader() })
+    getAllRolePoste(value, search) {
+        if (value === null)
+            value = 1;
+        if (search === null) {
+            return axios.get(API_URL1 + 'poste/commande/getAllPoste?page=' + value, { headers: authHeader() })
+        } else {
+            return axios.get(API_URL1 + 'poste/commande/getAllPoste?page=' + value + '&search=' + search, { headers: authHeader() })
+        }
     }
     //get all commande with role poste
-    getAllRoleLivreur(value) {
-        return axios.get(API_URL1 + 'livreur/commande/getAllLivreur?page=' + value, { headers: authHeader() })
+    getAllRoleLivreur(value, search) {
+        if (value === null)
+            value = 1;
+        if (search === null) {
+            return axios.get(API_URL1 + 'livreur/commande/getAllLivreur?page=' + value, { headers: authHeader() })
+        } else {
+            return axios.get(API_URL1 + 'livreur/commande/getAllLivreur?page=' + value + '&search=' + search, { headers: authHeader() })
+        }
     }
     // changer les etats d une commande
     ConfirmerCommande(id) {
@@ -90,6 +109,33 @@ class CommandesServices {
                 return response.data;
             });
     }
+    //stat entreprise
+    getStatics() {
+        return axios.get(API_URL1 + 'entreprise/statics', { headers: authHeader() })
+    }
+    //post stat
+    getPostStatics() {
+        return axios.get(API_URL1 + 'poste/statics', { headers: authHeader() })
+    }
+    //livreur stat
+    getLivreurStatics() {
+        return axios.get(API_URL1 + 'livreur/statics/', { headers: authHeader() })
+    }
+    //clients stat
+    getClientEntrepriseStat() {
+        return axios.get(API_URL1 + 'entreprise/clientsstatics', { headers: authHeader() })
+    }
+    //livreur poste stat
+    getLivreurPostStat() {
+        return axios.get(API_URL1 + 'poste/livreursstatics', { headers: authHeader() })
+    }
+
+    //livreur clients stat
+    getClientsLIvreurStat() {
+        return axios.get(API_URL1 + 'livreur/clientsstatics', { headers: authHeader() })
+    }
+
+
 
 }
 export default new CommandesServices();

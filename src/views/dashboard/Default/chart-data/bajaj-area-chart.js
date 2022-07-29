@@ -1,11 +1,9 @@
 // ===========================|| DASHBOARD - BAJAJ AREA CHART ||=========================== //
-
 const chartData = {
-    type: 'area',
-    height: 95,
+    type: 'line',
+    height: 90,
     options: {
         chart: {
-            id: 'support-chart',
             sparkline: {
                 enabled: true
             }
@@ -13,19 +11,39 @@ const chartData = {
         dataLabels: {
             enabled: false
         },
+
+
         stroke: {
             curve: 'smooth',
             width: 1
         },
+        yaxis: {
+            show: false,
+
+            forceNiceScale: true,
+            style: {
+                color: 'blue'
+
+            }
+
+        },
+        xaxis: {
+            type: 'category',
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        },
+
         tooltip: {
+            theme: 'dark',
             fixed: {
                 enabled: false
             },
             x: {
-                show: false
+                show: true,
             },
             y: {
-                title: 'Ticket '
+                show: false,
+
+                title: 'Total Order',
             },
             marker: {
                 show: false
@@ -34,7 +52,7 @@ const chartData = {
     },
     series: [
         {
-            data: [0, 15, 10, 50, 30, 40, 25]
+            data: []
         }
     ]
 };

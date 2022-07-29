@@ -149,8 +149,10 @@ export default function ProductGird() {
         setOpen(false);
         setLoading(true);
         ProductServices.deleteProduit(idDelete.id).then(() => {
-            ProductServices.getAll(query.get("page")).then((res) => {
-
+            if (query.get('search') != null) {
+                setSearchValue(query.get('search'))
+            }
+            ProductServices.getAll(query.get("page"), query.getAll("filter"), query.get('order'), query.get('search')).then((res) => {
                 setListProducts(res.data[0]);
                 setNumberPages(res.data["pagination"])
                 setLoading(false);

@@ -1,6 +1,7 @@
 import axios from "axios";
 import jwt_decode from 'jwt-decode';
 import { createBrowserHistory } from 'history';
+import authHeader from "./auth-header";
 const API_URL = "http://localhost:8000/api/";
 
 
@@ -25,7 +26,7 @@ class AuthService {
             });
     }
     logout() {
-        localStorage.removeItem("user");
+        localStorage.removeItem("token");
     }
     // register(username, email, password) {
     // return axios.post(API_URL + "signup", {
@@ -43,6 +44,9 @@ class AuthService {
             history.push('/login');
             window.location.reload();
         }
+    }
+    show() {
+        return axios.get(API_URL + 'getAuth', { headers: authHeader() })
     }
 }
 export default new AuthService();

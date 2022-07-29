@@ -14,6 +14,7 @@ import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 const ITEM_HEIGHT = 48;
 
@@ -43,12 +44,14 @@ export default function Row(props) {
 
                 </TableCell>
                 <TableCell align="left">{row.id}</TableCell>
-
+                <TableCell align="left">{row?.lignesCommandes[0]?.stock?.entreprise?.nom}</TableCell>
                 <TableCell component="th" scope="row">
                     {row.client.nom + ' ' + row.client.prenom}
                 </TableCell>
-                <TableCell align="right">{row.client.email}</TableCell>
-                <TableCell align="right">{row.numTel}</TableCell>
+                <TableCell align="center">{row.client.email}</TableCell>
+                <TableCell align="center">{row.numTel}</TableCell>
+                <TableCell align="center">{row?.lignesCommandes[0]?.stock?.entreprise?.numTel}</TableCell>
+
                 <TableCell align="right">{row.addresse}</TableCell>
                 <TableCell align="right">{row.gouvernerat}</TableCell>
                 <TableCell align="right">{row.delegation}</TableCell>
@@ -69,6 +72,10 @@ export default function Row(props) {
                         : (null)}
                     {(row.status === 'affecterLivreur') ? (
                         <Chip icon={<DeliveryDiningIcon />} label="Affecter à un livreur " color="success" />
+                    )
+                        : (null)}
+                    {(row.status === 'retour') ? (
+                        <Chip icon={<CancelIcon style={{ color: "white" }} />} label="Retour" style={{ backgroundColor: "red", color: "white" }} />
                     )
                         : (null)}
                 </TableCell>

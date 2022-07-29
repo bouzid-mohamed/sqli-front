@@ -1,7 +1,10 @@
 import axios from 'axios';
+import { useParams } from 'react-router';
 import authHeader from 'services/auth-services/auth-header';
 
 const API_URL = 'http://localhost:8000/api/entreprise/';
+const API_URL1 = 'http://localhost:8000/';
+
 class ProductService {
 
 
@@ -25,12 +28,27 @@ class ProductService {
     }
 
     getAll(value, filter, order, search) {
+
         if (value === null)
             value = 1;
         if (search === null) {
-            return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter + '&order=' + order, { headers: authHeader() })
+
+            if (order === null) {
+                return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter, { headers: authHeader() })
+
+            } else {
+                return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter + '&order=' + order, { headers: authHeader() })
+
+            }
+
         } else
-            return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter + '&order=' + order + '&search=' + search, { headers: authHeader() })
+            if (order === null) {
+                return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter + '&search=' + search, { headers: authHeader() })
+
+            } else {
+                return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter + '&order=' + order + '&search=' + search, { headers: authHeader() })
+
+            }
     }
 
     getAllNoPagination() {
@@ -83,6 +101,33 @@ class ProductService {
                 return response.data;
             });
     }
+
+    getAllProductEntreprise(id, value, filter, order, search) {
+
+
+        if (value === null)
+            value = 1;
+        if (search === null) {
+
+            if (order === null) {
+                return axios.get(API_URL1 + 'produits_entreprise/' + id + '&page=' + value + '&filter=' + filter, { headers: authHeader() })
+
+            } else {
+                return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter + '&order=' + order, { headers: authHeader() })
+
+            }
+
+        } else
+            if (order === null) {
+                return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter + '&search=' + search, { headers: authHeader() })
+
+            } else {
+                return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter + '&order=' + order + '&search=' + search, { headers: authHeader() })
+
+            }
+    }
+
+
 
 }
 export default new ProductService();

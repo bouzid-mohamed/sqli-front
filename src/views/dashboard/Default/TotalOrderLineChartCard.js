@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // material-ui
 import { useTheme, styled } from '@mui/material/styles';
-import { Avatar, Box, Button, Grid, Typography } from '@mui/material';
+import { Avatar, Badge, Box, Button, Grid, Typography } from '@mui/material';
 
 // third-party
 import Chart from 'react-apexcharts';
@@ -12,12 +12,11 @@ import Chart from 'react-apexcharts';
 import MainCard from 'ui-component/cards/MainCard';
 import SkeletonTotalOrderCard from 'ui-component/cards/Skeleton/EarningCard';
 
-import ChartDataMonth from './chart-data/total-order-month-line-chart';
-import ChartDataYear from './chart-data/total-order-year-line-chart';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
 // assets
 import LocalMallOutlinedIcon from '@mui/icons-material/LocalMallOutlined';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import NumberFormat from 'react-number-format';
 
 const CardWrapper = styled(MainCard)(({ theme }) => ({
     backgroundColor: theme.palette.primary.dark,
@@ -63,13 +62,11 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
 
 // ==============================|| DASHBOARD - TOTAL ORDER LINE CHART CARD ||============================== //
 
-const TotalOrderLineChartCard = ({ isLoading }) => {
+const TotalOrderLineChartCard = ({ isLoading, gainTotal, nbrGain, stat }) => {
     const theme = useTheme();
 
-    const [timeValue, setTimeValue] = useState(false);
-    const handleChangeTime = (event, newValue) => {
-        setTimeValue(newValue);
-    };
+
+
 
     return (
         <>
@@ -82,38 +79,33 @@ const TotalOrderLineChartCard = ({ isLoading }) => {
                             <Grid item>
                                 <Grid container justifyContent="space-between">
                                     <Grid item>
-                                        <Avatar
-                                            variant="rounded"
-                                            sx={{
-                                                ...theme.typography.commonAvatar,
-                                                ...theme.typography.largeAvatar,
-                                                backgroundColor: theme.palette.primary[800],
-                                                color: '#fff',
-                                                mt: 1
-                                            }}
-                                        >
-                                            <LocalMallOutlinedIcon fontSize="inherit" />
-                                        </Avatar>
+                                        <Badge badgeContent={nbrGain} color="secondary" sx={{ mr: 4 }}>
+
+                                            <Avatar
+                                                variant="rounded"
+                                                sx={{
+                                                    ...theme.typography.commonAvatar,
+                                                    ...theme.typography.largeAvatar,
+                                                    backgroundColor: theme.palette.primary[800],
+                                                    color: '#fff',
+                                                    mt: 0
+                                                }}
+                                            >
+                                                <LocalMallOutlinedIcon fontSize="inherit" />
+                                            </Avatar>
+                                        </Badge>
                                     </Grid>
                                     <Grid item>
                                         <Button
                                             disableElevation
-                                            variant={timeValue ? 'contained' : 'text'}
+                                            variant={'text'}
                                             size="small"
                                             sx={{ color: 'inherit' }}
-                                            onClick={(e) => handleChangeTime(e, true)}
+                                            style={{ cursor: "initial" }}
                                         >
-                                            Month
+                                            {'Mois ' + new Date().getFullYear()}
                                         </Button>
-                                        <Button
-                                            disableElevation
-                                            variant={!timeValue ? 'contained' : 'text'}
-                                            size="small"
-                                            sx={{ color: 'inherit' }}
-                                            onClick={(e) => handleChangeTime(e, false)}
-                                        >
-                                            Year
-                                        </Button>
+
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -122,15 +114,17 @@ const TotalOrderLineChartCard = ({ isLoading }) => {
                                     <Grid item xs={6}>
                                         <Grid container alignItems="center">
                                             <Grid item>
-                                                {timeValue ? (
-                                                    <Typography sx={{ fontSize: '2.125rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>
-                                                        $108
-                                                    </Typography>
-                                                ) : (
-                                                    <Typography sx={{ fontSize: '2.125rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>
-                                                        $961
-                                                    </Typography>
-                                                )}
+
+                                                <Typography sx={{ fontSize: '2.125rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>
+                                                    <NumberFormat
+                                                        value={gainTotal}
+                                                        thousandSeparator="."
+                                                        decimalSeparator=","
+                                                        prefix="Dt "
+                                                        displayType={'text'}
+                                                    />
+                                                </Typography>
+
                                             </Grid>
                                             <Grid item>
                                                 <Avatar
@@ -141,7 +135,7 @@ const TotalOrderLineChartCard = ({ isLoading }) => {
                                                         color: theme.palette.primary.dark
                                                     }}
                                                 >
-                                                    <ArrowDownwardIcon fontSize="inherit" sx={{ transform: 'rotate3d(1, 1, 1, 45deg)' }} />
+                                                    <ArrowUpwardIcon fontSize="inherit" sx={{ transform: 'rotate3d(1, 1, 1, 45deg)' }} />
                                                 </Avatar>
                                             </Grid>
                                             <Grid item xs={12}>
@@ -152,13 +146,13 @@ const TotalOrderLineChartCard = ({ isLoading }) => {
                                                         color: theme.palette.primary[200]
                                                     }}
                                                 >
-                                                    Total Order
+                                                    Gain total
                                                 </Typography>
                                             </Grid>
                                         </Grid>
                                     </Grid>
                                     <Grid item xs={6}>
-                                        {timeValue ? <Chart {...ChartDataMonth} /> : <Chart {...ChartDataYear} />}
+                                        <Chart {...stat} />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -171,7 +165,8 @@ const TotalOrderLineChartCard = ({ isLoading }) => {
 };
 
 TotalOrderLineChartCard.propTypes = {
-    isLoading: PropTypes.bool
+    isLoading: PropTypes.bool,
+    nbrGain: PropTypes.number
 };
 
 export default TotalOrderLineChartCard;

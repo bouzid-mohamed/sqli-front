@@ -45,9 +45,16 @@ class PromotionServices {
             });
     }
 
-    getAllList(value) {
+    getAllList(value, search) {
+        if (value === null)
+            value = 1;
+        if (search === null) {
+            return axios.get(API_URL + 'promotion/all?page=' + value, { headers: authHeader() })
+        } else {
+            return axios.get(API_URL + 'promotion/all?page=' + value + '&search=' + search, { headers: authHeader() })
 
-        return axios.get(API_URL + 'promotion/all?page=' + value, { headers: authHeader() })
+        }
+
 
     }
 

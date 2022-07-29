@@ -98,7 +98,11 @@ export default function StockGird() {
         setOpen(false);
         setIsloading(true);
         StockServices.deleteStock(idDelete.id).then(() => {
-            StockServices.getAll(query.get("page")).then((res) => {
+            if (query.get('search') != null) {
+                setSearchValue(query.get('search'))
+            }
+
+            StockServices.getAll(query.get("page"), query.get("search")).then((res) => {
                 setRows(res.data[0]);
                 setNumberPages(res.data["pagination"])
                 setIsloading(false);
@@ -152,10 +156,7 @@ export default function StockGird() {
                         <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
 
                             <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
-                                <Button onClick={() => {
-                                    history.push('/stock/add');
-                                    window.location.reload();
-                                }} variant="outlined" startIcon={<AddIcon />}>
+                                <Button href={'/stock/add'} variant="outlined" startIcon={<AddIcon />}>
                                     Ajouter</Button>
                             </Stack>
 

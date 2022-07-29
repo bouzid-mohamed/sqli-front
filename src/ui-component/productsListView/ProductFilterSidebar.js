@@ -3,7 +3,6 @@ import { Form, FormikProvider } from 'formik';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 // material
 
-import { makeStyles } from '@material-ui/core/styles';
 
 import {
 
@@ -67,16 +66,15 @@ const commonStyles2 = {
 };
 export default function ShopFilterSidebar({
     isOpenFilter,
-    onResetFilter,
     onOpenFilter,
     onCloseFilter,
     formik
 }) {
-    const { values, getFieldProps, handleChange } = formik;
+    const { getFieldProps } = formik;
     const [rows, setRows] = React.useState([]);
     const [isLoading, setIsloading] = React.useState(true);
-    const [list, setList] = React.useState([]);
-    const [pChecked, setPChecked] = React.useState(0);
+    const [list] = React.useState([]);
+    const [setPChecked] = React.useState(0);
     const [ch, setch] = React.useState([]);
     let query = useQuery();
     const [price, setPrice] = React.useState(0);

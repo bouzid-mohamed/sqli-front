@@ -35,7 +35,7 @@ export default function ConfirmationDialogRaw(props) {
     React.useEffect(
         () => {
 
-            LivreurServices.getAll().then((res) => {
+            LivreurServices.getList().then((res) => {
                 setOptions(res.data)
                 setLoading(false);
             });

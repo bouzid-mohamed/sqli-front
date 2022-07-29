@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, StyledEngineProvider } from '@mui/material';
@@ -11,10 +11,18 @@ import themes from 'themes';
 
 // project imports
 import NavigationScroll from 'layout/NavigationScroll';
+import { useEffect, useState } from 'react';
+import ProductServices from 'services/productServices/ProductServices';
+import { useParams } from 'react-router';
 
 // ==============================|| APP ||============================== //
 
 const App = () => {
+    let dispatch = useDispatch();
+    const params = useParams();
+
+    const [listproducts, setListproducts] = useState([])
+
     const customization = useSelector((state) => state.customization);
 
     return (

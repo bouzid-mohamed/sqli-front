@@ -12,11 +12,27 @@ import NotificationSection from './NotificationSection';
 
 // assets
 import { IconMenu2 } from '@tabler/icons';
+import { useEffect, useState } from 'react';
+import AuthService from 'services/auth-services/AuthService';
 
 // ==============================|| MAIN NAVBAR / HEADER ||============================== //
 
 const Header = ({ handleLeftDrawerToggle }) => {
     const theme = useTheme();
+    const [user, setUser] = useState(null);
+
+    useEffect(
+        () => {
+            AuthService.show().then((res) => {
+                setUser(res.data);
+                // setLoading(false)
+                console.log(res.data);
+
+            })
+
+        }, [],
+
+    );
 
     return (
         <>
@@ -31,7 +47,7 @@ const Header = ({ handleLeftDrawerToggle }) => {
                 }}
             >
                 <Box component="span" sx={{ display: { xs: 'none', md: 'block' }, flexGrow: 1 }}>
-                    <LogoSection />
+                    <LogoSection user={user} />
                 </Box>
                 <ButtonBase sx={{ borderRadius: '12px', overflow: 'hidden' }}>
                     <Avatar
@@ -62,7 +78,7 @@ const Header = ({ handleLeftDrawerToggle }) => {
 
             {/* notification & profile */}
             <NotificationSection />
-            <ProfileSection />
+            <ProfileSection user={user} />
         </>
     );
 };

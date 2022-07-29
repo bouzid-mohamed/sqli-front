@@ -39,11 +39,13 @@ export default function Row(props) {
                     </IconButton>
                 </TableCell>
                 <TableCell align="left">{row.id}</TableCell>
+                <TableCell align="left">{row?.lignesCommandes[0]?.stock?.entreprise?.nom}</TableCell>
                 <TableCell component="th" scope="row">
                     {row.client.nom + ' ' + row.client.prenom}
                 </TableCell>
-                <TableCell align="right">{row.client.email}</TableCell>
-                <TableCell align="right">{row.numTel}</TableCell>
+                <TableCell align="center">{row.client.email}</TableCell>
+                <TableCell align="center">{row.numTel}</TableCell>
+                <TableCell align="center">{row?.lignesCommandes[0]?.stock?.entreprise?.numTel}</TableCell>
                 <TableCell align="right">{row.addresse}</TableCell>
                 <TableCell align="right">{row.gouvernerat}</TableCell>
                 <TableCell align="right">{row.delegation}</TableCell>
@@ -122,9 +124,7 @@ export default function Row(props) {
                             <Typography gutterBottom component="div">
                                 <span style={{ color: 'red' }}> Addresse commande </span>  : {row.addresse + ' ' + row.delegation + ' ' + row.gouvernerat}
                             </Typography>
-                            <Typography gutterBottom component="div">
-                                {row.livreur != null ? (<>Remarque :  Votre commande attribué au livreur {row.livreur.nom + row.livreur.prenom}</>) : (<> Remarque :Commande non encore attribué à un livreur</>)}
-                            </Typography>
+
                         </Box>
                     </Collapse>
                 </TableCell>

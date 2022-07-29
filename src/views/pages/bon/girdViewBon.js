@@ -19,7 +19,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import MainCard from 'ui-component/cards/MainCard';
 import { useEffect, useState } from 'react';
-import { Pagination } from '@mui/material';
+import { Divider, InputBase, Pagination } from '@mui/material';
 import GirdSkeleton from 'ui-component/cards/Skeleton/NormalGirdSkeleton';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
@@ -28,7 +28,7 @@ import { useLocation } from 'react-router';
 import AddIcon from '@mui/icons-material/Add';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import SearchIcon from '@mui/icons-material/Search';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -66,14 +66,19 @@ export default function GirdViewBon() {
     const [numberPages, setNumberPages] = useState(0);
     const history = createBrowserHistory();
     const [idDelete, setIdDelete] = useState(0);
+    const [searchValue, setSearchValue] = useState('');
 
     const handleClose = () => {
         setOpen(false);
     };
     const handleChange = (event, value) => {
         setPage(value);
-        const history = createBrowserHistory();
-        history.push("/tableView/bons?page=" + value);
+        if (query.get('search') != null) {
+            history.push("/girdView/bons?page=" + value + "&search=" + searchValue);
+        } else {
+            history.push("/girdView/bons?page=" + value);
+
+        }
         window.location.reload();
     };
 
@@ -81,7 +86,10 @@ export default function GirdViewBon() {
         setOpen(false);
         setIsloading(true);
         BonServices.deleteBon(idDelete.id).then(() => {
-            BonServices.getAll(query.get("page")).then((res) => {
+            if (query.get('search') != null) {
+                setSearchValue(query.get('search'))
+            }
+            BonServices.getAll(query.get("page"), query.get("search")).then((res) => {
                 setRows(res.data[0]);
                 setNumberPages(res.data["pagination"])
                 setIsloading(false);
@@ -95,7 +103,10 @@ export default function GirdViewBon() {
 
     useEffect(() => {
 
-        BonServices.getAll(query.get("page")).then((res) => {
+        if (query.get('search') != null) {
+            setSearchValue(query.get('search'))
+        }
+        BonServices.getAll(query.get("page"), query.get("search")).then((res) => {
             setRows(res.data[0]);
             setNumberPages(res.data["pagination"])
             setIsloading(false);
@@ -103,6 +114,20 @@ export default function GirdViewBon() {
         })
 
     }, []);
+
+
+    const handleSearchChange = (e) => {
+        setSearchValue(e.target.value)
+    }
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const history = createBrowserHistory();
+            history.push("/girdView/bons?page=1&search=" + searchValue);
+            window.location.reload();
+        }
+    }
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
         return (
             <>
@@ -118,15 +143,51 @@ export default function GirdViewBon() {
                         <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
 
                             <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
-                                <Button onClick={() => {
-                                    history.push('/bon/add');
-                                    window.location.reload();
-                                }} variant="outlined" startIcon={<AddIcon />}>
+                                <Button href={'/bon/add'} variant="outlined" startIcon={<AddIcon />}>
                                     Ajouter</Button>
                             </Stack>
 
 
                         </Stack>
+                    </Stack>
+                    <Stack
+                        direction="row"
+                        flexWrap="wrap-reverse"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        sx={{ mb: 5 }}
+
+                    >
+
+
+                        <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
+                            <Paper style={{ 'border': "1px solid #5e35b1" }}
+                                component="form"
+                                sx={{ display: 'flex', alignItems: 'center', width: 400 }}
+                            >
+
+                                <InputBase
+                                    sx={{ ml: 1, flex: 1 }}
+                                    placeholder="Rechercher"
+                                    inputProps={{
+                                        'aria-label': 'Rechercher'
+                                    }}
+                                    value={searchValue}
+                                    onChange={handleSearchChange}
+                                    onKeyDown={handleKeyDown}
+
+
+                                />
+                                <IconButton onClick={event => window.location.href = "/girdView/bons?page=1&search=" + searchValue
+                                }
+                                    aria-label="search">
+                                    <SearchIcon />
+                                </IconButton>
+                                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+
+                            </Paper>
+                        </Stack>
+
                     </Stack>
 
 

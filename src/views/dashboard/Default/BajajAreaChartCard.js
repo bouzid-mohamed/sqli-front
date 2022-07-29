@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -14,7 +15,7 @@ import chartData from './chart-data/bajaj-area-chart';
 
 // ===========================|| DASHBOARD DEFAULT - BAJAJ AREA CHART CARD ||=========================== //
 
-const BajajAreaChartCard = () => {
+const BajajAreaChartCard = (props) => {
     const theme = useTheme();
     const customization = useSelector((state) => state.customization);
     const { navType } = customization;
@@ -39,19 +40,18 @@ const BajajAreaChartCard = () => {
                     <Grid container alignItems="center" justifyContent="space-between">
                         <Grid item>
                             <Typography variant="subtitle1" sx={{ color: theme.palette.secondary.dark }}>
-                                Bajaj Finery
-                            </Typography>
+                                Evolution du nombre de clients                            </Typography>
                         </Grid>
                         <Grid item>
                             <Typography variant="h4" sx={{ color: theme.palette.grey[800] }}>
-                                $1839.00
+                                total clients :  {props.nbClient}
                             </Typography>
                         </Grid>
                     </Grid>
                 </Grid>
                 <Grid item xs={12}>
                     <Typography variant="subtitle2" sx={{ color: theme.palette.grey[800] }}>
-                        10% Profit
+                        {new Date().getFullYear()}
                     </Typography>
                 </Grid>
             </Grid>

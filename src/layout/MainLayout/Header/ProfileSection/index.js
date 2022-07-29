@@ -35,28 +35,34 @@ import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
 import UpgradePlanCard from './UpgradePlanCard';
 import User1 from 'assets/images/users/user-round.svg';
+import AuthService from "services/auth-services/AuthService";
+import { createBrowserHistory } from 'history';
 
 // assets
 import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons';
 
 // ==============================|| PROFILE MENU ||============================== //
 
-const ProfileSection = () => {
+const ProfileSection = (props) => {
     const theme = useTheme();
     const customization = useSelector((state) => state.customization);
     const navigate = useNavigate();
-
+    const history = createBrowserHistory();
     const [sdm, setSdm] = useState(true);
     const [value, setValue] = useState('');
     const [notification, setNotification] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [open, setOpen] = useState(false);
+    const [user, setUser] = useState(null);
     /**
      * anchorRef is used on different componets and specifying one type leads to other components throwing an error
      * */
     const anchorRef = useRef(null);
     const handleLogout = async () => {
-        console.log('Logout');
+        AuthService.logout();
+        const history = createBrowserHistory();
+        history.push("/login");
+        window.location.reload();
     };
 
     const handleClose = (event) => {
@@ -79,13 +85,19 @@ const ProfileSection = () => {
     };
 
     const prevOpen = useRef(open);
-    useEffect(() => {
-        if (prevOpen.current === true && open === false) {
-            anchorRef.current.focus();
-        }
+    useEffect(
+        () => {
+            setUser(props.user)
 
-        prevOpen.current = open;
-    }, [open]);
+        }, [props.user],
+        () => {
+            if (prevOpen.current === true && open === false) {
+                anchorRef.current.focus();
+            }
+
+            prevOpen.current = open;
+        }, [open]
+    );
 
     return (
         <>
@@ -111,7 +123,7 @@ const ProfileSection = () => {
                 }}
                 icon={
                     <Avatar
-                        src={User1}
+                        src={user != null ? "http://localhost:8000/uploads/" + user?.photo : "http://localhost:8000/uploads/loading.png"}
                         sx={{
                             ...theme.typography.mediumAvatar,
                             margin: '8px 0 8px 8px !important',
@@ -159,10 +171,10 @@ const ProfileSection = () => {
                                             <Stack direction="row" spacing={0.5} alignItems="center">
                                                 <Typography variant="h4">Good Morning,</Typography>
                                                 <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
-                                                    Johne Doe
+                                                    {user?.nom}
                                                 </Typography>
                                             </Stack>
-                                            <Typography variant="subtitle2">Project Admin</Typography>
+                                            <Typography variant="subtitle2">Administrateur de projet</Typography>
                                         </Stack>
                                         <OutlinedInput
                                             sx={{ width: '100%', pr: 1, pl: 2, my: 2 }}
@@ -245,16 +257,44 @@ const ProfileSection = () => {
                                                     }
                                                 }}
                                             >
-                                                <ListItemButton
-                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                    selected={selectedIndex === 0}
-                                                    onClick={(event) => handleListItemClick(event, 0, '/user/account-profile/profile1')}
-                                                >
-                                                    <ListItemIcon>
-                                                        <IconSettings stroke={1.5} size="1.3rem" />
-                                                    </ListItemIcon>
-                                                    <ListItemText primary={<Typography variant="body2">Account Settings</Typography>} />
-                                                </ListItemButton>
+                                                {
+                                                    (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1) ? (<ListItemButton
+                                                        sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                        selected={selectedIndex === 0}
+                                                        onClick={(event) => handleListItemClick(event, 0, '/account/edit')}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <IconSettings stroke={1.5} size="1.3rem" />
+                                                        </ListItemIcon>
+                                                        <ListItemText primary={<Typography variant="body2">Paramètres du compte</Typography>} />
+                                                    </ListItemButton>) : (null)
+                                                }
+                                                {
+                                                    (AuthService.getCurrentUser().roles.indexOf("ROLE_POSTE") > -1) ? (<ListItemButton
+                                                        sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                        selected={selectedIndex === 0}
+                                                        onClick={(event) => handleListItemClick(event, 0, '/account/post/edit')}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <IconSettings stroke={1.5} size="1.3rem" />
+                                                        </ListItemIcon>
+                                                        <ListItemText primary={<Typography variant="body2">Paramètres du compte</Typography>} />
+                                                    </ListItemButton>) : (null)
+                                                }
+                                                {
+                                                    (AuthService.getCurrentUser().roles.indexOf("ROLE_LIVREUR") > -1) ? (<ListItemButton
+                                                        sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                        selected={selectedIndex === 0}
+                                                        onClick={(event) => handleListItemClick(event, 0, '/account/livreur/edit')}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <IconSettings stroke={1.5} size="1.3rem" />
+                                                        </ListItemIcon>
+                                                        <ListItemText primary={<Typography variant="body2">Paramètres du compte</Typography>} />
+                                                    </ListItemButton>) : (null)
+                                                }
+
+
                                                 <ListItemButton
                                                     sx={{ borderRadius: `${customization.borderRadius}px` }}
                                                     selected={selectedIndex === 1}
@@ -291,7 +331,7 @@ const ProfileSection = () => {
                                                     <ListItemIcon>
                                                         <IconLogout stroke={1.5} size="1.3rem" />
                                                     </ListItemIcon>
-                                                    <ListItemText primary={<Typography variant="body2">Logout</Typography>} />
+                                                    <ListItemText primary={<Typography variant="body2">Déconnexion</Typography>} />
                                                 </ListItemButton>
                                             </List>
                                         </Box>

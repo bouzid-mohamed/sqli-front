@@ -13,11 +13,12 @@ import Row from './rows/EntrepriseRows'
 import GirdSkeleton from 'ui-component/cards/Skeleton/NormalGirdSkeleton';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
-import { Pagination, Stack } from '@mui/material';
+import { Divider, IconButton, InputBase, Pagination, Stack } from '@mui/material';
 import Swal from 'sweetalert2';
 import CommandeServices from 'services/commande-services/CommandeServices';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SearchIcon from '@mui/icons-material/Search';
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -30,14 +31,36 @@ export default function CollapsibleTable() {
     const [isLoading, setIsloading] = React.useState(true);
     const [page, setPage] = React.useState(parseInt(query.get("page")));
     const [open, setOpen] = React.useState(false);
+    const [searchValue, setSearchValue] = React.useState('');
+
     const handleChange = (event, value) => {
         setPage(value);
         const history = createBrowserHistory();
-        history.push("/girdView/commandes?page=" + value);
+        if (query.get('search') != null) {
+            history.push("/girdView/commandes?page=" + value + "&search=" + searchValue);
+        } else {
+            history.push("/girdView/commandes?page=" + value);
+
+        }
         window.location.reload();
     };
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const history = createBrowserHistory();
+            history.push("/girdView/commandes?page=1&search=" + searchValue);
+            window.location.reload();
+        }
+    }
+
+    const handleSearchChange = (e) => {
+        setSearchValue(e.target.value)
+    }
     React.useEffect(() => {
-        commandeServices.getAll(query.get("page")).then((res) => {
+        if (query.get('search') != null) {
+            setSearchValue(query.get('search'))
+        }
+        commandeServices.getAll(query.get("page"), query.get("search")).then((res) => {
             setRows(res.data[0]);
             console.log(res.data[0])
             setNumberPages(res.data["pagination"])
@@ -60,7 +83,10 @@ export default function CollapsibleTable() {
             if (result.isConfirmed) {
                 setIsloading(true);
                 CommandeServices.ConfirmerCommande(row.id).then(() => {
-                    CommandeServices.getAll(query.get("page")).then((res) => {
+                    if (query.get('search') != null) {
+                        setSearchValue(query.get('search'))
+                    }
+                    commandeServices.getAll(query.get("page"), query.get("search")).then((res) => {
                         setRows(res.data[0]);
                         setNumberPages(res.data["pagination"])
                         setIsloading(false);
@@ -88,7 +114,10 @@ export default function CollapsibleTable() {
             if (result.isConfirmed) {
                 setIsloading(true);
                 CommandeServices.AffecterPoste(row.id).then(() => {
-                    CommandeServices.getAll(query.get("page")).then((res) => {
+                    if (query.get('search') != null) {
+                        setSearchValue(query.get('search'))
+                    }
+                    commandeServices.getAll(query.get("page"), query.get("search")).then((res) => {
                         setRows(res.data[0]);
                         setNumberPages(res.data["pagination"])
                         setIsloading(false);
@@ -116,7 +145,10 @@ export default function CollapsibleTable() {
             if (result.isConfirmed) {
                 setIsloading(true);
                 CommandeServices.Annulee(row.id).then(() => {
-                    CommandeServices.getAll(query.get("page")).then((res) => {
+                    if (query.get('search') != null) {
+                        setSearchValue(query.get('search'))
+                    }
+                    commandeServices.getAll(query.get("page"), query.get("search")).then((res) => {
                         setRows(res.data[0]);
                         setNumberPages(res.data["pagination"])
                         setIsloading(false);
@@ -146,6 +178,45 @@ export default function CollapsibleTable() {
                 title="Liste des Commandes"
                 style={{ height: '100%' }}>
                 <TableContainer component={Paper}>
+                    <Stack
+                        direction="row"
+                        flexWrap="wrap-reverse"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        sx={{ mb: 5 }}
+
+                    >
+
+
+                        <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
+                            <Paper style={{ 'border': "1px solid #5e35b1" }}
+                                component="form"
+                                sx={{ display: 'flex', alignItems: 'center', width: 400 }}
+                            >
+
+                                <InputBase
+                                    sx={{ ml: 1, flex: 1 }}
+                                    placeholder="Rechercher"
+                                    inputProps={{
+                                        'aria-label': 'Rechercher'
+                                    }}
+                                    value={searchValue}
+                                    onChange={handleSearchChange}
+                                    onKeyDown={handleKeyDown}
+
+
+                                />
+                                <IconButton onClick={event => window.location.href = "/girdView/commandes?page=1&search=" + searchValue
+                                }
+                                    aria-label="search">
+                                    <SearchIcon />
+                                </IconButton>
+                                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+
+                            </Paper>
+                        </Stack>
+
+                    </Stack>
                     {isLoading ? (
                         <>
                             {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((index) => (
@@ -158,8 +229,10 @@ export default function CollapsibleTable() {
                                 <TableHead style={{ backgroundColor: "#5a33aa" }}>
                                     <TableRow>
                                         <TableCell />
-                                        <TableCell style={{ color: '#ffffff' }}>Nom</TableCell>
-                                        <TableCell style={{ color: '#ffffff' }} align="right">Email</TableCell>
+                                        <TableCell style={{ color: '#ffffff' }}>Id</TableCell>
+
+                                        <TableCell style={{ color: '#ffffff' }}>Nom client</TableCell>
+                                        <TableCell style={{ color: '#ffffff' }} align="center">Email</TableCell>
                                         <TableCell style={{ color: '#ffffff' }} align="right">Num tel</TableCell>
                                         <TableCell style={{ color: '#ffffff' }} align="right">Addresse</TableCell>
                                         <TableCell style={{ color: '#ffffff' }} align="right">Gouvernerat</TableCell>

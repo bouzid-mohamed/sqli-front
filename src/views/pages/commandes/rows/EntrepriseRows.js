@@ -51,10 +51,11 @@ export default function Row(props) {
                     </IconButton>
 
                 </TableCell>
+                <TableCell align="left">{row.id}</TableCell>
                 <TableCell component="th" scope="row">
                     {row.client.nom + ' ' + row.client.prenom}
                 </TableCell>
-                <TableCell align="right">{row.client.email}</TableCell>
+                <TableCell align="center">{row.client.email}</TableCell>
                 <TableCell align="right">{row.numTel}</TableCell>
                 <TableCell align="right">{row.addresse}</TableCell>
                 <TableCell align="right">{row.gouvernerat}</TableCell>
@@ -89,9 +90,16 @@ export default function Row(props) {
                     {(row.status === 'affecterLivreur') ? (
                         <Chip icon={<DeliveryDiningIcon />} label="Affecter à un livreur " color="success" />
                     )
-                        : (null)}</TableCell>
+                        : (null)}
+                    {(row.status === 'retour') ? (
+                        <Chip icon={<CancelIcon style={{ color: "white" }} />} label="Retour" style={{ backgroundColor: "red", color: "white" }} />
+                    )
+                        : (null)}
+
+                </TableCell>
+
                 <TableCell align="right">
-                    {(row.status === ('confirmationClient' && 'affectationPoste' && 'nouvelle')) ? (
+                    {(row.status === ('confirmationClient') || row.status === ('affectationPoste') || row.status === ('nouvelle')) ? (
                         <div>
                             <IconButton
                                 aria-label="more"
@@ -185,7 +193,7 @@ export default function Row(props) {
                                     {row.lignesCommandes.map((l) => (
                                         <TableRow key={l.id}>
                                             <TableCell align="right" scope="row">
-                                                <Avatar sx={{ width: 150, height: 100 }} src={"http://localhost:8000/uploads/" + l?.stock?.produit.images[0].nom} variant="square" />
+                                                <Avatar sx={{ width: 150, height: 100 }} src={"http://localhost:8000/uploads/" + l?.stock?.produit?.images[0].nom} variant="square" />
                                             </TableCell>
                                             <TableCell align="right">{l?.stock?.produit?.nom}</TableCell>
                                             <TableCell align="right">

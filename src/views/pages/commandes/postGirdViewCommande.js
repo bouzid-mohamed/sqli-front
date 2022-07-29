@@ -13,14 +13,14 @@ import Row from './rows/postrows'
 import GirdSkeleton from 'ui-component/cards/Skeleton/NormalGirdSkeleton';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
-import { Pagination, Stack } from '@mui/material';
+import { InputBase, Pagination, IconButton, Stack, Divider, } from '@mui/material';
 import Swal from 'sweetalert2';
 import CommandeServices from 'services/commande-services/CommandeServices';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
-
+import SearchIcon from '@mui/icons-material/Search';
 import ConfirmationDialogRaw from './affecterLivreur/ConfirmationDialogRaw';
 
 function useQuery() {
@@ -37,17 +37,41 @@ export default function CollapsibleTable() {
     const [value, setValue] = React.useState(-1);
     const [openAlert, setOpenAlert] = React.useState(false);
     const [commande, setCommande] = React.useState(0);
+    const [searchValue, setSearchValue] = React.useState('');
 
 
     const handleChange = (event, v) => {
         setPage(v);
         const history = createBrowserHistory();
-        history.push("/girdView/commandes?page=" + v);
+
+        if (query.get('search') != null) {
+            history.push("/post/girdView/commandes?page=" + v + "&search=" + searchValue);
+        } else {
+            history.push("/post/girdView/commandes?page=" + v);
+
+        }
+
         window.location.reload();
     };
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const history = createBrowserHistory();
+            history.push("/post/girdView/commandes?page=1&search=" + searchValue);
+            window.location.reload();
+        }
+    }
+
+    const handleSearchChange = (e) => {
+        setSearchValue(e.target.value)
+    }
     React.useEffect(() => {
-        commandeServices.getAllRolePoste(query.get("page")).then((res) => {
+        if (query.get('search') != null) {
+            setSearchValue(query.get('search'))
+        }
+        commandeServices.getAllRolePoste(query.get("page"), query.get("search")).then((res) => {
             setRows(res.data[0]);
+            console.log(res.data[0])
             setNumberPages(res.data["pagination"])
             setIsloading(false);
         })
@@ -77,7 +101,10 @@ export default function CollapsibleTable() {
                 if (result.isConfirmed) {
                     setIsloading(true);
                     CommandeServices.affecterLivreur(commande.id, value).then(() => {
-                        CommandeServices.getAllRolePoste(query.get("page")).then((res) => {
+                        if (query.get('search') != null) {
+                            setSearchValue(query.get('search'))
+                        }
+                        commandeServices.getAllRolePoste(query.get("page"), query.get("search")).then((res) => {
                             setRows(res.data[0]);
                             setNumberPages(res.data["pagination"])
                             setIsloading(false);
@@ -106,7 +133,10 @@ export default function CollapsibleTable() {
             if (result.isConfirmed) {
                 setIsloading(true);
                 CommandeServices.ConfirmationPoste(row.id).then(() => {
-                    CommandeServices.getAllRolePoste(query.get("page")).then((res) => {
+                    if (query.get('search') != null) {
+                        setSearchValue(query.get('search'))
+                    }
+                    commandeServices.getAllRolePoste(query.get("page"), query.get("search")).then((res) => {
                         setRows(res.data[0]);
                         setNumberPages(res.data["pagination"])
                         setIsloading(false);
@@ -134,7 +164,10 @@ export default function CollapsibleTable() {
             if (result.isConfirmed) {
                 setIsloading(true);
                 CommandeServices.Annulee(row.id).then(() => {
-                    CommandeServices.getAll(query.get("page")).then((res) => {
+                    if (query.get('search') != null) {
+                        setSearchValue(query.get('search'))
+                    }
+                    commandeServices.getAllRolePoste(query.get("page"), query.get("search")).then((res) => {
                         setRows(res.data[0]);
                         setNumberPages(res.data["pagination"])
                         setIsloading(false);
@@ -165,7 +198,47 @@ export default function CollapsibleTable() {
             <MainCard
                 title="Liste des Commandes"
                 style={{ height: '100%' }}>
+
                 <TableContainer component={Paper}>
+                    <Stack
+                        direction="row"
+                        flexWrap="wrap-reverse"
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        sx={{ mb: 5 }}
+
+                    >
+
+
+                        <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
+                            <Paper style={{ 'border': "1px solid #5e35b1" }}
+                                component="form"
+                                sx={{ display: 'flex', alignItems: 'center', width: 400 }}
+                            >
+
+                                <InputBase
+                                    sx={{ ml: 1, flex: 1 }}
+                                    placeholder="Rechercher"
+                                    inputProps={{
+                                        'aria-label': 'Rechercher'
+                                    }}
+                                    value={searchValue}
+                                    onChange={handleSearchChange}
+                                    onKeyDown={handleKeyDown}
+
+
+                                />
+                                <IconButton onClick={event => window.location.href = "/post/girdView/commandes?page=1&search=" + searchValue
+                                }
+                                    aria-label="search">
+                                    <SearchIcon />
+                                </IconButton>
+                                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+
+                            </Paper>
+                        </Stack>
+
+                    </Stack>
                     {isLoading ? (
                         <>
                             {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((index) => (
@@ -179,9 +252,11 @@ export default function CollapsibleTable() {
                                     <TableRow>
                                         <TableCell />
                                         <TableCell style={{ color: '#ffffff' }}>id</TableCell>
-                                        <TableCell style={{ color: '#ffffff' }}>Nom</TableCell>
-                                        <TableCell style={{ color: '#ffffff' }} align="right">Email</TableCell>
-                                        <TableCell style={{ color: '#ffffff' }} align="right">Num tel</TableCell>
+                                        <TableCell style={{ color: '#ffffff' }}>Nom entreprise</TableCell>
+                                        <TableCell style={{ color: '#ffffff' }}>Nom client</TableCell>
+                                        <TableCell style={{ color: '#ffffff' }} align="center">Email client</TableCell>
+                                        <TableCell style={{ color: '#ffffff' }} align="center">Num tel client</TableCell>
+                                        <TableCell style={{ color: '#ffffff' }} align="center">Num tel entreprise</TableCell>
                                         <TableCell style={{ color: '#ffffff' }} align="right">Addresse</TableCell>
                                         <TableCell style={{ color: '#ffffff' }} align="right">Gouvernerat</TableCell>
                                         <TableCell style={{ color: '#ffffff' }} align="right">Delegation</TableCell>

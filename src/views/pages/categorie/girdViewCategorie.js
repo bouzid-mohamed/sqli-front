@@ -172,7 +172,10 @@ export default function GirdViewCategorie() {
         setOpen(false);
         setIsloading(true);
         CategorieServices.deleteCategorie(catDelete.id).then(() => {
-            CategorieServices.getAllPagination(query.get("page")).then((res) => {
+            if (query.get('search') != null) {
+                setSearchValue(query.get('search'))
+            }
+            CategorieServices.getAllPagination(query.get("page"), query.get("search")).then((res) => {
                 setRows(res.data[0]);
                 setNumberPages(res.data["pagination"])
                 setIsloading(false);

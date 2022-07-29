@@ -146,7 +146,7 @@ export default function AddPromotion({ ...others }) {
             })
 
 
-            PromotionServices.addPromotion(values.nom, values.description, Moment(value[0]).format().toString(), Moment(value[0]).format().toString(), values.pourcentage, formData).then(
+            PromotionServices.addPromotion(values.nom, values.description, Moment(value[0]).format().toString(), Moment(value[1]).format().toString(), values.pourcentage, formData).then(
                 () => {
 
                     Swal.fire({

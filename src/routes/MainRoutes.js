@@ -28,6 +28,12 @@ const ProductGird = Loadable(lazy(() => import('views/pages/products/ProductGird
 const AddProduct = Loadable(lazy(() => import('views/pages/products/addProduct')));
 const ShowProduct = Loadable(lazy(() => import('views/pages/products/showProduct')));
 const EditProduct = Loadable(lazy(() => import('views/pages/products/editProduct')));
+const EditEntreprise = Loadable(lazy(() => import('views/pages/comptes/editEntreprise')));
+const EditPoste = Loadable(lazy(() => import('views/pages/comptes/editPoste')));
+const EditLivreur = Loadable(lazy(() => import('views/pages/comptes/editLivreur')));
+
+
+
 
 const GirdViewBon = Loadable(lazy(() => import('views/pages/bon/girdViewBon')));
 const AddBon = Loadable(lazy(() => import('views/pages/bon/addBon')));
@@ -45,6 +51,7 @@ const LivreurGirdViewCommandes = Loadable(lazy(() => import('views/pages/command
 const AddLivreur = Loadable(lazy(() => import('views/pages/livreur/addLivreur')));
 const ListLivreur = Loadable(lazy(() => import('views/pages/livreur/listLivreur')));
 const GirdViewPost = Loadable(lazy(() => import('views/pages/postes/GirdViewPost')));
+
 
 
 
@@ -164,6 +171,18 @@ const MainRoutes = {
             element: <AddLivreur />
         },
         {
+            path: '/account/edit',
+            element: <EditEntreprise />
+        },
+        {
+            path: '/account/post/edit',
+            element: <EditPoste />
+        },
+        {
+            path: '/account/livreur/edit',
+            element: <EditLivreur />
+        },
+        {
             path: '/post/livreur/list',
             element: <ListLivreur />
         },
@@ -194,7 +213,8 @@ const MainRoutes = {
         {
             path: '/sample-page',
             element: <SamplePage />
-        }
+        },
+
     ]
 };
 
