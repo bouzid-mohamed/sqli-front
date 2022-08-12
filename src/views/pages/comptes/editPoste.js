@@ -147,7 +147,6 @@ export default function EditPoste({ ...others }) {
         AuthService.show().then((res) => {
             setUser(res.data);
             setLoadcirular(false);
-            console.log(res.data)
             setFiles([{ preview: "http://localhost:8000/uploads/" + res.data.photo, name: null }])
 
             if (formikRef.current) {

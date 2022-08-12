@@ -135,7 +135,6 @@ const TotalGrowthBarChart = (props) => {
     }, [year]);
 
     useEffect(() => {
-        console.log('bbbbbb')
         const newChartData = {
             ...chartData.options,
             colors: [primary200, primaryDark, secondaryMain, successmain, secondaryLight],

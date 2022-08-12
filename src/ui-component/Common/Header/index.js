@@ -8,7 +8,7 @@ import TopHeader from './TopHeader'
 import { createBrowserHistory } from 'history';
 import svg from '../../../assets/img/svg/cancel.svg'
 import svgsearch from '../../../assets/img/svg/search.svg'
-import { useParams } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 import { useDispatch, useSelector } from "react-redux";
 import Swal from 'sweetalert2';
 import 'font-awesome/css/font-awesome.min.css'
@@ -20,8 +20,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "../../../assets/css/style.css"
 import ProductServices from 'services/productServices/ProductServices'
 
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
 
 const Header = () => {
+    let query = useQuery();
     const params = useParams();
     const [click, setClick] = useState(false);
     const [show, setShow] = useState();
@@ -30,7 +34,7 @@ const Header = () => {
     let carts = useSelector((state) => state.products.carts);
     let favorites = useSelector((state) => state.products.favorites);
     let dispatch = useDispatch();
-
+    const [filter, setFilter] = React.useState([]);
 
     const rmCartProduct = (id) => {
         dispatch({ type: "products/removeCart", payload: { id } });
@@ -94,8 +98,7 @@ const Header = () => {
 
     // Sticky Menu Area
     useEffect(() => {
-        ProductServices.getAllProductEntreprise(params.idE, null, null, null, null).then((res) => {
-
+        ProductServices.getAllProductEntreprise(params.idE, query.get("page"), filter, null, null).then((res) => {
             res.data[0].filter((p) => {
                 let hov = ''
                 let price = 0
@@ -127,14 +130,24 @@ const Header = () => {
                     promotion: p.promotion,
                     categorie: p.categorie,
                     stoks: p.stoks,
+                    entreprise: p.Entreprise,
                     color:
                         im
 
                 })
 
             })
-
+            dispatch({ type: "products/setNumberPages", payload: res.data["pagination"] })
             dispatch({ type: "products/addProducts", payload: listproducts })
+
+            if (localStorage.getItem('cart' + params.idE)) {
+                var storedcarts = JSON.parse(localStorage.getItem('cart' + params.idE));
+                dispatch({ type: "products/initCart", payload: storedcarts })
+            }
+            if (localStorage.getItem('favorites' + params.idE)) {
+                var storedfavs = JSON.parse(localStorage.getItem('favorites' + params.idE));
+                dispatch({ type: "products/initFav", payload: storedfavs })
+            }
 
         })
 
@@ -144,7 +157,7 @@ const Header = () => {
         };
 
 
-    });
+    }, []);
 
     const isSticky = (e) => {
         const header = document.querySelector('.header-section');

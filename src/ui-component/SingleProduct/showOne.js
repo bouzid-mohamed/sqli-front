@@ -31,7 +31,6 @@ export default function ShowOne() {
                 images.push(img.nom)
             )
             setLoading(false)
-            console.log(res.data[0].stoks)
 
 
         })

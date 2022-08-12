@@ -1,12 +1,13 @@
 import loadable from '../ui-component/Common/loader/loadable';
 import Loading from '../ui-component/Common/loader';
 import pMinDelay from 'p-min-delay';
-const ShopLeftSideBar = loadable(() => pMinDelay(import('../views/pages/front/Shop/shop-left-sidebar'), 250), { fallback: <Loading /> });
-const ProductDetailsTwo = loadable(() => pMinDelay(import('../views/pages/front/Shop/product-details-two'), 250), { fallback: <Loading /> });
-const Cart = loadable(() => pMinDelay(import('../views/pages/cart'), 250), { fallback: <Loading /> });
-const CheckoutOne = loadable(() => pMinDelay(import('../views/pages/checkout'), 250), { fallback: <Loading /> });
-const About = loadable(() => pMinDelay(import('../views/pages/about/about'), 250), { fallback: <Loading /> });
-const Home = loadable(() => pMinDelay(import('../views/pages/front/Fashion'), 250), { fallback: <Loading /> });
+import { LinearProgress } from '@mui/material';
+const ShopLeftSideBar = loadable(() => pMinDelay(import('../views/pages/front/Shop/shop-left-sidebar'), 250), { fallback: <LinearProgress /> });
+const ProductDetailsTwo = loadable(() => pMinDelay(import('../views/pages/front/Shop/product-details-two'), 250), { fallback: <LinearProgress /> });
+const Cart = loadable(() => pMinDelay(import('../views/pages/cart'), 250), { fallback: <LinearProgress /> });
+const CheckoutOne = loadable(() => pMinDelay(import('../views/pages/checkout'), 250), { fallback: <LinearProgress /> });
+const About = loadable(() => pMinDelay(import('../views/pages/about/about'), 250), { fallback: <LinearProgress /> });
+const Home = loadable(() => pMinDelay(import('../views/pages/front/Fashion'), 250), { fallback: <LinearProgress /> });
 
 
 
@@ -33,11 +34,11 @@ const FrontRoutes = {
             element: <CheckoutOne />
         },
         {
-            path: '/about',
+            path: '/aboutUs/:idE',
             element: <About />
         },
         {
-            path: '/home',
+            path: '/home/:idE',
             element: <Home />
         }
 

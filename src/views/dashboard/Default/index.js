@@ -38,7 +38,6 @@ const Dashboard = () => {
         setNbrEnCours(nencour)
         setStat(s)
         setLoading(false);
-        console.log(React.version + 'versiooooooooooooooooooooooooonnnnnn');
 
 
     }

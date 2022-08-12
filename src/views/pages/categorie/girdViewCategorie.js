@@ -190,7 +190,6 @@ export default function GirdViewCategorie() {
     const handleCatDelete = (cat) => {
         setCatDelete(cat);
         setOpenChild(true);
-        console.log(cat.id)
 
 
     }

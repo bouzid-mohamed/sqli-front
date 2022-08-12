@@ -1,6 +1,7 @@
 import axios from 'axios';
 import authHeader from 'services/auth-services/auth-header';
 const API_URL = 'http://localhost:8000/api/entreprise/';
+const API_URL2 = 'http://localhost:8000/';
 class PromotionServices {
 
     //ajouter un promo
@@ -11,7 +12,6 @@ class PromotionServices {
         bodyFormData.append('dateDebut', dateDebut)
         bodyFormData.append('dateFin', dateFin)
         bodyFormData.append('pourcentage', pourcentage)
-        console.log(bodyFormData.nom)
 
         return axios
             .post(API_URL + "promotion/addpromotion",
@@ -24,6 +24,10 @@ class PromotionServices {
     // get all promotion d une entreprise
     getAll() {
         return axios.get(API_URL + 'promotion', { headers: authHeader() })
+    }
+    // get  promotion page home d une entreprise
+    getAllPageHome(id) {
+        return axios.get(API_URL2 + 'show_promotions_home/' + id, { headers: authHeader() })
     }
 
 

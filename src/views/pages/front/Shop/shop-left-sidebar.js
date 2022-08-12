@@ -9,7 +9,6 @@ const ShopLeftSideBar = () => {
         <>
             <Header />
             <Banner title="Shop" />
-
             <LeftSideBar />
             <Footer />
 

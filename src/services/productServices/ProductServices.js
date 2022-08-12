@@ -52,7 +52,6 @@ class ProductService {
     }
 
     getAllNoPagination() {
-        console.log(axios.get(API_URL + 'produit/all', { headers: authHeader() }))
 
         return axios.get(API_URL + 'produit/all', { headers: authHeader() })
 
@@ -110,7 +109,7 @@ class ProductService {
         if (search === null) {
 
             if (order === null) {
-                return axios.get(API_URL1 + 'produits_entreprise/' + id + '&page=' + value + '&filter=' + filter, { headers: authHeader() })
+                return axios.get(API_URL1 + 'produits_entreprise/' + id + '?page=' + value)
 
             } else {
                 return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter + '&order=' + order, { headers: authHeader() })
@@ -126,7 +125,15 @@ class ProductService {
 
             }
     }
+    showProductFront(idE, idP) {
+        return axios.get(API_URL1 + 'show_produit/' + idE + '/' + idP, { headers: authHeader() })
 
+    }
+
+    showProductTriHome(idE) {
+        return axios.get(API_URL1 + 'show_produits_home/' + idE, { headers: authHeader() })
+
+    }
 
 
 }

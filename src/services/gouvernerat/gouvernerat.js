@@ -8,7 +8,6 @@ export default function getData() {
         }
     )
         .then(function (response) {
-            console.log(response)
             return response.json();
         })
         .then(function (myJson) {

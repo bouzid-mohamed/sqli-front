@@ -155,7 +155,6 @@ export default function AddProduct({ ...others }) {
             ProductServices.show(params.id).then((res) => {
                 setProduct(res.data[0]);
                 setLoadcirular(false);
-                console.log(res.data[0])
                 if (formikRef.current) {
                     formikRef.current.setFieldValue(
                         "nom",

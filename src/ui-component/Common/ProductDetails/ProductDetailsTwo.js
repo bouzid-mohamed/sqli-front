@@ -7,20 +7,61 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from 'react-router-dom';
-import { RatingStar } from "rating-star";
 import Loading from '../../Common/loader'
 import img404 from '../../../assets/img/Na_Nov_26.jpg'
+import ProductServices from 'services/productServices/ProductServices';
 
 const ProductDetailsTwo = () => {
-
+    const [errorProduct, setErrorProduct] = useState(0)
     let dispatch = useDispatch();
-    let { id } = useParams();
     const params = useParams()
-    dispatch({ type: "products/getProductById", payload: { id } });
-    let product = useSelector((state) => state.products.single);
+    const [product, setProduct] = useState(null)
     let load = useSelector((state) => state.products.loading)
     let loadSingle = useSelector((state) => state.products.loadingSingle)
+    useEffect(() => {
+        ProductServices.showProductFront(params.idE, params.id).then((res) => {
+            let hov = ''
+            let price = 0
+            let label = ''
+            let im = []
+            if (res.data[0].images.length > 1)
+                hov = res.data[0].images[1].nom
+            else hov = res.data[0].images[0].nom
+            if (res.data[0].promotion) {
+                price = Math.trunc(res.data[0].prix - (res.data[0].prix * res.data[0].promotion.pourcentage / 100))
+                label = 'promo' + ' ' + res.data[0].promotion.pourcentage + '%'
+            }
+            else price = res.data[0].prix
+            res.data[0].images.map((i) => {
+                im.push({
+                    color: 'red', img: "http://localhost:8000/uploads/" + i.nom, quantity: 1,
+                })
+            })
+            let p = res.data[0]
 
+            setProduct({
+                id: p.id, labels: label, category: "fashion", img: "http://localhost:8000/uploads/" + p.images[0].nom, hover_img: "http://localhost:8000/uploads/" + hov,
+                title: p.nom,
+                price: price,
+                description: p.description,
+                rating: {
+                    rate: 3.9,
+                    count: 30
+                },
+                promotion: p.promotion,
+                categorie: p.categorie,
+                stoks: p.stoks,
+                entreprise: p.Entreprise,
+                color:
+                    im
+
+            })
+            dispatch({ type: "products/getSingleProduct", payload: { product } });
+
+
+
+        }).catch(err => setErrorProduct(1))
+    }, [])
     // Add to cart
     const addToCart = async (id) => {
         dispatch({ type: "products/addToCart", payload: { id } })
@@ -74,9 +115,8 @@ const ProductDetailsTwo = () => {
     };
     return (
         <>
-            {load || loadSingle ? (<Loading></Loading>) : (product
-                ?
-                <>  <section id="product_single_two" className="ptb-100">
+            {errorProduct === 0 ? (<>
+                {load || loadSingle ? (<Loading></Loading>) : (<>  <section id="product_single_two" className="ptb-100">
                     <div className="container">
                         <div className="row area_boxed">
                             <div className="col-lg-4">
@@ -181,27 +221,24 @@ const ProductDetailsTwo = () => {
                 </section>
                     <RelatedProduct />
 
-                </>
-                :
-                <>
-                    <div className="container ptb-100">
-                        <div className="row">
-                            <div className="col-lg-6 offset-lg-3 col-md-6 offset-md-3 col-sm-12 col-12">
-                                <div className="empaty_cart_area">
-                                    <img src={img404} alt="img" />
-                                    <h2>PRODUIT NON TROUVÉ</h2>
-                                    <h3>Désolé ... Aucun élément trouvé selon votre requête !</h3>
-                                    <Link to={"/shop/" + params.idE} className="btn btn-black-overlay btn_sm">Continuer vos achats</Link>
-                                </div>
+                </>)}
+
+            </>) : (<> <>
+                <div className="container ptb-100">
+                    <div className="row">
+                        <div className="col-lg-6 offset-lg-3 col-md-6 offset-md-3 col-sm-12 col-12">
+                            <div className="empaty_cart_area">
+                                <img src={img404} alt="img" />
+                                <h2>PRODUIT NON TROUVÉ</h2>
+                                <h3>Désolé ... Aucun élément trouvé selon votre requête !</h3>
+                                <Link to={"/shop/" + params.idE} className="btn btn-black-overlay btn_sm">Continuer vos achats</Link>
                             </div>
                         </div>
                     </div>
-                    <RelatedProduct />
+                </div>
+                <RelatedProduct />
 
-                </>
-            )}
-
-
+            </></>)}
         </>
     )
 }

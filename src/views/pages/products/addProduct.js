@@ -174,11 +174,9 @@ export default function AddProduct({ ...others }) {
         else {
             let formData = new FormData()
             const fileObjects = acceptedFiles.map(file => {
-                console.log(file)
                 formData.append('assets[]', file, file.name)
             })
-            console.log(categorieName)
-            console.log(promotionName)
+
             ProductServices.addProduct(values.nom, values.prix, categorieName, values.description, promotionName, formData).then(
                 () => {
 

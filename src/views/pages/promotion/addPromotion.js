@@ -141,7 +141,6 @@ export default function AddPromotion({ ...others }) {
         else {
             let formData = new FormData()
             const fileObjects = acceptedFiles.map(file => {
-                console.log(file)
                 formData.append('assets', file, file.name)
             })
 

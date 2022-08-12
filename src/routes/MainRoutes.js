@@ -52,7 +52,10 @@ const AddLivreur = Loadable(lazy(() => import('views/pages/livreur/addLivreur'))
 const ListLivreur = Loadable(lazy(() => import('views/pages/livreur/listLivreur')));
 const GirdViewPost = Loadable(lazy(() => import('views/pages/postes/GirdViewPost')));
 
+const AboutBack = Loadable(lazy(() => import('views/pages/contenu/abouts')));
 
+const Media = Loadable(lazy(() => import('views/pages/media/mediaGird')));
+const EditMedia = Loadable(lazy(() => import('views/pages/media/editMedia')));
 
 
 
@@ -189,6 +192,18 @@ const MainRoutes = {
         {
             path: '/post/list',
             element: <GirdViewPost />
+        },
+        {
+            path: '/about',
+            element: <AboutBack />
+        },
+        {
+            path: '/media',
+            element: <Media />
+        },
+        {
+            path: '/media/edit/:id',
+            element: <EditMedia />
         },
         {
             path: '/utils/util-typography',

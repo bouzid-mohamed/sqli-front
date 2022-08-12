@@ -29,10 +29,10 @@ const ProductCard = (props) => {
             <div className="product_wrappers_one">
                 <div className="thumb">
                     <Link to={`/product-details/${params.idE}/${props.data.id}`} className="image">
-                        <img src={props.data.img} alt="Product" style={{ height: 360, width: 330 }} />
+                        <img src={props.data.img} alt="Product" style={{ height: 360 }} />
 
                         <img className="hover-image" src={props.data.hover_img}
-                            style={{ height: 360, width: 330 }} alt="Product" />
+                            style={{ height: 360 }} alt="Product" />
                     </Link>
                     <span className="badges">
                         <span className={(['hot', 'new', 'sale'][Math.round(Math.random() * 2)])}>{props.data.labels}</span>

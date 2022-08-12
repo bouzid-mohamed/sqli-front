@@ -71,7 +71,6 @@ export default function CollapsibleTable() {
         }
         commandeServices.getAllRolePoste(query.get("page"), query.get("search")).then((res) => {
             setRows(res.data[0]);
-            console.log(res.data[0])
             setNumberPages(res.data["pagination"])
             setIsloading(false);
         })

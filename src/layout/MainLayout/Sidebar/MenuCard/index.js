@@ -88,7 +88,6 @@ const MenuCard = () => {
             AuthService.show().then((res) => {
                 setUser(res.data);
                 // setLoading(false)
-                console.log(res.data);
 
             })
 

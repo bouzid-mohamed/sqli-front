@@ -1,9 +1,31 @@
-import React from 'react'
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom';
+import MediaServices from 'services/media-services/MediaServices';
+import Loading from '../../../ui-component/Common/loader'
+
 const Banner = (props) => {
+    const [isLoading, setIsloading] = useState(true);
+    const params = useParams();
+    const [banner, setBanner] = useState();
+    const [imageUrl, setImageUrl] = useState('')
+    useEffect(() => {
+
+        MediaServices.getAllMedia(params.idE).then((res) => {
+
+            res.data.filter((m) => {
+                if (m.nom === 1) {
+                    setBanner(m)
+                    setImageUrl("http://localhost:8000/uploads/" + m.image)
+                }
+            })
+            setIsloading(false)
+
+        })
+
+    }, []);
     return (
         <>
-            <section id="common_banner_one">
+            {isLoading ? (<Loading></Loading>) : (<section id="common_banner_one" style={{ backgroundImage: `url("${imageUrl}")` }}>
                 <div className="container ">
                     <div className="row">
                         <div className="col-lg-12">
@@ -18,7 +40,8 @@ const Banner = (props) => {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section>)}
+
         </>
     )
 }

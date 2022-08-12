@@ -5,12 +5,12 @@ import produits from './produits';
 import coupon from './couponPromotion';
 import categorieStock from './categorieStock';
 import commandes from './commande';
-
+import contents from './contents';
 
 // ==============================|| MENU ITEMS ||============================== //
 
 const menuItems = {
-    items: [dashboard, commandes, produits, categorieStock, coupon]
+    items: [dashboard, commandes, produits, categorieStock, coupon, contents]
 };
 
 export default menuItems;

@@ -2,6 +2,7 @@ import axios from 'axios';
 import authHeader from 'services/auth-services/auth-header';
 const API_URL = 'http://localhost:8000/entreprise/';
 const API_URL2 = 'http://localhost:8000/api/entreprise/';
+const API_URL3 = 'http://localhost:8000/';
 class CompanyService {
 
     //ajouter un compte client 
@@ -37,7 +38,20 @@ class CompanyService {
                 return response.data;
             });
     }
+    updateAbout(textAbout, bodyFormData, id) {
+        bodyFormData.append('text', textAbout)
+        return axios
+            .post(API_URL2 + "updateAboutUs/" + id,
+                bodyFormData, { headers: authHeader() })
+            .then(response => {
+                return response.data;
+            });
+    }
 
+    //afficher entreprise 
+    show(id) {
+        return axios.get(API_URL3 + 'show_entreprise/' + id, { headers: authHeader() })
+    }
 
 }
 export default new CompanyService();

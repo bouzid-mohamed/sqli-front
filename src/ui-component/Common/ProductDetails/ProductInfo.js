@@ -51,7 +51,7 @@ const ProductInfo = (props) => {
                 <div className="col-lg-12">
                     <div className="product_details_tabs">
                         <ul className="nav nav-tabs">
-                            <li><a data-toggle="tab" className="active">Description</a></li>
+                            <li><a data-toggle="tab" className="active">Infos</a></li>
 
                         </ul>
                         <div className="tab-content">

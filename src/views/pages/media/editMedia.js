@@ -1,35 +1,24 @@
-// material-ui
-
-import * as React from 'react';
-import { useDropzone } from "react-dropzone";
 import LoadingButton from '@mui/lab/LoadingButton';
-import TextField from '@mui/material/TextField';
-import DateRangePicker from '@mui/lab/DateRangePicker';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider'
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
-import PromotionServices from 'services/promotion-services/promotionServices';
-import { useParams } from 'react-router';
-import Moment from 'moment';
+import { useDropzone } from "react-dropzone";
 
 
 // material-ui
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import {
     Alert,
     Box,
     Button,
-    CircularProgress,
     FormControl,
     FormHelperText,
     Grid,
     InputLabel,
     OutlinedInput,
-    Typography,
-    useMediaQuery
+    useMediaQuery,
+    CircularProgress
 } from '@mui/material';
 
 // third party
@@ -44,7 +33,9 @@ import AnimateButton from 'ui-component/extended/AnimateButton';
 import MainCard from 'ui-component/cards/MainCard';
 import Swal from 'sweetalert2';
 
-
+import CompanyServices from 'services/companyServices/CompanyServices';
+import MediaServices from 'services/media-services/MediaServices';
+import { useParams } from 'react-router';
 
 const thumbsContainer = {
     display: "flex",
@@ -76,26 +67,25 @@ const img = {
     width: "auto",
     height: "100%"
 };
-export default function EditPromotion({ ...others }) {
+
+
+
+export default function EditMedia({ ...others }) {
     const history = createBrowserHistory();
     const theme = useTheme();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
-    const [strength] = useState(0);
-    const [level] = useState();
-    const [value, setValue] = React.useState([null, null]);
     const [message, setMessage] = useState(null);
-    const [dd, setDd] = useState(null);
-    const [df, setDf] = useState(null);
+    const params = useParams();
+    const [media, setMedia] = useState(null);
+    const [loadcirular, setLoadcirular] = useState(true);
+    const [isCover, setIsCover] = useState(false)
+    const formikRef = React.useRef();
+
     // dropzone 
     const [files, setFiles] = useState([]);
-    const params = useParams();
-    const [loadcirular, setLoadcirular] = useState(true);
-
-    const formikRef = React.useRef();
     const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
         accept: "image/*",
         onDrop: acceptedFiles => {
-
 
             setFiles(
                 acceptedFiles.map(file =>
@@ -107,75 +97,76 @@ export default function EditPromotion({ ...others }) {
         }, multiple: false
     });
 
-    const thumbs =
-        files.map(file => (
-            <div style={thumb} key={file.name}>
-                <div style={thumbInner}>
-                    <img src={file.preview} style={img} alt="Ecommerce" />
-                </div>
+    const thumbs = files.map(file => (
+        <div style={thumb} key={file.name}>
+            <div style={thumbInner}>
+                <img src={file.preview} style={img} alt="Ecommerce" />
             </div>
-        ));
-
-    useEffect(
-
-        () => {
+        </div>
+    ));
 
 
 
-            PromotionServices.show(params.id).then((res) => {
-                setLoadcirular(false);
-                var dt = Moment(res.data[0].dateDebut).format('dd MMM yyyy');
-                var dt1 = Moment(res.data[0].dateFin).format('dd MMM yyyy');
-                setFiles([{ preview: "http://localhost:8000/uploads/" + res.data[0].banniere, name: null }])
-                setValue([dt, dt1])
-                if (formikRef.current) {
-                    formikRef.current.setFieldValue(
-                        "nom",
-                        res.data[0].nom
-                    );
-                    formikRef.current.setFieldValue(
-                        "description",
-                        res.data[0].description
-                    );
-                    formikRef.current.setFieldValue(
-                        "pourcentage",
-                        res.data[0].pourcentage
-                    );
-                }
-            })
-        }, [],
+
+    useEffect(() => {
+
+        MediaServices.show(params.id).then((res) => {
+            setMedia(res.data[0]);
+            setFiles([{ preview: "http://localhost:8000/uploads/" + res.data[0].image, name: null }])
+            if (res.data[0].nom === 1) {
+                setIsCover(true)
+            }
+            setLoadcirular(false);
+
+            if (formikRef.current && isCover === false) {
+                formikRef.current.setFieldValue(
+                    "titre",
+                    res.data[0].titre
+                );
+                formikRef.current.setFieldValue(
+                    "description",
+                    res.data[0].description
+                );
+                formikRef.current.setFieldValue(
+                    "url",
+                    res.data[0].url
+                );
+            }
+
+        })
+    }, [],
         () => () => {
             // Make sure to revoke the data uris to avoid memory leaks
             files.forEach(file => URL.revokeObjectURL(file.preview));
-
         },
-        [files],
-
-
-
+        [files]
     );
+    const handleSubmit = (values, { setErrors, setStatus, setSubmitting }) => {
+        let formData = new FormData()
 
-    const handleSubmit = (values, { setSubmitting }) => {
-        let formData = new FormData();
-        if (files[0].name != null) {
+        if (acceptedFiles[0] != null) {
+            //   let formData = new FormData()
             const fileObjects = acceptedFiles.map(file => {
                 formData.append('assets[]', file, file.name)
             })
         }
-        PromotionServices.updatePromotion(values.nom, values.description, Moment(value[0]).format().toString(), Moment(value[0]).format().toString(), values.pourcentage, formData, params.id).then(
+
+
+        MediaServices.updateMedia(values.titre, values.description, values.url, formData, media.id).then(
             () => {
 
                 Swal.fire({
                     title: 'Bon travail!!',
-                    text: "Votre promotion a été modifié avec succès!",
+                    text: "Votre média a été modifié avec succès!",
                     icon: 'success',
                     showCancelButton: false,
                     confirmButtonColor: '#3085d6',
                     confirmButtonText: 'Ok'
                 }).then((result) => {
                     if (result.isConfirmed) {
+
                         const history = createBrowserHistory();
-                        history.push("/girdView/promotion?page=1");
+                        history.push("/media");
                         window.location.reload();
                     }
                 })
@@ -184,14 +175,13 @@ export default function EditPromotion({ ...others }) {
                 setSubmitting(false);
             },
             error => {
-                const resMessage = error.message
+                const resMessage = 'erreur'
                 setMessage(resMessage);
                 setSubmitting(false);
             }
         );
 
     }
-
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
         return (
             loadcirular === true ? (
@@ -204,99 +194,49 @@ export default function EditPromotion({ ...others }) {
 
                     <Formik
                         innerRef={formikRef}
+
                         initialValues={{
-                            nom: '',
+                            titre: '',
                             description: '',
-                            pourcentage: '',
-                            dateDebut: null,
-                            dateFin: null,
-                            submit: null,
+                            url: '',
 
-
+                            submit: null
                         }}
                         validationSchema={Yup.object().shape({
-                            nom: Yup.string().max(255, 'Doit être un nom valide').min(2, 'Doit être un nom valide').required('Nom est requis'),
-                            description: Yup.string().max(300, 'Doit être une description valide').min(5, 'La description doit contenir au moins 5 caractères').required('Description est requis'),
-                            pourcentage: Yup.number().min(0, 'la pourcentage  de promotion doit etre supérieur à 0 ').required('Pourcentage promotion est requis'),
-
+                            titre: isCover ? Yup.string() : Yup.string().max(20, 'titre media ne doit pas dépasser 20 caractère').min(2, 'Titre média doit contenir au moin 2 caractères').required('Titre est requis'),
+                            description: isCover ? Yup.string() : Yup.string().max(30, 'description média ne doit pas dépasser 30 caractère').min(2, 'description média  doit contenir au moin 2 caractères').required('Text est requis'),
+                            url: isCover ? Yup.string() : Yup.string()
+                                .matches(
+                                    /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/,
+                                    'Entrez une URL correcte !'
+                                )
+                                .required('Please enter website'),
                         })}
                         onSubmit={(values, { setErrors, setStatus, setSubmitting }) => handleSubmit(values, { setErrors, setStatus, setSubmitting })}
-
                     >
                         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
                             <form noValidate onSubmit={handleSubmit} {...others}>
-                                <Grid container spacing={matchDownSM ? 0 : 2}>
 
-
-                                </Grid>
-                                <FormControl fullWidth error={Boolean(touched.nom && errors.nom)} sx={{ ...theme.typography.customInput }}>
-                                    <InputLabel htmlFor="nom">Nom promotion</InputLabel>
+                                <FormControl fullWidth error={Boolean(touched.titre && errors.titre)} sx={{ ...theme.typography.customInput }} style={{ display: isCover ? 'none' : '' }}>
+                                    <InputLabel htmlFor="titre">Titre </InputLabel>
                                     <OutlinedInput
-                                        id="nom"
+                                        id="titre"
                                         type="text"
-                                        value={values.nom}
-                                        name="nom"
+                                        value={values.titre}
+                                        name="titre"
                                         onBlur={handleBlur}
                                         onChange={handleChange}
                                         inputProps={{}}
                                     />
-                                    {touched.nom && errors.nom && (
-                                        <FormHelperText error id="standard-weight-helper-text-nom-register">
-                                            {errors.nom}
+                                    {touched.titre && errors.titre && (
+                                        <FormHelperText error id="standard-weight-helper-text-textAbout-register">
+                                            {errors.titre}
                                         </FormHelperText>
                                     )}
                                 </FormControl>
-
-
-                                <FormControl fullWidth error={Boolean(touched.pourcentage && errors.pourcentage)} sx={{ ...theme.typography.customInput }}>
-                                    <InputLabel htmlFor="pourcentage">Pourcentage promotion</InputLabel>
+                                <FormControl fullWidth error={Boolean(touched.description && errors.description)} sx={{ ...theme.typography.customInput }} style={{ display: isCover ? 'none' : '' }}>
+                                    <InputLabel htmlFor="description">description </InputLabel>
                                     <OutlinedInput
-                                        id="pourcentage"
-                                        type="number"
-                                        value={values.pourcentage}
-                                        name="pourcentage"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        inputProps={{}}
-                                    />
-                                    {touched.pourcentage && errors.pourcentage && (
-                                        <FormHelperText error id="standard-weight-helper-text-pourcentage-register">
-                                            {errors.pourcentage}
-                                        </FormHelperText>
-                                    )}
-                                </FormControl>
-
-                                <FormControl fullWidth  >
-                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                        <DateRangePicker
-                                            dateDisplayFormat="d MMM yyyy"
-                                            value={value}
-                                            onChange={(newValue) => {
-                                                setValue(newValue);
-
-                                            }}
-                                            renderInput={(startProps, endProps) => (
-                                                <React.Fragment>
-                                                    <TextField name="dateDebut" value={dd} onChange={(event) => { setDd(event.target.value) }} {...startProps} style={{ "width": "50%" }} error={Boolean(touched.dateDebut && value[0] == null)} sx={{ ...theme.typography.customInput }} />
-                                                    <Box sx={{ mx: 2 }}> jusqu'a </Box>
-                                                    <TextField name="dateFin" value={df} onChange={(event) => setDf(event.target.value)}   {...endProps} style={{ "width": "50%" }} error={Boolean(touched.dateFin && value[1] == null)} sx={{ ...theme.typography.customInput }} />
-                                                </React.Fragment>
-                                            )}
-                                        />
-                                    </LocalizationProvider>
-
-                                    <FormHelperText id="standard-weight-helper-text-dateDebut-register">
-                                        Sélectionner la date début et fin du promotion
-                                    </FormHelperText>
-                                </FormControl>
-
-
-
-                                <FormControl fullWidth error={Boolean(touched.description && errors.description)} sx={{ ...theme.typography.customInput }}>
-                                    <OutlinedInput
-                                        multiline
-                                        placeholder="Description"
-                                        minRows={3}
                                         id="description"
                                         type="text"
                                         value={values.description}
@@ -306,11 +246,30 @@ export default function EditPromotion({ ...others }) {
                                         inputProps={{}}
                                     />
                                     {touched.description && errors.description && (
-                                        <FormHelperText error id="standard-weight-helper-text-description-register">
+                                        <FormHelperText error id="standard-weight-helper-text-textAbout-register">
                                             {errors.description}
                                         </FormHelperText>
                                     )}
                                 </FormControl>
+                                <FormControl fullWidth error={Boolean(touched.url && errors.url)} sx={{ ...theme.typography.customInput }} style={{ display: isCover ? 'none' : '' }}>
+                                    <InputLabel htmlFor="url">URL </InputLabel>
+                                    <OutlinedInput
+                                        id="url"
+                                        type="text"
+                                        value={values.url}
+                                        name="url"
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        inputProps={{}}
+                                    />
+                                    {touched.url && errors.url && (
+                                        <FormHelperText error id="standard-weight-helper-text-textAbout-register">
+                                            {errors.url}
+                                        </FormHelperText>
+                                    )}
+                                </FormControl>
+
+
 
                                 <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
                                     <section className="container" style={{ "width": "100%", "minHeight": 120, "border": "0.5px dashed #c0c0c0", "borderRadius": "12px" }}>
@@ -321,28 +280,13 @@ export default function EditPromotion({ ...others }) {
                                         <aside style={thumbsContainer}>{thumbs}</aside>
                                     </section>
                                     <FormHelperText id="helper-banière">
-                                        Sélectionner la banière du promotion
+                                        Sélectionner la photo de votre page à propos
                                     </FormHelperText>
                                 </FormControl>
-                                {strength !== 0 && (
-                                    <FormControl fullWidth>
-                                        <Box sx={{ mb: 2 }}>
-                                            <Grid container spacing={2} alignItems="center">
-                                                <Grid item>
-                                                    <Box
-                                                        style={{ backgroundColor: level?.color }}
-                                                        sx={{ width: 85, height: 8, borderRadius: '7px' }}
-                                                    />
-                                                </Grid>
-                                                <Grid item>
-                                                    <Typography variant="subtitle1" fontSize="0.75rem">
-                                                        {level?.label}
-                                                    </Typography>
-                                                </Grid>
-                                            </Grid>
-                                        </Box>
-                                    </FormControl>
-                                )}
+
+
+
+
 
 
                                 {errors.submit && (
@@ -350,6 +294,9 @@ export default function EditPromotion({ ...others }) {
                                         <FormHelperText error>{errors.submit}</FormHelperText>
                                     </Box>
                                 )}
+
+
+
                                 <Grid container spacing={matchDownSM ? (0) : 2} direction="row-reverse" style={{ "marginTop": 30 }}>
 
                                     <Grid item xs={12} sm={12} >
@@ -378,7 +325,7 @@ export default function EditPromotion({ ...others }) {
                                                 color="secondary"
                                                 onClick={() => {
                                                     const history = createBrowserHistory();
-                                                    history.push("/girdView/promotion?page=1");
+                                                    history.push("/media");
                                                     window.location.reload();
                                                 }}
                                                 variant="outlined"
@@ -416,3 +363,5 @@ export default function EditPromotion({ ...others }) {
 
 
 };
+
+//export default listViewProducts;
