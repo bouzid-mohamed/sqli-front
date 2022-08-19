@@ -301,10 +301,10 @@ export default function GirdViewCategorie() {
 
                                                     <TreeItem nodeId={Math.random().toString(36)} key={Math.random().toString(36).substr(2, 9)} label={row.nom}>
 
-                                                        {row.catFils[0] != null ? (
+                                                        {row.catFils.length > 0 ? (
                                                             row.catFils.map((fr) => (
                                                                 <TreeItem key={fr.id} nodeId={Math.random().toString(36)} label={fr.nom}>
-                                                                    {fr.catFils[0] != null ? (
+                                                                    {fr.catFils.length > 0 ? (
                                                                         fr.catFils.map((fr1) => (
                                                                             <TreeItem key={fr1.id} nodeId={Math.random().toString(36)} label={fr1.nom} />
                                                                         ))
@@ -354,12 +354,12 @@ export default function GirdViewCategorie() {
 
                                             <Button color="error" key={Math.random().toString(36).substr(2, 9)} onClick={() => { handleCatDelete(idDelete) }}>{idDelete.nom}</Button>
 
-                                            {idDelete.catFils[0] != null ? (
+                                            {idDelete.catFils.length > 0 ? (
                                                 idDelete.catFils.map((fr) => (
                                                     <>
                                                         <Button color="error" key={fr.id} onClick={(id) => { handleCatDelete(fr) }}>{fr.nom}</Button>
 
-                                                        {fr.catFils[0] != null ? (
+                                                        {fr.catFils.length > 0 ? (
                                                             fr.catFils.map((fr1) => (
                                                                 <Button color="error" key={fr1.id} onClick={() => { handleCatDelete(fr1) }}>{fr1.nom}</Button>
 

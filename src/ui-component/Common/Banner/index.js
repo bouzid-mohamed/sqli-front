@@ -25,14 +25,14 @@ const Banner = (props) => {
     }, []);
     return (
         <>
-            {isLoading ? (<Loading></Loading>) : (<section id="common_banner_one" style={{ backgroundImage: `url("${imageUrl}")` }}>
+            {isLoading ? (null) : (<section id="common_banner_one" style={{ backgroundImage: `url("${imageUrl}")` }}>
                 <div className="container ">
                     <div className="row">
                         <div className="col-lg-12">
                             <div className="common_banner_text">
                                 <h2>{props.title}</h2>
                                 <ul>
-                                    <li><Link to="/">Home</Link></li>
+                                    <li><Link to={"/home/" + params.idE}>Accueil</Link></li>
                                     <li className="slash">/</li>
                                     <li className="active">{props.title}</li>
                                 </ul>

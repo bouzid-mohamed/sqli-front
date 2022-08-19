@@ -1,22 +1,25 @@
-import {createSlice} from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 // User Slice
 const userSlice = createSlice({
     name: 'user',
     initialState: {
         status: false,
-        user:{}
+        user: {}
     },
     reducers: {
         // Login
         login: (state) => {
             state.status = true
+            var item = JSON.parse(localStorage.getItem('user'));
             state.user = {
-                name: 'Jhon Doe',
+                name: item.nom,
                 role: 'customer',
-                email: 'jhondoe@gmail.com',
-                pass:'jhondoe123'
+                email: item.email,
+                pass: '',
+                photo: item.photo
             }
+
         },
         // Register
         register: (state, action) => {

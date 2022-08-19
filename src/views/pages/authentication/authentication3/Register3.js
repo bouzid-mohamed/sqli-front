@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -18,6 +18,7 @@ import AuthFooter from 'ui-component/cards/AuthFooter';
 const Register = () => {
     const theme = useTheme();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
+    const params = useParams()
 
     return (
         <AuthWrapper1>
@@ -69,7 +70,7 @@ const Register = () => {
                                         <Grid item container direction="column" alignItems="center" xs={12}>
                                             <Typography
                                                 component={Link}
-                                                to="/login"
+                                                to={"/login/" + params.idE}
                                                 variant="subtitle1"
                                                 sx={{ textDecoration: 'none' }}
                                             >

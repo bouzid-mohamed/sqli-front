@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import logo from '../../../assets/img/logo.png'
 import logoWhite from '../../../assets/img/logo-white.png'
-import { MenuData } from './MenuData'
 import NaveItems from './NaveItems'
 import TopHeader from './TopHeader'
 import { createBrowserHistory } from 'history';
@@ -19,7 +18,8 @@ import 'font-awesome/css/font-awesome.min.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "../../../assets/css/style.css"
 import ProductServices from 'services/productServices/ProductServices'
-
+import CategorieServices from 'services/categories-services/CategorieServices'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 function useQuery() {
     return new URLSearchParams(useLocation().search);
 }
@@ -29,13 +29,17 @@ const Header = () => {
     const params = useParams();
     const [click, setClick] = useState(false);
     const [show, setShow] = useState();
+    const [show2, setShow2] = useState();
+
     const history = createBrowserHistory();
     const [listproducts, setListproducts] = useState([])
+    const [listCategories, setListCategories] = useState([])
+
+    const [dataMenu, setDataMenu] = useState([]);
     let carts = useSelector((state) => state.products.carts);
     let favorites = useSelector((state) => state.products.favorites);
     let dispatch = useDispatch();
     const [filter, setFilter] = React.useState([]);
-
     const rmCartProduct = (id) => {
         dispatch({ type: "products/removeCart", payload: { id } });
     }
@@ -95,10 +99,13 @@ const Header = () => {
     const handleShow = (value) => {
         value === show ? setShow("") : setShow(value)
     }
+    const handleShow2 = (value) => {
+        value === show2 ? setShow2("") : setShow2(value)
+    }
 
-    // Sticky Menu Area
+    // Sticky Menu Area query.get("page"), query.getAll("filter"), query.get('order'), query.get('search')
     useEffect(() => {
-        ProductServices.getAllProductEntreprise(params.idE, query.get("page"), filter, null, null).then((res) => {
+        ProductServices.getAllProductEntreprise(params.idE, query.get("page"), query.getAll("filter"), query.get('order'), query.get('search')).then((res) => {
             res.data[0].filter((p) => {
                 let hov = ''
                 let price = 0
@@ -131,12 +138,17 @@ const Header = () => {
                     categorie: p.categorie,
                     stoks: p.stoks,
                     entreprise: p.Entreprise,
-                    color:
-                        im
+                    color: im
 
                 })
 
             })
+            if (localStorage.getItem('user') && localStorage.getItem('token')) {
+                dispatch({ type: "user/login" })
+
+            }
+
+
             dispatch({ type: "products/setNumberPages", payload: res.data["pagination"] })
             dispatch({ type: "products/addProducts", payload: listproducts })
 
@@ -148,8 +160,48 @@ const Header = () => {
                 var storedfavs = JSON.parse(localStorage.getItem('favorites' + params.idE));
                 dispatch({ type: "products/initFav", payload: storedfavs })
             }
+            if (localStorage.getItem('compare' + params.idE)) {
+                var storedcomps = JSON.parse(localStorage.getItem('compare' + params.idE));
+                dispatch({ type: "products/initCompare", payload: storedcomps })
+            }
 
         })
+
+        //debut categories 
+        CategorieServices.getAllFront(params.idE).then((res) => {
+            let tabItems = []
+            let children = []
+            let children2 = []
+            let mega = false
+            setListCategories(res.data)
+            res.data.filter((c) => {
+
+                if (c.catFils.length === 0 && c.catPere === null) {
+                    children.push({ name: c.nom, href: '/shop/' + params.idE + '?page=1&filter=' + c.id })
+                }
+                if (c.catFils.length > 0 && c.catPere === null) {
+                    mega = true
+                    let tabch = []
+                    c.catFils.map((f) => {
+                        tabch.push({ name: f.nom, href: '/shop/' + params.idE + '?page=1&filter=' + f.id })
+                    })
+                    let n = { name: c.nom, href: '/shop/' + params.idE + '?page=1&filter=' + c.id, children: tabch }
+                    children2.push(n)
+
+                }
+            })
+            tabItems.push({ name: 'accueil', href: '/home/' + params.idE, children: [] })
+            children2.push({ name: 'Autre', href: '#!', children: children })
+            tabItems.push({ name: 'Produits', href: '/shop/' + params.idE, mega_menu: mega, children: children2 })
+            tabItems.push({ name: 'commandes', href: '/my-account/customer-order/' + params.idE, children: [] })
+            tabItems.push({ name: 'à propos', href: '/aboutUs/' + params.idE, children: [] })
+            setDataMenu(tabItems)
+            dispatch({ type: "products/addCategories", payload: res.data })
+
+
+        })
+
+        //fin categories 
 
         window.addEventListener('scroll', isSticky);
         return () => {
@@ -181,11 +233,13 @@ const Header = () => {
                                     </div>
                                     <div className="main-menu menu-color--black menu-hover-color--golden d-none d-xl-block">
                                         <nav>
-                                            <ul>
-                                                {MenuData.map((item, index) => (
+                                            {dataMenu.length > 0 ? (<ul>
+                                                {dataMenu.map((item, index) => (
                                                     <NaveItems item={item} key={index} />
                                                 ))}
-                                            </ul>
+                                            </ul>) : (null)}
+
+
                                         </nav>
                                     </div>
 
@@ -280,117 +334,42 @@ const Header = () => {
                     <div className="mobile-menu-bottom">
                         <div className="offcanvas1-menu">
                             <ul>
-                                <li>
-                                    <a href="#!" onClick={() => handleShow("home")}><span>Home</span></a>
-                                    {
-                                        show === "home" ?
-                                            <ul className="mobile-sub-menu">
-                                                <li><Link to="/">Fashion</Link></li>
-                                                <li><Link to="/furniture">Furniture</Link></li>
-                                                <li><Link to="/electronics">Electronics</Link></li>
-                                            </ul> : null
-                                    }
 
-                                </li>
                                 <li >
-                                    <a href="#!" onClick={() => handleShow("shop")}><span>Shop</span></a>
-                                    {
-                                        show === "shop" ? <>
-                                            <ul className="mobile-sub-menu">
-                                                <li>
-                                                    <a href="#!">Shop Layout</a>
-                                                    <ul className="mobile-sub-menu">
-                                                        <li><Link to="/shop">Shop Four Grid</Link></li>
-                                                        <li><Link to="/shopTwo">Shop Three Grid</Link></li>
-                                                        <li><Link to="/shoplist">Shop List View</Link></li>
-                                                        <li><Link to="/shop-left-bar">Shop Left Sidebar</Link></li>
-                                                        <li><Link to="/shop-right-bar">Shop Right Sidebar</Link></li>
-                                                    </ul>
-                                                </li>
-                                            </ul>
+                                    {dataMenu.map((item, index) => (
 
-                                            <ul className="mobile-sub-menu">
-                                                <li>
-                                                    <a href="#!">Shop Pages</a>
-                                                    <ul className="mobile-sub-menu">
-                                                        <li><Link to="/cart">Cart View One</Link></li>
-                                                        <li><Link to="/cartTwo">Cart View Two </Link></li>
-                                                        <li><Link to="/empty-cart">Empty Cart</Link></li>
-                                                        <li><Link to="/checkout">Checkout View One</Link></li>
-                                                        <li><Link to="/checkout">Checkout View Two</Link></li>
-                                                        <li><Link to="/wishlist">Wishlist</Link></li>
-                                                        <li><Link to="/compare">Compare</Link></li>
-                                                        <li><Link to="/order-tracking">Order Tracking</Link></li>
-                                                        <li><Link to="/order-complete">Order Complete</Link></li>
-                                                    </ul>
-                                                </li>
-                                            </ul>
-                                            <ul className="mobile-sub-menu">
-                                                <li>
-                                                    <a href="#!">Product Single</a>
-                                                    <ul className="mobile-sub-menu">
-                                                        <li><Link to="/product-details/1">Product Single</Link></li>
-                                                        <li><Link to="/product-details/1">Product Single Two</Link></li>
-                                                    </ul>
-                                                </li>
-                                            </ul>
-                                        </> : null
-                                    }
+                                        item.name === 'Produits' ? (
+                                            <div style={{ marginTop: '10px' }} key={Math.random().toString(36).substr(2, 9)}><a href={'#'} onClick={() => handleShow(item.name)}><span>{item.name}</span></a>
+                                                {
+                                                    show === item.name ?
+
+                                                        item.children.map((c, i1) => (<ul className="mobile-sub-menu" key={Math.random().toString(36).substr(2, 9)}>
+                                                            <li  >
+                                                                <a href={'#'} onClick={() => handleShow2(c.name)}>{c.name}</a>
+                                                                {show2 === c.name ? (<ul className="mobile-sub-menu">
+                                                                    {c.children.map((f1, i2) => (
+                                                                        <li key={Math.random().toString(36).substr(2, 9)}><a href={f1.href}>{f1.name}</a></li>
+
+                                                                    ))}
+
+                                                                </ul>) : (null)}
+
+                                                            </li>
+                                                        </ul>))
+
+                                                        : null
+                                                }</div>
+
+                                        ) : (<div style={{ marginTop: '10px' }} key={Math.random().toString(36).substr(2, 9)}> <a href="#!" onClick={() => handleShow("home")}><span>{item.name}</span></a></div>)
+
+
+                                    ))}
+
 
                                 </li>
-                                <li>
-                                    <a href="#!" onClick={() => handleShow("feature")}><span>Feature</span></a>
-                                    {
-                                        show === "feature" ?
 
-                                            <ul className="mobile-sub-menu">
-                                                <li><Link to="/product-hover">Product Hover</Link></li>
-                                                <li><Link to="/order-success">Order Success</Link></li>
-                                                <li><Link to="/email-template-one">Email Template 1</Link></li>
-                                                <li><Link to="/email-template-two">Email Template 2</Link></li>
-                                                <li><Link to="/email-template-three">Email Template 3</Link></li>
-                                                <li><Link to="/lookbooks">LookBook</Link></li>
-                                                <li><Link to="/invoice-one">Invoice 1</Link></li>
-                                                <li><Link to="/invoice-two">Invoice 2</Link></li>
-                                            </ul>
 
-                                            : null
-                                    }
-                                </li>
-                                <li>
-                                    <a href="#!" onClick={() => handleShow("blogs")}><span>Blogs</span></a>
-                                    {
-                                        show === "blogs" ?
-                                            <ul className="mobile-sub-menu">
-                                                <li><Link to="/blog-grid-three">Blog Grid View One</Link></li>
-                                                <li><Link to="/blog-grid-two">Blog Grid View Two</Link></li>
-                                                <li><Link to="/blog-list-view">Blog List View</Link></li>
-                                                <li><Link to="/blog-single-one">Blog Single View One </Link></li>
-                                                <li><Link to="/blog-single-two">Blog Single View TWo</Link></li>
-                                            </ul>
-                                            : null
-                                    }
-                                </li>
-                                <li>
-                                    <a href="#!" onClick={() => handleShow("pages")}><span>Pages</span></a>
 
-                                    {
-                                        show === "pages" ?
-                                            <ul className="mobile-sub-menu">
-                                                <li><Link to="/about">About Us</Link></li>
-                                                <li><Link to="/vendor-dashboard">Vendor</Link></li>
-                                                <li><Link to="/my-account">My Account</Link></li>
-                                                <li><Link to="/contact-one">Contact Us One</Link></li>
-                                                <li><Link to="/contact-two">Contact Us Two</Link></li>
-                                                <li><Link to="/coming-soon">Coming Soon</Link></li>
-                                                <li><Link to="/faqs">Frequently Questions</Link></li>
-                                                <li><Link to="/privacy-policy">Privacy Policy</Link></li>
-                                                <li><Link to="/error">404 Page</Link></li>
-                                                <li><Link to="/login">Login</Link></li>
-                                            </ul>
-                                            : null
-                                    }
-                                </li>
                             </ul>
                         </div>
 
@@ -419,7 +398,7 @@ const Header = () => {
                             </li>
                         </ul>
                         <ul className="user-link">
-                            <li><Link to="/wishlist">Wishlist</Link></li>
+                            <li><Link to="/wishlist">Favoris</Link></li>
                             <li><Link to="/cart">Cart</Link></li>
                             <li><Link to="/checkout">Checkout</Link></li>
                         </ul>
@@ -456,9 +435,9 @@ const Header = () => {
                         </li>
                     </ul>
                     <ul className="user-link">
-                        <li><Link to="/wishlist">Wishlist</Link></li>
-                        <li><Link to="/cart">Cart</Link></li>
-                        <li><Link to="/checkout">Checkout</Link></li>
+                        <li><Link to={"/wishlist/" + params.idE}>Favoris</Link></li>
+                        <li><Link to={"/cart/" + params.idE}>Panier</Link></li>
+                        <li><Link to={'/compare/' + params.idE}>Comparaison</Link></li>
                     </ul>
                 </div>
             </div>
@@ -470,40 +449,40 @@ const Header = () => {
                     </button>
                 </div>
                 <div className="offcanvas1-add-cart-wrapper">
-                    <h4 className="offcanvas1-title">Shopping Cart</h4>
+                    <h4 className="offcanvas1-title">Panier</h4>
                     <ul className="offcanvas1-cart">
                         {carts.map((data, index) => (
                             <li className="offcanvas1-wishlist-item-single" key={index}>
                                 <div className="offcanvas1-wishlist-item-block">
-                                    <Link to={`/product-details/${data.id}`} className="offcanvas1-wishlist-item-image-link" >
+                                    <Link to={'/product-details/' + params.idE + '/' + data.id} className="offcanvas1-wishlist-item-image-link" >
                                         <img src={data.img} alt="img"
                                             className="offcanvas1-wishlist-image" />
                                     </Link>
                                     <div className="offcanvas1-wishlist-item-content">
-                                        <Link to={`/product-details/${data.id}`} className="offcanvas1-wishlist-item-link">{data.title}</Link>
+                                        <Link to={'/product-details/' + params.idE + '/' + data.id} className="offcanvas1-wishlist-item-link">{data.title}</Link>
                                         <div className="offcanvas1-wishlist-item-details">
                                             <span className="offcanvas1-wishlist-item-details-quantity">{data.quantity || 1} x
                                             </span>
-                                            <span className="offcanvas1-wishlist-item-details-price"> ${data.price}</span>
+                                            <span className="offcanvas1-wishlist-item-details-price"> Dt{data.price}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="offcanvas1-wishlist-item-delete text-right">
-                                    <a href="#!" className="offcanvas1-wishlist-item-delete" onClick={() => rmCartProduct(data.id)}><i className="fa fa-trash"></i></a>
+                                    <a href="#!" className="offcanvas1-wishlist-item-delete" onClick={() => rmCartProduct(data)}><i className="fa fa-trash"></i></a>
                                 </div>
                             </li>
                         ))}
                     </ul>
                     <div className="offcanvas1-cart-total-price">
-                        <span className="offcanvas1-cart-total-price-text">Subtotal:</span>
-                        <span className="offcanvas1-cart-total-price-value">${cartTotal()}.00</span>
+                        <span className="offcanvas1-cart-total-price-text">Total:</span>
+                        <span className="offcanvas1-cart-total-price-value">Dt{cartTotal()}.00</span>
                     </div>
                     <ul className="offcanvas1-cart-action-button">
                         <li>
-                            <Link to="/cart" className="theme-btn-one btn-black-overlay btn_md">View Cart</Link>
+                            <Link to={"/cart/" + params.idE} className="theme-btn-one btn-black-overlay btn_md">Panier</Link>
                         </li>
                         <li>
-                            <Link to="/checkout" className="theme-btn-one btn-black-overlay btn_md">Checkout</Link>
+                            <Link to={"/checkout/" + params.idE} className="theme-btn-one btn-black-overlay btn_md">Vérifier</Link>
                         </li>
                     </ul>
                 </div>
@@ -516,34 +495,34 @@ const Header = () => {
                     </button>
                 </div>
                 <div className="offcanvas1-wishlist-wrapper">
-                    <h4 className="offcanvas1-title">Wishlist</h4>
+                    <h4 className="offcanvas1-title">Favoris</h4>
 
                     <ul className="offcanvas1-wishlist">
                         {favorites.map((data, index) => (
                             <li className="offcanvas1-wishlist-item-single" key={index}>
                                 <div className="offcanvas1-wishlist-item-block">
-                                    <Link to={`/product-details/${data.id}`} className="offcanvas1-wishlist-item-image-link" >
+                                    <Link to={'/product-details/' + params.idE + '/' + data.id} className="offcanvas1-wishlist-item-image-link" >
                                         <img src={data.img} alt="img"
                                             className="offcanvas1-wishlist-image" />
                                     </Link>
                                     <div className="offcanvas1-wishlist-item-content">
-                                        <Link to={`/product-details/${data.id}`} className="offcanvas1-wishlist-item-link">{data.title}</Link>
+                                        <Link to={'/product-details/' + params.idE + '/' + data.id} className="offcanvas1-wishlist-item-link">{data.title}</Link>
                                         <div className="offcanvas1-wishlist-item-details">
                                             <span className="offcanvas1-wishlist-item-details-quantity">1 x
                                             </span>
-                                            <span className="offcanvas1-wishlist-item-details-price">{data.price}</span>
+                                            <span className="offcanvas1-wishlist-item-details-price">Dt{data.price}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="offcanvas1-wishlist-item-delete text-right">
-                                    <a href="#!" className="offcanvas1-wishlist-item-delete" onClick={() => rmFavProduct(data.id)}><i className="fa fa-trash"></i></a>
+                                    <a href="#!" className="offcanvas1-wishlist-item-delete" onClick={() => rmFavProduct(data)}><i className="fa fa-trash"></i></a>
                                 </div>
                             </li>
                         ))}
                     </ul>
                     <ul className="offcanvas1-wishlist-action-button">
                         <li>
-                            <Link to="/wishlist" className="theme-btn-one btn-black-overlay btn_md">View wishlist</Link>
+                            <Link to={"/wishlist/" + params.idE} className="theme-btn-one btn-black-overlay btn_md">Favoris</Link>
                         </li>
                     </ul>
                 </div>

@@ -50,59 +50,13 @@ export const MenuData = [
                         name: "Shop Three Grid",
                         href: "/shopTwo"
                     },
-                    {
-                        name: "Shop List View",
-                        href: "/shoplist"
-                    },
-                    {
-                        name: "Shop Left Sidebar",
-                        href: "/shop-left-bar"
-                    },
-                    {
-                        name: "Shop Right Sidebar",
-                        href: "/shop-right-bar"
-                    },
-                    {
-                        name: "Product Single",
-                        href: "/product-details/1"
-                    },
-                    {
-                        name: "Product Single Two",
-                        href: "/product-details/1"
-                    }
+
                 ]
             },
             {
                 name: "Other Pages",
                 children: [
-                    {
-                        name: "Cart View One",
-                        href: "/cart"
-                    },
-                    {
-                        name: "Cart View Two",
-                        href: "/cartTwo"
-                    },
-                    {
-                        name: "Cart View Three",
-                        href: "/cartThree"
-                    },
-                    {
-                        name: "Empty Cart",
-                        href: "/empty-cart"
-                    },
-                    {
-                        name: "Checkout View One",
-                        href: "/checkout"
-                    },
-                    {
-                        name: "Checkout View Two",
-                        href: "/checkout"
-                    },
-                    {
-                        name: "Wishlist",
-                        href: "/wishlist"
-                    },
+
                     {
                         name: "Compare",
                         href: "/compare"

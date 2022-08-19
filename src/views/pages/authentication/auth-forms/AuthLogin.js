@@ -72,7 +72,6 @@ const FirebaseLogin = ({ ...others }) => {
             () => {
                 const history = createBrowserHistory();
                 if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1) {
-
                     history.push("/");
                     window.location.reload();
                 } else if (AuthService.getCurrentUser().roles.indexOf("ROLE_POSTE") > -1) {
@@ -80,6 +79,9 @@ const FirebaseLogin = ({ ...others }) => {
                     window.location.reload();
                 } else if (AuthService.getCurrentUser().roles.indexOf("ROLE_LIVREUR") > -1) {
                     history.push("/livreur");
+                    window.location.reload();
+                } else if (AuthService.getCurrentUser().roles.indexOf("ROLE_CLIENT") > -1) {
+                    history.push("/login");
                     window.location.reload();
                 }
 

@@ -91,7 +91,7 @@ export default function ProductGird() {
             })
         }
         const history = createBrowserHistory();
-        if (filter[0] != null) {
+        if (filter.length > 0) {
             history.push("/tableView/products?page=" + value + '&filter=' + filter);
         } else if (query.get('search') != null) {
             history.push("/tableView/products?page=" + value + "&search=" + searchValue);

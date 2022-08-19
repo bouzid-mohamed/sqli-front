@@ -10,6 +10,8 @@ import { useParams } from 'react-router-dom';
 import Loading from '../../Common/loader'
 import img404 from '../../../assets/img/Na_Nov_26.jpg'
 import ProductServices from 'services/productServices/ProductServices';
+import { IconFrame } from '@tabler/icons';
+import Swal from 'sweetalert2';
 
 const ProductDetailsTwo = () => {
     const [errorProduct, setErrorProduct] = useState(0)
@@ -17,13 +19,26 @@ const ProductDetailsTwo = () => {
     const params = useParams()
     const [product, setProduct] = useState(null)
     let load = useSelector((state) => state.products.loading)
+    const [taille, setTaille] = useState([])
+    const [couleur, setCouleur] = useState([])
+    const [stockChoisit, setStockChoisit] = useState(null)
+    const [pchecked, setPchecked] = useState(0)
+
     let loadSingle = useSelector((state) => state.products.loadingSingle)
     useEffect(() => {
         ProductServices.showProductFront(params.idE, params.id).then((res) => {
+            let tstoks = []
+            res.data[0].stoks.filter((s) => {
+                if (!tstoks.includes(s.taille) && s.quantite > 0)
+                    tstoks.push(s.taille)
+            })
+            setTaille(tstoks)
+
             let hov = ''
             let price = 0
             let label = ''
             let im = []
+
             if (res.data[0].images.length > 1)
                 hov = res.data[0].images[1].nom
             else hov = res.data[0].images[0].nom
@@ -52,10 +67,11 @@ const ProductDetailsTwo = () => {
                 categorie: p.categorie,
                 stoks: p.stoks,
                 entreprise: p.Entreprise,
-                color:
-                    im
+                color: im
 
             })
+
+
             dispatch({ type: "products/getSingleProduct", payload: { product } });
 
 
@@ -64,7 +80,20 @@ const ProductDetailsTwo = () => {
     }, [])
     // Add to cart
     const addToCart = async (id) => {
-        dispatch({ type: "products/addToCart", payload: { id } })
+        if (stockChoisit === null) {
+            Swal.fire({
+                title: 'Echec!',
+                text: 'Il faut choisir la taille et le couleur',
+                imageUrl: product.img,
+                imageWidth: 200,
+                imageAlt: product.title,
+                showConfirmButton: false,
+                timer: 5000
+            })
+
+        } else {
+            dispatch({ type: "products/addToCart", payload: [id, stockChoisit, count] })
+        }
     }
 
     // Add to Favorite
@@ -91,8 +120,8 @@ const ProductDetailsTwo = () => {
     }
     const [img, setImg] = useState(product?.img)
     const colorSwatch = (i) => {
-        let data = product.color.find(item => item.color === i)
-        setImg(data.img)
+        setPchecked(i.id);
+        setStockChoisit(i);
     }
 
     let settings = {
@@ -113,6 +142,26 @@ const ProductDetailsTwo = () => {
             }
         ]
     };
+    const handleChange = (e) => {
+        let col = []
+        product.stoks.map((s) => {
+            if (s.taille === e.target.value) {
+                col.push(s)
+            }
+            setCouleur(col)
+        })
+    }
+    const InStock = (d) => {
+        let sum = 0;
+        if (d.stoks.length > 0) {
+            d.stoks.map((s) => {
+                sum = sum + s.quantite
+            })
+        }
+        if (sum > 0) return true
+        else return false
+    }
+
     return (
         <>
             {errorProduct === 0 ? (<>
@@ -142,75 +191,86 @@ const ProductDetailsTwo = () => {
 
                                             <h5>{product.categorie.nom}</h5>
                                         </div>
-                                        {product.promotion ? (<h4>Dt{' ' + product.price}.00 <del>Dt{' ' + Math.trunc(product.price + (product.price * product.promotion.pourcentage / 100))}.00</del> </h4>
+                                        {product.promotion ? (<h4>Dt{' ' + product.price}.00 <del>Dt{' ' + Math.trunc((product.price * 100 / product.promotion.pourcentage))}.00</del> </h4>
                                         ) : (<h4>Dt{' ' + product.price}.00  </h4>)}
                                         <p>{product.description}</p>
-                                        {product.stoks?.length >= 1 ? (
-                                            <div className="customs_selects">
-                                                <select name="product" className="customs_sel_box">
-                                                    <option value="">Taille</option>
+                                        {InStock(product) ? (
+                                            <>
+                                                <div className="customs_selects">
+                                                    <select name="product" className="customs_sel_box" onChange={handleChange} onBlur={handleChange}  >
+                                                        <option value="" >Taille</option>
 
-                                                    {product.stoks.map((stok) => (
-                                                        <option key={stok.id} value={stok.id} >
-                                                            {stok.taille}
-                                                        </option >
-                                                    ))}
+                                                        {taille.map((stok) => (
+                                                            <option key={stok} value={stok} >
+                                                                {stok}
+                                                            </option >
+                                                        ))}
 
-                                                </select>
-                                            </div>) : (null)}
+                                                    </select>
+                                                </div>
+                                                <div className="variable-single-item">
+                                                    {couleur.length > 0 ? (<span>Couleur</span>) : (<span>Choisir la taille pour savoir les couleurs disponible</span>)}
+                                                    <div className="product-variable-color">
 
-                                        <div className="variable-single-item">
-                                            <span>Couleur</span>
-                                            <div className="product-variable-color">
+                                                        {couleur?.map((stok) => (
 
-                                                {product.stoks.map((stok) => (
+                                                            <label key={stok.id} htmlFor={stok.id}>
+                                                                <input name="modal-product-color" id={stok.id}
+                                                                    className="color-select" type="radio" onChange={() => { colorSwatch(stok) }} checked={pchecked === stok.id ? true : false} />
+                                                                <span className="product-color-red" style={{ background: stok.couleur }}></span>
+                                                            </label>
 
-
-                                                    <label key={stok.id} htmlFor="modal-product-color-red1">
-                                                        <input name="modal-product-color" id="modal-product-color-red1"
-                                                            className="color-select" type="radio" onChange={() => { colorSwatch('red') }} defaultChecked />
-                                                        <span className="product-color-red"></span>
-                                                    </label>
-
-                                                ))}
-
+                                                        ))}
 
 
-
-
-
-                                            </div>
-                                        </div>
-                                        <form id="product_count_form_two">
-                                            <div className="product_count_one">
-                                                <div className="plus-minus-input">
-                                                    <div className="input-group-button">
-                                                        <button type="button" className="button" onClick={decNum}>
-                                                            <i className="fa fa-minus"></i>
-                                                        </button>
-                                                    </div>
-                                                    <input className="form-control" type="number" value={count} readOnly />
-                                                    <div className="input-group-button">
-                                                        <button type="button" className="button" onClick={incNum}>
-                                                            <i className="fa fa-plus"></i>
-                                                        </button>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </form>
-                                        <div className="links_Product_areas">
-                                            <ul>
-                                                <li>
-                                                    <a href="#!" className="action wishlist" title="Wishlist" onClick={() => addToFav(product.id)}><i
-                                                        className="fa fa-heart"></i>Ajouter à la liste de souhaits</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#!" className="action compare" title="Compare" onClick={() => addToComp(product.id)}><i
-                                                        className="fa fa-exchange"></i>Ajouter pour comparer</a>
-                                                </li>
-                                            </ul>
-                                            <a href="#!" className="theme-btn-one btn-black-overlay btn_sm" onClick={() => addToCart(product.id)}>Ajouter au panier</a>
-                                        </div>
+                                                <form id="product_count_form_two">
+                                                    <div className="product_count_one">
+                                                        <div className="plus-minus-input">
+                                                            <div className="input-group-button">
+                                                                <button type="button" className="button" onClick={decNum}>
+                                                                    <i className="fa fa-minus"></i>
+                                                                </button>
+                                                            </div>
+                                                            <input className="form-control" type="number" value={count} readOnly />
+                                                            <div className="input-group-button">
+                                                                <button type="button" className="button" onClick={incNum}>
+                                                                    <i className="fa fa-plus"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                                <div className="links_Product_areas">
+                                                    <ul>
+                                                        <li>
+                                                            <a href="#!" className="action wishlist" title="Wishlist" onClick={() => addToFav(product)}><i
+                                                                className="fa fa-heart"></i>Ajouter à la liste de souhaits</a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="#!" className="action compare" title="Compare" onClick={() => addToComp(product)}><i
+                                                                className="fa fa-exchange"></i>Ajouter pour comparer</a>
+                                                        </li>
+                                                    </ul>
+                                                    <a href="#!" className="theme-btn-one btn-black-overlay btn_sm" onClick={() => addToCart(product)} disabled={product.stoks?.length > 0 ? true : false}>Ajouter au panier</a>
+                                                </div>
+                                            </>) : (<><h4 style={{ color: 'red' }}>N'est pas disponible dans le stock</h4> <div className="links_Product_areas">
+                                                <ul>
+                                                    <li>
+                                                        <a href="#!" className="action wishlist" title="Wishlist" onClick={() => addToFav(product)}><i
+                                                            className="fa fa-heart"></i>Ajouter à la liste de souhaits</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#!" className="action compare" title="Compare" onClick={() => addToComp(product)}><i
+                                                            className="fa fa-exchange"></i>Ajouter pour comparer</a>
+                                                    </li>
+                                                </ul>
+                                            </div></>)}
+
+
+
+
 
                                     </div>
                                 </div>

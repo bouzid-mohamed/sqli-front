@@ -1,6 +1,7 @@
 import axios from 'axios';
 import authHeader from '../auth-services/auth-header';
 const API_URL = 'http://localhost:8000/client/';
+const API_URL1 = 'http://localhost:8000/api/client/';
 class UserService {
 
   //ajouter un compte client 
@@ -31,6 +32,22 @@ class UserService {
   }
   getAdminBoard() {
     return axios.get(API_URL + 'admin', { headers: authHeader() });
+  }
+  //update un client
+  updateClient(nom, prenom, email, numTel, newPassword, password, bodyFormData, id) {
+
+    bodyFormData.append('nom', nom)
+    bodyFormData.append('prenom', prenom)
+    bodyFormData.append('email', email)
+    bodyFormData.append('numTel', numTel)
+    bodyFormData.append('password', password)
+    bodyFormData.append('newPassword', newPassword)
+    return axios
+      .post(API_URL1 + "update/" + id,
+        bodyFormData, { headers: authHeader() })
+      .then(response => {
+        return response.data;
+      });
   }
 }
 export default new UserService();

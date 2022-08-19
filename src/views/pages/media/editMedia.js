@@ -119,18 +119,25 @@ export default function EditMedia({ ...others }) {
             setLoadcirular(false);
 
             if (formikRef.current && isCover === false) {
-                formikRef.current.setFieldValue(
-                    "titre",
-                    res.data[0].titre
-                );
-                formikRef.current.setFieldValue(
-                    "description",
-                    res.data[0].description
-                );
-                formikRef.current.setFieldValue(
-                    "url",
-                    res.data[0].url
-                );
+                if (res.data[0].titre != null) {
+                    formikRef.current.setFieldValue(
+                        "titre",
+                        res.data[0].titre
+                    );
+                }
+                if (res.data[0].description != null) {
+                    formikRef.current.setFieldValue(
+                        "description",
+                        res.data[0].description
+                    );
+                }
+                if (res.data[0].url != null) {
+                    formikRef.current.setFieldValue(
+                        "url",
+                        res.data[0].url
+                    );
+                }
+
             }
 
         })
@@ -199,7 +206,6 @@ export default function EditMedia({ ...others }) {
                             titre: '',
                             description: '',
                             url: '',
-
                             submit: null
                         }}
                         validationSchema={Yup.object().shape({

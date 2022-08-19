@@ -1,6 +1,7 @@
 import axios from 'axios';
 import authHeader from 'services/auth-services/auth-header';
 const API_URL = 'http://localhost:8000/api/entreprise/bon';
+const API_URL2 = 'http://localhost:8000/';
 class BonServices {
     // get all promotion d une entreprise
 
@@ -54,6 +55,9 @@ class BonServices {
 
     show(id) {
         return axios.get(API_URL + '/' + id, { headers: authHeader() })
+    }
+    verifBon(entreprise, code) {
+        return axios.get(API_URL2 + 'verif_bon/' + entreprise + '/' + code)
     }
 }
 export default new BonServices();

@@ -50,7 +50,7 @@ class CompanyService {
 
     //afficher entreprise 
     show(id) {
-        return axios.get(API_URL3 + 'show_entreprise/' + id, { headers: authHeader() })
+        return axios.get(API_URL3 + 'show_entreprise/' + id)
     }
 
 }

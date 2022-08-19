@@ -35,8 +35,8 @@ function useQuery() {
     return new URLSearchParams(useLocation().search);
 }
 export const FILTER_PRICE_OPTIONS = [
-    { value: '1', label: 'Prix : bas-élevé' },
-    { value: '2', label: 'Prix: élevé-bas' },
+    { value: 1, label: 'Prix : bas-élevé' },
+    { value: 2, label: 'Prix: élevé-bas' },
 
 ];
 ShopFilterSidebar.propTypes = {
@@ -73,21 +73,22 @@ export default function ShopFilterSidebar({
     const { getFieldProps } = formik;
     const [rows, setRows] = React.useState([]);
     const [isLoading, setIsloading] = React.useState(true);
-    const [list] = React.useState([]);
-    const [setPChecked] = React.useState(0);
+    const [list, setList] = React.useState([]);
+    const [pChecked, setPChecked] = React.useState(0);
     const [ch, setch] = React.useState([]);
     let query = useQuery();
     const [price, setPrice] = React.useState(0);
 
     React.useEffect(() => {
         if (query.get("filter")) {
+
             var myArray = query.get("filter").split(',');
             myArray.filter((e) => {
                 list.push(parseInt(e))
             })
         }
         if (query.get("order")) {
-            setPChecked(query.get("order"))
+            setPChecked(parseInt(query.get("order")))
         }
         var i = 0;
         CategorieServices.getAll().then((res) => {
@@ -105,6 +106,7 @@ export default function ShopFilterSidebar({
                     i = i + 1;
                     var a1 = [];
                     if (c.catFils[0] != null) {
+                        console.log(c)
                         c.catFils.filter((fils1) => {
                             fils1.num = i;
                             if (list.indexOf(parseInt(fils1.id)) > -1) {
@@ -176,10 +178,13 @@ export default function ShopFilterSidebar({
     }
     const handleChangePrice = (e) => {
         if (price === 1) {
+
             setPrice(2)
+            setPChecked(2)
         }
         else {
             setPrice(1)
+            setPChecked(1)
         }
     }
 
@@ -313,17 +318,23 @@ export default function ShopFilterSidebar({
                                         Prix
                                     </Typography>
                                     <RadioGroup {...getFieldProps('priceRange')}>
-                                        {FILTER_PRICE_OPTIONS.map((o) => (
-                                            < FormControlLabel
-                                                key={o.value}
-                                                value={o.value}
-                                                control={<Radio />}
-                                                label={o.label}
-                                                onChange={handleChangePrice}
 
+                                        < FormControlLabel
+                                            value={1}
+                                            control={<Radio />}
+                                            label='Prix : bas-élevé'
+                                            onChange={handleChangePrice}
+                                            checked={true ? pChecked === 1 : false}
+                                        />
+                                        < FormControlLabel
+                                            value={2}
+                                            control={<Radio />}
+                                            label='Prix: élevé-bas'
+                                            onChange={handleChangePrice}
+                                            checked={true ? pChecked === 2 : false}
 
-                                            />
-                                        ))}
+                                        />
+
 
 
                                     </RadioGroup>

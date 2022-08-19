@@ -1,10 +1,14 @@
 import axios from 'axios';
 import authHeader from 'services/auth-services/auth-header';
 const API_URL = 'http://localhost:8000/api/entreprise/';
+const API_URL2 = 'http://localhost:8000/';
 class CategorieServices {
 
     getAll() {
         return axios.get(API_URL + 'categories', { headers: authHeader() })
+    }
+    getAllFront(id) {
+        return axios.get(API_URL2 + 'show_categories_list/' + id)
     }
 
     getAllPagination(value, search) {

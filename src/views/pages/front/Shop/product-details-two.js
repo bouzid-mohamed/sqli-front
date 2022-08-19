@@ -9,7 +9,7 @@ const ProductDetailsTwo = () => {
     return (
         <>
             <Header />
-            <Banner title="Product Desils " />
+            <Banner title="Détails du produit " />
             <ProductDetailsTwos />
             <Footer />
         </>

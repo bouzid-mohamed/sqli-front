@@ -11,7 +11,7 @@ class MediaServices {
     }
 
     getAllMedia(id) {
-        return axios.get(API_URL2 + 'show_medias/' + id, { headers: authHeader() })
+        return axios.get(API_URL2 + 'show_medias/' + id)
     }
 
 

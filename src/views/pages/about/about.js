@@ -7,7 +7,7 @@ const About = () => {
     return (
         <>
             <Header />
-            <Banner title="About" />
+            <Banner title="À PROPOS" />
             <AboutComponent />
             <Footer />
         </>

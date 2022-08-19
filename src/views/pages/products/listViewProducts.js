@@ -43,7 +43,7 @@ export default function ListViewProducts() {
             })
         }
         const history = createBrowserHistory();
-        if (filter[0] != null) {
+        if (filter.length > 0) {
             history.push("/listView/products?page=" + value + '&filter=' + filter);
         } else if (query.get('search') != null) {
             history.push("/listView/products?page=" + value + "&search=" + searchValue);

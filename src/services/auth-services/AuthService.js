@@ -27,6 +27,9 @@ class AuthService {
     }
     logout() {
         localStorage.removeItem("token");
+        if (localStorage.getItem('user')) {
+            localStorage.removeItem("user");
+        }
     }
     // register(username, email, password) {
     // return axios.post(API_URL + "signup", {
@@ -42,6 +45,16 @@ class AuthService {
             return decoded;
         } catch (err) {
             history.push('/login');
+            window.location.reload();
+        }
+    }
+    getCurrentClient(id) {
+        try {
+            const token = localStorage.getItem('token');
+            var decoded = jwt_decode(token);
+            return decoded;
+        } catch (err) {
+            history.push('/login/' + id);
             window.location.reload();
         }
     }

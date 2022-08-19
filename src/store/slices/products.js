@@ -14,11 +14,13 @@ const productsSlice = createSlice({
     initialState: {
         products: [],
         carts: [],
+        categories: [],
         favorites: [],
         compare: [],
         numberPages: 1,
         single: null,
         loading: true,
+        loadingCategorie: true,
         loadingSingle: true,
 
     },
@@ -43,6 +45,12 @@ const productsSlice = createSlice({
             state.loading = false
 
         },
+        addCategories: (state, action) => {
+
+            Object.assign(state.categories, { ...action.payload });
+            state.loadingCategorie = false
+
+        },
         setNumberPages: (state, action) => {
             state.numberPages = action.payload
         },
@@ -53,21 +61,23 @@ const productsSlice = createSlice({
         initFav: (state, action) => {
             Object.assign(state.favorites, { ...action.payload });
         },
+        initCompare: (state, action) => {
+            Object.assign(state.compare, { ...action.payload });
+        },
 
         // Add to Cart
         addToCart: (state, action) => {
-
-            let { id } = action.payload;
-            // Check existance
-            let item = state.carts.find(i => i.id === parseInt(id))
-            let item2 = state.products.find(i => i.id === parseInt(id))
+            let a = []
+            Object.assign(a, { ...action.payload });
+            let id = a[0];
+            let copieIdie = { ...id }
+            let stock = a[1];
+            copieIdie.quantity = parseInt(a[2])
+            copieIdie.stokChoisit = stock
+            let item = state.carts.find(i => i.stokChoisit.id === parseInt(stock.id))
             if (item === undefined) {
-                // Get Product
-                let arr = state.products.find(item => item.id === parseInt(id))
-                arr.quantity = 1
-                state.carts.push(arr)
-                //to locale storage 
-                localStorage.setItem('cart' + item2.entreprise.id, JSON.stringify(state.carts));
+                state.carts.push(copieIdie)
+                localStorage.setItem('cart' + id.entreprise.id, JSON.stringify(state.carts));
                 Swal.fire({
                     title: 'Succès!',
                     text: 'Ajouté avec succès à votre panier',
@@ -75,7 +85,6 @@ const productsSlice = createSlice({
                     showConfirmButton: false,
                     timer: 2500
                 })
-
             } else {
                 Swal.fire({
                     title: 'Echec!',
@@ -92,8 +101,8 @@ const productsSlice = createSlice({
         addToComp: (state, action) => {
             if (state.compare.length >= 3) {
                 Swal.fire({
-                    title: 'Failed!',
-                    text: 'Compare List is Full',
+                    title: 'Echec!',
+                    text: 'La liste de comparaison est pleine',
                     icon: 'warning',
                     showConfirmButton: false,
                     timer: 2500,
@@ -104,22 +113,21 @@ const productsSlice = createSlice({
             let { id } = action.payload;
 
             // Check existance
-            let item = state.compare.find(i => i.id === parseInt(id))
+            let item = state.compare.find(i => i.id === parseInt(id.id))
             if (item === undefined) {
-                // Get Product
-                let arr = state.products.find(item => item.id === parseInt(id))
-                state.compare.push(arr)
+                state.compare.push(id)
+                localStorage.setItem('compare' + id.entreprise.id, JSON.stringify(state.compare));
                 Swal.fire({
                     title: 'Succès!',
-                    text: 'Successfully added to Compare List',
+                    text: 'Ajouté avec succès à la liste de comparaison',
                     icon: 'success',
                     showConfirmButton: false,
                     timer: 2500,
                 })
             } else {
                 Swal.fire({
-                    title: 'Failed!',
-                    text: 'Already Added in Compare List',
+                    title: 'Echec!',
+                    text: 'Déjà ajouté dans la liste de comparaison',
                     imageUrl: item.img,
                     imageWidth: 200,
                     imageAlt: item.title,
@@ -144,20 +152,19 @@ const productsSlice = createSlice({
         // Remove Cart
         removeCart: (state, action) => {
             let { id } = action.payload;
-            let arr = state.carts.filter(item => item.id !== parseInt(id))
-            let item2 = state.products.find(i => i.id === parseInt(id))
+            let arr = state.carts.filter(item => item.stokChoisit.id !== parseInt(id.stokChoisit.id))
             state.carts = arr
             //storage
-            localStorage.setItem('cart' + item2.entreprise.id, JSON.stringify(state.carts));
+            localStorage.setItem('cart' + id.entreprise.id, JSON.stringify(state.carts));
 
 
         },
         // Delete from Compare
         delCompare: (state, action) => {
             let { id } = action.payload;
-            let arr = state.compare.filter(item => item.id !== parseInt(id))
+            let arr = state.compare.filter(item => item.id !== id.id)
             state.compare = arr
-
+            localStorage.setItem('compare' + id.entreprise.id, JSON.stringify(state.compare));
         },
         // Clear Cart
         clearCart: (state) => {
@@ -171,16 +178,16 @@ const productsSlice = createSlice({
             let { id } = action.payload;
 
             // Check existance
-            let item = state.favorites.find(i => i.id === parseInt(id))
-            let item2 = state.products.find(i => i.id === parseInt(id))
+            let item = state.favorites.find(i => i.id === parseInt(id.id))
+            //   let item2 = state.products.find(i => i.id === parseInt(id.id))
             if (item === undefined) {
                 // Get Product
-                let arr = state.products.find(item => item.id === parseInt(id))
-                arr.quantity = 1
-                state.favorites.push(arr)
-                localStorage.setItem('favorites' + item2.entreprise.id, JSON.stringify(state.favorites));
+                //   let arr = state.products.find(item => item.id === parseInt(id))
+                //  arr.quantity = 1
+                state.favorites.push(id)
+                localStorage.setItem('favorites' + id.entreprise.id, JSON.stringify(state.favorites));
 
-                Swal.fire('Succès', "AAjouté à la liste de souhaits", 'success')
+                Swal.fire('Succès', "Ajouté à la liste de souhaits", 'success')
             } else {
                 Swal.fire('Echec', "Déjà ajouté à la liste de souhaits", 'warning')
             }
@@ -188,11 +195,9 @@ const productsSlice = createSlice({
         // Remove from Favorite / Wishlist
         removeFav: (state, action) => {
             let { id } = action.payload;
-            let item2 = state.products.find(i => i.id === parseInt(id))
-            let arr = state.favorites.filter(item => item.id !== id)
+            let arr = state.favorites.filter(item => item.id !== id.id)
             state.favorites = arr
-            localStorage.setItem('favorites' + item2.entreprise.id, JSON.stringify(state.favorites));
-
+            localStorage.setItem('favorites' + id.entreprise.id, JSON.stringify(state.favorites));
 
         },
     }

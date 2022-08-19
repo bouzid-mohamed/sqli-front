@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 
 const ProductDetailsOne = () => {
     let dispatch = useDispatch();
-
+    const params = useParams()
     let { id } = useParams();
     dispatch({ type: "products/getProductById", payload: { id } });
     let product = useSelector((state) => state.products.single);
@@ -123,7 +123,7 @@ const ProductDetailsOne = () => {
                                                     className="fa fa-heart"></i>Add To Wishlist</a>
                                             </li>
                                             <li>
-                                                <a href="#!" className="action compare" onClick={() => addToComp(product.id)} title="Compare"><i
+                                                <a href="#!" className="action compare" onClick={() => addToComp(product)} title="Compare"><i
                                                     className="fa fa-exchange"></i>Add To Compare</a>
                                             </li>
                                         </ul>
@@ -143,9 +143,9 @@ const ProductDetailsOne = () => {
                     <div className="col-lg-6 offset-lg-3 col-md-6 offset-md-3 col-sm-12 col-12">
                         <div className="empaty_cart_area">
                             <img src={img} alt="img" />
-                            <h2>PRODUCT NOT FOUND</h2>
-                            <h3>Sorry Mate... No Item Found according to Your query!</h3>
-                            <Link to="/shop" className="btn btn-black-overlay btn_sm">Continue Shopping</Link>
+                            <h2>PRODUIT NON TROUVÉ</h2>
+                            <h3>Désolé ... Aucun élément trouvé selon votre requête !</h3>
+                            <Link to={"/shop/" + params.idE} className="btn btn-black-overlay btn_sm">Continuer vos achats</Link>
                         </div>
                     </div>
                 </div>

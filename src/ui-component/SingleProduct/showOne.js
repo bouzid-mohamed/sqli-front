@@ -77,7 +77,7 @@ export default function ShowOne() {
                             <Typography variant="subtitle1" color="text.secondary" component="div" sx={{ mt: 3 }}>
                                 {product.description}
                             </Typography>
-                            {product.stoks[0] != null ? (
+                            {product.stoks.length > 0 ? (
                                 <>
                                     <Typography variant="h5" component="div" sx={{ mt: 3 }}>
                                         Tailles  :

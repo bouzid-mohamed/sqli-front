@@ -109,29 +109,28 @@ class ProductService {
         if (search === null) {
 
             if (order === null) {
-                return axios.get(API_URL1 + 'produits_entreprise/' + id + '?page=' + value)
+                return axios.get(API_URL1 + 'produits_entreprise/' + id + '?page=' + value + '&filter=' + filter)
 
             } else {
-                return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter + '&order=' + order, { headers: authHeader() })
-
+                return axios.get(API_URL1 + 'produits_entreprise/' + id + '?page=' + value + '&filter=' + filter + '&order=' + order)
             }
 
         } else
             if (order === null) {
-                return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter + '&search=' + search, { headers: authHeader() })
+                return axios.get(API_URL1 + 'produits_entreprise/' + id + '?page=' + value + '&filter=' + filter + '&search=' + search)
 
             } else {
-                return axios.get(API_URL + 'produit?page=' + value + '&filter=' + filter + '&order=' + order + '&search=' + search, { headers: authHeader() })
+                return axios.get(API_URL1 + 'produits_entreprise/' + id + '?page=' + value + '&filter=' + filter + '&order=' + order + '&search=' + search)
 
             }
     }
     showProductFront(idE, idP) {
-        return axios.get(API_URL1 + 'show_produit/' + idE + '/' + idP, { headers: authHeader() })
+        return axios.get(API_URL1 + 'show_produit/' + idE + '/' + idP)
 
     }
 
     showProductTriHome(idE) {
-        return axios.get(API_URL1 + 'show_produits_home/' + idE, { headers: authHeader() })
+        return axios.get(API_URL1 + 'show_produits_home/' + idE)
 
     }
 

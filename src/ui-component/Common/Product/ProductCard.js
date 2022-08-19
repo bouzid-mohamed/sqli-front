@@ -38,11 +38,11 @@ const ProductCard = (props) => {
                         <span className={(['hot', 'new', 'sale'][Math.round(Math.random() * 2)])}>{props.data.labels}</span>
                     </span>
                     <div className="actions">
-                        <a href="#!" className="action wishlist" title="Wishlist" onClick={() => addToFav(props.data.id)}><AiOutlineHeart /></a>
+                        <a href="#!" className="action wishlist" title="Wishlist" onClick={() => addToFav(props.data)}><AiOutlineHeart /></a>
                         <a href="#!" className="action quickview" title="Quick view" onClick={() => setModalShow(true)}><AiOutlineExpand /></a>
-                        <a href="#!" className="action compare" title="Compare" onClick={() => addToComp(props.data.id)}><FaExchangeAlt /></a>
+                        <a href="#!" className="action compare" title="Compare" onClick={() => addToComp(props.data)}><FaExchangeAlt /></a>
                     </div>
-                    <button type="button" className="add-to-cart offcanvas1-toggle" onClick={() => addToCart(props.data.id)}>Add to cart</button>
+                    <button type="button" className="add-to-cart offcanvas1-toggle" onClick={(e) => { e.preventDefault(); window.location.href = '/product-details/' + params.idE + '/' + props.data.id }} >Ajouter au panier</button>
                 </div>
                 <div className="content">
                     <h5 className="title">

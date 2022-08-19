@@ -134,6 +134,26 @@ class CommandesServices {
     getClientsLIvreurStat() {
         return axios.get(API_URL1 + 'livreur/clientsstatics', { headers: authHeader() })
     }
+    //ajouter une commande role client 
+    //ajouter un stock 
+    addCommande(addresse, gouvernerat, delegation, lignesCommande, bon) {
+        console.log(lignesCommande)
+        return axios
+            .post(API_URL1 + "client/commande/add", {
+                addresse, gouvernerat, delegation, lignesCommande, bon
+            }, { headers: authHeader() })
+            .then(response => {
+                return response.data;
+            });
+    }
+    getCommandeClient(id) {
+        return axios.get(API_URL1 + 'client/getAllCommandeClient/' + id, { headers: authHeader() })
+
+    }
+    showOneCommandeClient(idE, idC) {
+        return axios.get(API_URL1 + 'client/getCommandeClient/' + idE + '/' + idC, { headers: authHeader() })
+
+    }
 
 
 

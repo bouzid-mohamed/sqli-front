@@ -27,7 +27,7 @@ class PromotionServices {
     }
     // get  promotion page home d une entreprise
     getAllPageHome(id) {
-        return axios.get(API_URL2 + 'show_promotions_home/' + id, { headers: authHeader() })
+        return axios.get(API_URL2 + 'show_promotions_home/' + id)
     }
 
 

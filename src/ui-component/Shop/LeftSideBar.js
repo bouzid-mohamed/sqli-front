@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import SideBar from './SideBar'
 import ProductCard from '../Common/Product/ProductCard'
 import { useSelector } from "react-redux";
 import Loading from '../../ui-component/Common/loader';
 import { useLocation } from 'react-router';
 import { createBrowserHistory } from 'history';
-import { PanoramaSharp } from '@material-ui/icons';
 import { useParams } from 'react-router';
 
 function useQuery() {
@@ -46,7 +45,7 @@ const LeftSideBar = () => {
             })
         }
         const history = createBrowserHistory();
-        if (filter[0] != null) {
+        if (filter.length > 0) {
             history.push("/shop/" + params.idE + "?page=" + value + '&filter=' + filter);
         } else if (query.get('search') != null) {
             history.push("/shop/" + params.idE + "?page=" + value + "&search=" + searchValue);
@@ -70,7 +69,7 @@ const LeftSideBar = () => {
             })
         }
         const history = createBrowserHistory();
-        if (filter[0] != null) {
+        if (filter.length > 0) {
             history.push("/shop/" + params.idE + "?page=" + value + '&filter=' + filter);
         } else if (query.get('search') != null) {
             history.push("/shop/" + params.idE + "?page=" + value + "&search=" + searchValue);
@@ -88,7 +87,7 @@ const LeftSideBar = () => {
             })
         }
         const history = createBrowserHistory();
-        if (filter[0] != null) {
+        if (filter.length > 0) {
             history.push("/shop/" + params.idE + "?page=" + value + '&filter=' + filter);
         } else if (query.get('search') != null) {
             history.push("/shop/" + params.idE + "?page=" + value + "&search=" + searchValue);
