@@ -130,7 +130,7 @@ const AccountDetailsEdit = () => {
     return (
 
         <>
-            {load || loading ? (<Loading />) : (<>
+            {loading ? (<Loading />) : (<>
                 <section id="account_edit" className="pt-100 pb-100">
                     <div className="container">
                         <div className="row">

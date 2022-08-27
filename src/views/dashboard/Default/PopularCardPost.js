@@ -90,8 +90,9 @@ const PopularCard = ({ isLoading }) => {
 
                 })
                 resL.data.filter((liv) => {
-                    if (!handleCheck(liv.id, livreurs)) {
+                    if (!handleCheck(liv.id, livreur2)) {
                         livreur2.push({ 'nbrCmd': 0, id: liv.id, email: liv.email, nom: liv.nom, prenom: liv.prenom, numTel: liv.numTel })
+                        console.log(liv.id)
 
                     }
 

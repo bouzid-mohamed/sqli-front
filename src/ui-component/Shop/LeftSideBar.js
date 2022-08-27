@@ -14,7 +14,6 @@ const LeftSideBar = () => {
     const params = useParams();
 
     const [products, setProducts] = useState(useSelector((state) => state.products.products))
-    let load = useSelector((state) => state.products.loading)
     let numberPages = useSelector((state) => state.products.numberPages)
     let query = useQuery();
     const [filter, setFilter] = React.useState([]);
@@ -104,7 +103,7 @@ const LeftSideBar = () => {
                     <div className="row">
                         <SideBar filterEvent={randProduct} />
                         <div className="col-lg-9">
-                            {load ? (<Loading></Loading>) : (<div className="row">
+                            <div className="row">
                                 {prods.slice(0, 16).map((data, index) => (
                                     <div className="col-lg-4 col-md-4 col-sm-6 col-12" key={index}>
                                         <ProductCard data={data} />
@@ -131,7 +130,7 @@ const LeftSideBar = () => {
                                         </li>
                                     </ul>
                                 </div>
-                            </div>)}
+                            </div>
 
                         </div>
                     </div>

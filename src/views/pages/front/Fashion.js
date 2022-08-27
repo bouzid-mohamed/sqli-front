@@ -11,6 +11,8 @@ import Loading from '../../../ui-component/Common/loader'
 import { useParams } from 'react-router'
 import promotionServices from 'services/promotion-services/promotionServices'
 import ProductServices from 'services/productServices/ProductServices'
+import { useSelector } from 'react-redux'
+import Error404 from '../error/error404'
 
 const Fashion = () => {
 
@@ -27,6 +29,8 @@ const Fashion = () => {
     const [isLoading2, setIsloading2] = useState(true);
     const [isLoading3, setIsloading3] = useState(true);
     const [isLoading4, setIsloading4] = useState(true);
+    let load = useSelector((state) => state.products.loading)
+    let error404 = useSelector((state) => state.products.errorPage)
 
     const params = useParams();
 
@@ -216,13 +220,15 @@ const Fashion = () => {
     }, []);
     return (
         <>
-            {isLoading || isLoading2 || isLoading3 || isLoading4 ? (<Loading />) : (<>  <Header />
-                <Banner medias={topmedia} />
-                {promos.length >= 5 ? (<BannerBottom promos={promos} />) : (null)}
-                <HotProduct prods={[prodsPrix, prodsNouveaux, prodsPromotion, prodsVendu.length > 7 ? prodsVendu.slice(0, 7) : prodsVendu]} />
-                <TodayDeal prods={prodsNouveaux} />
-                <Trending medias={bottommedia} />
-                <Footer /> </>)
+            <Header />
+            {load || isLoading || isLoading2 || isLoading3 || isLoading4 ? (<Loading />) : (<>
+                {error404 === 0 ? (<> <Banner medias={topmedia} />
+                    {promos.length >= 5 ? (<BannerBottom promos={promos} />) : (null)}
+                    <HotProduct prods={[prodsPrix, prodsNouveaux, prodsPromotion, prodsVendu.length > 7 ? prodsVendu.slice(0, 7) : prodsVendu]} />
+                    <TodayDeal prods={prodsNouveaux} />
+                    <Trending medias={bottommedia} />
+                    <Footer /></>) : (<Error404></Error404>)}
+            </>)
             }
 
         </>

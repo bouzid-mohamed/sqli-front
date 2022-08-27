@@ -19,6 +19,7 @@ import CommandeServices from 'services/commande-services/CommandeServices';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SearchIcon from '@mui/icons-material/Search';
+import NotificationServices from 'services/notification-services/NotificationServices';
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -60,11 +61,20 @@ export default function CollapsibleTable() {
         if (query.get('search') != null) {
             setSearchValue(query.get('search'))
         }
-        commandeServices.getAll(query.get("page"), query.get("search")).then((res) => {
-            setRows(res.data[0]);
-            setNumberPages(res.data["pagination"])
-            setIsloading(false);
-        })
+        if (query.get("byId")) {
+            NotificationServices.showEntreprise(query.get("byId")).then((res) => {
+                setRows(res.data);
+                setNumberPages(0)
+                setIsloading(false);
+            })
+        } else {
+            commandeServices.getAll(query.get("page"), query.get("search")).then((res) => {
+                setRows(res.data[0]);
+                setNumberPages(res.data["pagination"])
+                setIsloading(false);
+            })
+        }
+
     }, []);
 
     // etat commande vers confirmer
@@ -249,9 +259,10 @@ export default function CollapsibleTable() {
                             </Table>
                         </>
                     )}
-                    <Stack direction="row-reverse" marginTop={"2%"}>
+                    {numberPages > 0 ? (<Stack direction="row-reverse" marginTop={"2%"}>
                         <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
-                    </Stack>
+                    </Stack>) : (null)}
+
                 </TableContainer>
                 <ToastContainer />
 

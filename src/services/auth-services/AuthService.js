@@ -20,6 +20,8 @@ class AuthService {
                 if (response.data.token) {
                     var token = response.data.token;
                     localStorage.setItem('token', token);
+
+
                 }
 
                 return response.data;
@@ -38,6 +40,23 @@ class AuthService {
     //password
     // });
     //}
+
+    refrechToken() {
+        let t = localStorage.getItem('refresh_token')
+        let t1 = localStorage.getItem('token')
+        return axios
+            .post(API_URL + 'token/refresh', {
+                'refresh_token': t
+            })
+            .then((response) => {
+                if (response.data.token) {
+                    var token = response.data.token;
+                    localStorage.setItem('token', token);
+                }
+
+
+            });
+    }
     getCurrentUser() {
         try {
             const token = localStorage.getItem('token');

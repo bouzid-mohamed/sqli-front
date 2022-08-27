@@ -1,90 +1,84 @@
-import React, { useEffect } from 'react'
-import logo from '../../../assets/img/logo.png'
-import payment from '../../../assets/img/common/payment.png'
-import { Link } from 'react-router-dom'
-import NewsletterModal from '../NewsletterModal'
+import { useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
 import { useSelector } from "react-redux"
-import { useDispatch } from "react-redux";
 import Swal from 'sweetalert2'
+import { Rating } from '@mui/material'
+import CompanyServices from 'services/companyServices/CompanyServices'
 
-const FooterData = [
-    {
-        title: "INFORMATION",
-        links: [
-            { linkTitle: "Home", link: "/" },
-            { linkTitle: "About us", link: "/about" },
-            { linkTitle: "Privacy Policy", link: "/privacy-policy" },
-            { linkTitle: "Frequently Questions", link: "/faqs" },
-            { linkTitle: "Order Tracking", link: "/order-tracking" },
-            { linkTitle: "Compare", link: "/compare" }
-        ]
-    },
-    {
-        title: "SHOP",
-        links: [
-            { linkTitle: "Cart View One", link: "/cart" },
-            { linkTitle: "Cart View Two", link: "/cartTwo" },
-            { linkTitle: "Empty Cart", link: "/empty-cart" },
-            { linkTitle: "Checkout View One", link: "/checkout" },
-            { linkTitle: "Checkout View Two", link: "/checkout" },
-            { linkTitle: "Wishlist", link: "/wishlist" }
-        ]
-    }
-]
+
 
 const Footer = () => {
-    let dispatch = useDispatch();
+    let load = useSelector((state) => state.products.loadingCategorie)
+    let loadingEntreprise = useSelector((state) => state.products.loadingEntreprise)
+    let entreprise = useSelector((state) => state.products.entreprise)
+    const [value, setValue] = useState(0)
 
-    let promoCenter = useSelector((state) => state.settings.promoCenter);
-    let promoStatus = useSelector((state) => state.settings.promoStatus);
-    let stopPromo = useSelector((state) => state.settings.stopPromo);
-    let cookie = useSelector((state) => state.settings.cookie);
-    let stopCookie = useSelector((state) => state.settings.stopCookie);
+    let categories = [...useSelector((state) => state.products.categories)];
 
-    useEffect(() => {
-        if (promoStatus) {
-            return
-        } else {
-            dispatch({ type: "settings/promoStatus" })
-            setTimeout(function () {
-                dispatch({ type: "settings/promoCenter" })
-            }, 2000)
-        }
+    const [fData, setFData] = useState([])
+    const params = useParams()
+    const [submitting, setSubmitting] = useState(false)
 
-        if (stopCookie) {
-            return
-        } else {
-            setTimeout(function () {
-                dispatch({ type: "settings/cookie" })
-            }, 6000)
-        }
-    }, [dispatch, promoStatus, stopCookie]);
+    useEffect(
 
 
-    const startPromoModal = () => {
-        if (stopPromo) {
-            dispatch({ type: "settings/promoCenter" })
-            return;
-        } else {
-            dispatch({ type: "settings/promoCenter" })
-            setTimeout(function () {
-                dispatch({ type: "settings/promoCenter" })
-            }, 700000)
-        }
+        () => {
+            let cat = []
+            let d = []
+            categories.filter((c) => {
+                if (c.catPere === null) {
+                    cat.push({ linkTitle: c.nom, link: "/shop/1?page=1&filter=" + c.id },)
+                }
 
-    }
+            })
 
-    const stopPromoModal = () => {
-        dispatch({ type: "settings/stopPromo" })
-    }
+            const infos = {
+                title: "INFORMATIONS",
+                links: [
+                    { linkTitle: "Acceuil", link: "/home/" + params.idE },
+                    { linkTitle: "Produits", link: "/shop/" + params.idE },
+                    { linkTitle: "À PROPOS", link: "/aboutUs/" + params.idE },
+                    { linkTitle: "Panier", link: "/cart/" + params.idE },
+                    { linkTitle: "Favoris", link: "/wishlist/" + params.idE },
+                    { linkTitle: "Comparaison", link: "/compare/" + params.idE }
+                ]
+            }
+            d.push(infos)
+            d.push({ title: 'Produits', links: cat })
+            setFData(d)
+            if (loadingEntreprise === false) {
+                setValue(entreprise.note / entreprise.type)
+            }
+            if (localStorage.getItem('note' + params.idE)) {
+                setSubmitting(true)
+            }
 
-    const cancelCookie = () => {
-        dispatch({ type: "settings/cookie" })
-    }
+        }, [load],
 
-    const acceptCookie = () => {
-        // Write your function there
-        dispatch({ type: "settings/cookie" })
+    );
+
+
+
+
+
+    const handleChangeNote = (newValue) => {
+        setValue(newValue);
+        CompanyServices.updateNote(newValue, params.idE).then(
+            () => {
+
+                Swal.fire({
+                    title: 'Succès!',
+                    text: 'Merci pour votre évaluation',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 2500
+                })
+                localStorage.setItem('note' + entreprise.id, true);
+                setSubmitting(true);
+            },
+
+
+        );
     }
 
     return (
@@ -94,34 +88,17 @@ const Footer = () => {
                     <div className="row">
                         <div className="col-lg-4 col-md-12 col-sm-12 col-12">
                             <div className="footer_left_side">
-                                <Link to="/" ><img src={logo} alt="logo" /></Link>
-                                <p>
-                                    <strong>ANDSHOP</strong> is an multi-vendor B2C fast e-commerce company. The company mainly focuses on men,women and children wear,
-                                    but it also offers other apparel, clothes, accessories, shoes, bags and other fashion items.
-                                </p>
-                                <div className="footer_left_side_icon">
-                                    <ul>
-                                        <li>
-                                            <a href="#!"><i className="fa fa-facebook-f"></i></a>
-                                        </li>
-                                        <li>
-                                            <a href="#!"><i className="fa fa-twitter"></i></a>
-                                        </li>
-                                        <li>
-                                            <a href="#!"><i className="fa fa-linkedin"></i></a>
-                                        </li>
-                                        <li>
-                                            <a href="#!"><i className="fa fa-instagram"></i></a>
-                                        </li>
-                                        <li>
-                                            <a href="#!"><i className="fa fa-google"></i></a>
-                                        </li>
-                                    </ul>
-                                </div>
+
+                                {loadingEntreprise ? (null) : (
+
+                                    entreprise.textAbout.length > 235 ? (<>  <Link to={"/home/" + params.idE} ><img style={{ maxHeight: '80px' }} src={"http://localhost:8000/uploads/" + entreprise.photo} alt="logo" /></Link><p>{entreprise.textAbout.slice(0, 235)} ....  </p> </>) : (<>  <Link to="/" ><img style={{ maxWidth: '255px' }} src={"http://localhost:8000/uploads/" + entreprise.photo} alt="logo" /></Link><p>{entreprise.textAbout}</p></>)
+                                )}
+
+
                             </div>
                         </div>
-                        <div className="col-lg-3 col-md-6 col-sm-12 col-12">
-                            {FooterData.slice(0, 1).map((data, index) => (
+                        {load || fData.length < 0 ? (null) : (<div className="col-lg-3 col-md-6 col-sm-12 col-12">
+                            {fData.slice(0, 1).map((data, index) => (
                                 <div className="footer_one_widget" key={index}>
                                     <h3>{data.title}</h3>
                                     <ul>
@@ -132,9 +109,10 @@ const Footer = () => {
                                 </div>
                             ))}
 
-                        </div>
-                        <div className="col-lg-2 col-md-6 col-sm-12 col-12">
-                            {FooterData.slice(1, 2).map((data, index) => (
+                        </div>)}
+
+                        {load || fData.length < 2 ? (null) : (<div className="col-lg-2 col-md-6 col-sm-12 col-12">
+                            {fData.slice(1, 2).map((data, index) => (
                                 <div className="footer_one_widget" key={index}>
                                     <h3>{data.title}</h3>
                                     <ul>
@@ -144,17 +122,18 @@ const Footer = () => {
                                     </ul>
                                 </div>
                             ))}
-                        </div>
+                        </div>)}
+
                         <div className="col-lg-3 col-md-12 col-sm-12 col-12">
                             <div className="footer_one_widget">
-                                <h3>NEWSLETTER</h3>
+                                <h3>Évaluez notre entreprise</h3>
                                 <div id="mc_embed_signup" className="subscribe-form">
                                     <form onSubmit={(e) => { e.preventDefault(); Swal.fire('Success', 'Thank you for your Subscribtion', 'success'); document.querySelector("input[type='email']").value = "" }}>
-                                        <div className="mc-form">
-                                            <input className="form-control" type="email" placeholder="Your Mail" name="EMAIL" defaultValue="" required />
-                                            <div className="clear">
-                                                <button className="theme-btn-one btn_md" type="submit" name="subscribe" defaultValue=""> Send Mail</button>
-                                            </div>
+
+                                        <div className="mc-form" >
+                                            <Rating name="size-large" precision={0.5} value={value} onChange={(event, newValue) => {
+                                                handleChangeNote(newValue);
+                                            }} size="large" readOnly={submitting} />
                                         </div>
                                     </form>
                                 </div>
@@ -174,19 +153,14 @@ const Footer = () => {
                     <div className="row">
                         <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                             <div className="copyright_left">
-                                <h6>© CopyRight 2022 <span>AndShop</span></h6>
+                                <h6>© CopyRight 2022 <span> SQLI</span></h6>
                             </div>
                         </div>
-                        <div className="col-lg-6 col-md-6 col-sm-6 col-12">
-                            <div className="copyright_right">
-                                <img src={payment} alt="img" />
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </section>
 
-            <NewsletterModal show={promoCenter} stop={stopPromoModal} start={startPromoModal} />
         </>
     )
 }

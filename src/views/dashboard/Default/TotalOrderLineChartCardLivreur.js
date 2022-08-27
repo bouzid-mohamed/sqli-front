@@ -117,7 +117,7 @@ const TotalOrderLineChartCard = ({ isLoading, gainTotal, nbrGain, stat }) => {
 
                                                 <Typography sx={{ fontSize: '2.125rem', fontWeight: 500, mr: 1, mt: 1.75, mb: 0.75 }}>
                                                     <NumberFormat
-                                                        value={gainTotal}
+                                                        value={gainTotal.toFixed(3)}
                                                         thousandSeparator="."
                                                         decimalSeparator=","
                                                         prefix="Dt "

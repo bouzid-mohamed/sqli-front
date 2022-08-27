@@ -6,6 +6,7 @@ import Team from './Team'
 import CompanyServices from 'services/companyServices/CompanyServices'
 import { useParams } from 'react-router-dom';
 import Loading from '../Common/loader'
+import { useSelector } from 'react-redux'
 
 const AboutComponent = () => {
 
@@ -13,25 +14,13 @@ const AboutComponent = () => {
     const params = useParams()
     const [loadcirular, setLoadcirular] = useState(true);
     const [img, setImg] = useState(null)
-    useEffect(() => {
-        CompanyServices.show(params.idE).then((res) => {
-            setUser(res.data[0]);
+    let loadingEntreprise = useSelector((state) => state.products.loadingEntreprise)
+    let entreprise = useSelector((state) => state.products.entreprise)
 
-            setLoadcirular(false);
-            if (res.data[0].photoAbout != null) {
-                setImg("http://localhost:8000/uploads/" + res.data[0].photoAbout)
-
-            } else {
-                setImg("http://localhost:8000/uploads/" + res.data[0].photo)
-
-            }
-
-        })
-    }, [])
     return (
         <>
-            {loadcirular ? (<Loading></Loading>) : (<><AboutTop user={user} img={img} loadcirular={loadcirular} />
-                <Feature user={user} /> </>)}
+            {loadingEntreprise ? (<Loading></Loading>) : (<><AboutTop user={entreprise} img={entreprise.photoAbout != null ? "http://localhost:8000/uploads/" + entreprise.photoAbout : "http://localhost:8000/uploads/" + entreprise.photo.photo} />
+                <Feature user={entreprise} /> </>)}
 
         </>
     )

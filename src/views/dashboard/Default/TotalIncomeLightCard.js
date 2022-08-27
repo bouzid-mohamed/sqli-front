@@ -78,7 +78,7 @@ const TotalIncomeLightCard = ({ isLoading, annulee, nbrAnnule }) => {
                                     primary={
                                         <Typography variant="h4" >
                                             <NumberFormat
-                                                value={annulee}
+                                                value={annulee.toFixed(3)}
                                                 thousandSeparator="."
                                                 decimalSeparator=","
                                                 prefix="Dt "

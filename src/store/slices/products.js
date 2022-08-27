@@ -17,11 +17,14 @@ const productsSlice = createSlice({
         categories: [],
         favorites: [],
         compare: [],
+        entreprise: null,
         numberPages: 1,
         single: null,
         loading: true,
         loadingCategorie: true,
         loadingSingle: true,
+        loadingEntreprise: true,
+        errorPage: 0,
 
     },
     reducers: {
@@ -45,6 +48,11 @@ const productsSlice = createSlice({
             state.loading = false
 
         },
+        addEntreprise: (state, action) => {
+            state.entreprise = action.payload
+            state.loadingEntreprise = false
+
+        },
         addCategories: (state, action) => {
 
             Object.assign(state.categories, { ...action.payload });
@@ -60,6 +68,10 @@ const productsSlice = createSlice({
         },
         initFav: (state, action) => {
             Object.assign(state.favorites, { ...action.payload });
+        },
+        addError: (state, action) => {
+            state.errorPage = 1
+            state.loading = false
         },
         initCompare: (state, action) => {
             Object.assign(state.compare, { ...action.payload });

@@ -13,6 +13,7 @@ import LivreurServices from 'services/livreur-services/LivreurServices';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import Alert from '@mui/material/Alert';
+import commandes from 'menu-items/commande';
 
 
 
@@ -89,12 +90,20 @@ export default function ConfirmationDialogRaw(props) {
                         onChange={handleChange}
                     >
                         {options.map((option) => (
-                            <FormControlLabel
+
+                            option?.id != props.commande.livreur.id ? (<FormControlLabel
                                 value={option.id}
                                 key={option.id}
                                 control={<Radio />}
                                 label={option.nom + ' ' + option.prenom}
-                            />
+                            />) : (<FormControlLabel
+                                value={option.id}
+                                style={{ color: 'red' }}
+                                key={option.id}
+                                control={<Radio />}
+                                label={option.nom + ' ' + option.prenom}
+                            />)
+
                         ))}
                     </RadioGroup>)
                 )}

@@ -29,7 +29,7 @@ const Wishlist = () => {
         else return false
     }
     return (
-        <> {load ? (<Loading></Loading>) : (<>
+        <>
             {favorites.length
                 ?
                 <section id="Wishlist_area" className="ptb-100">
@@ -95,7 +95,7 @@ const Wishlist = () => {
                     </div>
                 </section>
             }
-        </>)} </>
+        </>
 
     )
 }

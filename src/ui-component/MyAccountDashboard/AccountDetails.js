@@ -20,7 +20,7 @@ const AccountDetails = () => {
 
     return (
         <>
-            {load || loading ? (<Loading />) : (<>
+            {loading ? (<Loading />) : (<>
                 <div className="myaccount-content">
                     <div className="save_button mt-3 d-flex align-items-center justify-content-between">
                         <h4 className="title">Détails du compte</h4>

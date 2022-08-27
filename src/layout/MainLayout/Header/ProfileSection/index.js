@@ -2,7 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import InfoIcon from '@mui/icons-material/Info';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import {
@@ -169,78 +171,19 @@ const ProfileSection = (props) => {
                                     <Box sx={{ p: 2 }}>
                                         <Stack>
                                             <Stack direction="row" spacing={0.5} alignItems="center">
-                                                <Typography variant="h4">Good Morning,</Typography>
+                                                <Typography variant="h4">Bonjour,</Typography>
                                                 <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
                                                     {user?.nom}
                                                 </Typography>
                                             </Stack>
                                             <Typography variant="subtitle2">Administrateur de projet</Typography>
                                         </Stack>
-                                        <OutlinedInput
-                                            sx={{ width: '100%', pr: 1, pl: 2, my: 2 }}
-                                            id="input-search-profile"
-                                            value={value}
-                                            onChange={(e) => setValue(e.target.value)}
-                                            placeholder="Search profile options"
-                                            startAdornment={
-                                                <InputAdornment position="start">
-                                                    <IconSearch stroke={1.5} size="1rem" color={theme.palette.grey[500]} />
-                                                </InputAdornment>
-                                            }
-                                            aria-describedby="search-helper-text"
-                                            inputProps={{
-                                                'aria-label': 'weight'
-                                            }}
-                                        />
+
                                         <Divider />
                                     </Box>
                                     <PerfectScrollbar style={{ height: '100%', maxHeight: 'calc(100vh - 250px)', overflowX: 'hidden' }}>
                                         <Box sx={{ p: 2 }}>
-                                            <UpgradePlanCard />
-                                            <Divider />
-                                            <Card
-                                                sx={{
-                                                    bgcolor: theme.palette.primary.light,
-                                                    my: 2
-                                                }}
-                                            >
-                                                <CardContent>
-                                                    <Grid container spacing={3} direction="column">
-                                                        <Grid item>
-                                                            <Grid item container alignItems="center" justifyContent="space-between">
-                                                                <Grid item>
-                                                                    <Typography variant="subtitle1">Start DND Mode</Typography>
-                                                                </Grid>
-                                                                <Grid item>
-                                                                    <Switch
-                                                                        color="primary"
-                                                                        checked={sdm}
-                                                                        onChange={(e) => setSdm(e.target.checked)}
-                                                                        name="sdm"
-                                                                        size="small"
-                                                                    />
-                                                                </Grid>
-                                                            </Grid>
-                                                        </Grid>
-                                                        <Grid item>
-                                                            <Grid item container alignItems="center" justifyContent="space-between">
-                                                                <Grid item>
-                                                                    <Typography variant="subtitle1">Allow Notifications</Typography>
-                                                                </Grid>
-                                                                <Grid item>
-                                                                    <Switch
-                                                                        checked={notification}
-                                                                        onChange={(e) => setNotification(e.target.checked)}
-                                                                        name="sdm"
-                                                                        size="small"
-                                                                    />
-                                                                </Grid>
-                                                            </Grid>
-                                                        </Grid>
-                                                    </Grid>
-                                                </CardContent>
-                                            </Card>
-                                            <Divider />
+
                                             <List
                                                 component="nav"
                                                 sx={{
@@ -258,71 +201,151 @@ const ProfileSection = (props) => {
                                                 }}
                                             >
                                                 {
-                                                    (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1) ? (<ListItemButton
-                                                        sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                        selected={selectedIndex === 0}
-                                                        onClick={(event) => handleListItemClick(event, 0, '/account/edit')}
-                                                    >
-                                                        <ListItemIcon>
-                                                            <IconSettings stroke={1.5} size="1.3rem" />
-                                                        </ListItemIcon>
-                                                        <ListItemText primary={<Typography variant="body2">Paramètres du compte</Typography>} />
-                                                    </ListItemButton>) : (null)
+                                                    (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1) ? (
+                                                        <>
+
+
+
+
+                                                            <ListItemButton
+                                                                sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                                selected={selectedIndex === 2}
+                                                                onClick={(event) => handleListItemClick(event, 2, '/about')}
+                                                            >
+                                                                <ListItemIcon>
+                                                                    <InfoIcon stroke={1.5} size="1.3rem" />
+                                                                </ListItemIcon>
+                                                                <ListItemText
+                                                                    primary={
+
+                                                                        <Typography variant="body2">À propos {user?.nom}</Typography>
+
+                                                                    }
+                                                                />
+                                                            </ListItemButton>
+                                                            <ListItemButton
+                                                                sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                                selected={selectedIndex === 1}
+                                                                onClick={(event) => handleListItemClick(event, 1, '/girdView/commandes?page=1')}
+                                                            >
+                                                                <ListItemIcon>
+
+                                                                    <LocalShippingIcon stroke={1.5} size="1.3rem" />
+                                                                </ListItemIcon>
+                                                                <ListItemText
+                                                                    primary={
+
+                                                                        <Typography variant="body2">Mes commandes</Typography>
+
+                                                                    }
+                                                                />
+                                                            </ListItemButton>
+                                                            <ListItemButton
+                                                                sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                                selected={selectedIndex === 3}
+                                                                onClick={(event) => handleListItemClick(event, 3, '/home/' + user?.id)}
+                                                            >
+                                                                <ListItemIcon>
+
+                                                                    <AddShoppingCartIcon stroke={1.5} size="1.3rem" />
+                                                                </ListItemIcon>
+                                                                <ListItemText
+                                                                    primary={
+
+                                                                        <Typography variant="body2">Ma boutique</Typography>
+
+                                                                    }
+                                                                />
+                                                            </ListItemButton>
+
+                                                            <ListItemButton
+                                                                sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                                selected={selectedIndex === 0}
+                                                                onClick={(event) => handleListItemClick(event, 0, '/account/edit')}
+                                                            >
+                                                                <ListItemIcon>
+                                                                    <IconSettings stroke={1.5} size="1.3rem" />
+                                                                </ListItemIcon>
+                                                                <ListItemText primary={<Typography variant="body2">Paramètres du compte</Typography>} />
+                                                            </ListItemButton>
+
+                                                        </>
+                                                    )
+
+
+                                                        : (null)
                                                 }
                                                 {
-                                                    (AuthService.getCurrentUser().roles.indexOf("ROLE_POSTE") > -1) ? (<ListItemButton
-                                                        sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                        selected={selectedIndex === 0}
-                                                        onClick={(event) => handleListItemClick(event, 0, '/account/post/edit')}
-                                                    >
-                                                        <ListItemIcon>
-                                                            <IconSettings stroke={1.5} size="1.3rem" />
-                                                        </ListItemIcon>
-                                                        <ListItemText primary={<Typography variant="body2">Paramètres du compte</Typography>} />
-                                                    </ListItemButton>) : (null)
+                                                    (AuthService.getCurrentUser().roles.indexOf("ROLE_POSTE") > -1) ? (
+
+                                                        <>
+                                                            <ListItemButton
+                                                                sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                                selected={selectedIndex === 0}
+                                                                onClick={(event) => handleListItemClick(event, 0, '/post/girdView/commandes?page=1')}
+                                                            >
+                                                                <ListItemIcon>
+
+                                                                    <LocalShippingIcon stroke={1.5} size="1.3rem" />
+                                                                </ListItemIcon>
+                                                                <ListItemText
+                                                                    primary={
+
+                                                                        <Typography variant="body2">Mes commandes</Typography>
+
+                                                                    }
+                                                                />
+                                                            </ListItemButton>
+
+                                                            <ListItemButton
+                                                                sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                                selected={selectedIndex === 1}
+                                                                onClick={(event) => handleListItemClick(event, 1, '/account/post/edit')}
+                                                            >
+                                                                <ListItemIcon>
+                                                                    <IconSettings stroke={1.5} size="1.3rem" />
+                                                                </ListItemIcon>
+                                                                <ListItemText primary={<Typography variant="body2">Paramètres du compte</Typography>} />
+                                                            </ListItemButton>
+                                                        </>
+
+                                                    ) : (null)
                                                 }
                                                 {
-                                                    (AuthService.getCurrentUser().roles.indexOf("ROLE_LIVREUR") > -1) ? (<ListItemButton
-                                                        sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                        selected={selectedIndex === 0}
-                                                        onClick={(event) => handleListItemClick(event, 0, '/account/livreur/edit')}
-                                                    >
-                                                        <ListItemIcon>
-                                                            <IconSettings stroke={1.5} size="1.3rem" />
-                                                        </ListItemIcon>
-                                                        <ListItemText primary={<Typography variant="body2">Paramètres du compte</Typography>} />
-                                                    </ListItemButton>) : (null)
+                                                    (AuthService.getCurrentUser().roles.indexOf("ROLE_LIVREUR") > -1) ? (
+                                                        <>
+                                                            <ListItemButton
+                                                                sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                                selected={selectedIndex === 0}
+                                                                onClick={(event) => handleListItemClick(event, 0, '/livreur/girdView/commandes?page=1')}
+                                                            >
+                                                                <ListItemIcon>
+
+                                                                    <LocalShippingIcon stroke={1.5} size="1.3rem" />
+                                                                </ListItemIcon>
+                                                                <ListItemText
+                                                                    primary={
+
+                                                                        <Typography variant="body2">Mes commandes</Typography>
+
+                                                                    }
+                                                                />
+                                                            </ListItemButton>
+                                                            <ListItemButton
+                                                                sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                                selected={selectedIndex === 1}
+                                                                onClick={(event) => handleListItemClick(event, 1, '/account/livreur/edit')}
+                                                            >
+                                                                <ListItemIcon>
+                                                                    <IconSettings stroke={1.5} size="1.3rem" />
+                                                                </ListItemIcon>
+                                                                <ListItemText primary={<Typography variant="body2">Paramètres du compte</Typography>} />
+                                                            </ListItemButton>
+                                                        </>
+                                                    ) : (null)
                                                 }
 
 
-                                                <ListItemButton
-                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                    selected={selectedIndex === 1}
-                                                    onClick={(event) => handleListItemClick(event, 1, '/user/social-profile/posts')}
-                                                >
-                                                    <ListItemIcon>
-                                                        <IconUser stroke={1.5} size="1.3rem" />
-                                                    </ListItemIcon>
-                                                    <ListItemText
-                                                        primary={
-                                                            <Grid container spacing={1} justifyContent="space-between">
-                                                                <Grid item>
-                                                                    <Typography variant="body2">Social Profile</Typography>
-                                                                </Grid>
-                                                                <Grid item>
-                                                                    <Chip
-                                                                        label="02"
-                                                                        size="small"
-                                                                        sx={{
-                                                                            bgcolor: theme.palette.warning.dark,
-                                                                            color: theme.palette.background.default
-                                                                        }}
-                                                                    />
-                                                                </Grid>
-                                                            </Grid>
-                                                        }
-                                                    />
-                                                </ListItemButton>
                                                 <ListItemButton
                                                     sx={{ borderRadius: `${customization.borderRadius}px` }}
                                                     selected={selectedIndex === 4}

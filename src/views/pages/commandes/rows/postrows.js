@@ -80,7 +80,7 @@ export default function Row(props) {
                         : (null)}
                 </TableCell>
                 <TableCell align="right">
-                    {(row.status === ('affectationPoste') || row.status === ('confirmationPoste')) ? (
+                    {(row.status === ('affectationPoste') || row.status === ('confirmationPoste') || row.status === ('retour')) ? (
                         <div>
                             <IconButton
                                 aria-label="more"
@@ -115,6 +115,12 @@ export default function Row(props) {
                                     </div>)
                                     : (null)}
                                 {(row.status === 'confirmationPoste') ? (
+                                    <div>
+                                        <MenuItem onClick={() => { props.handleAffecterLivreur(row) }}>
+                                            Affecter à un livreur
+                                        </MenuItem></div>)
+                                    : (null)}
+                                {(row.status === 'retour') ? (
                                     <div>
                                         <MenuItem onClick={() => { props.handleAffecterLivreur(row) }}>
                                             Affecter à un livreur

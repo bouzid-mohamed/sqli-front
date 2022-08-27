@@ -80,7 +80,7 @@ const TotalIncomeDarkCard = ({ isLoading, retour, nbrRetour }) => {
                                     primary={
                                         <Typography variant="h4" sx={{ color: '#fff' }}>
                                             <NumberFormat
-                                                value={retour}
+                                                value={retour.toFixed(3)}
                                                 thousandSeparator="."
                                                 decimalSeparator=","
                                                 prefix="Dt "

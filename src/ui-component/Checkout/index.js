@@ -9,7 +9,6 @@ const Checkout = () => {
 
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
-    let load = useSelector((state) => state.products.loading)
 
     useEffect(() => {
         AuthService.show().then((res) => {
@@ -21,7 +20,7 @@ const Checkout = () => {
 
     return (
         <>
-            {load || loading ? (<Loading />) : (<>
+            {loading ? (<Loading />) : (<>
                 <section id="checkout_one" className="ptb-100">
                     <div className="container">
                         <div className="row">

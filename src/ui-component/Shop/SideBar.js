@@ -202,7 +202,7 @@ const SideBar = (props) => {
                     <div className="shop_sidebar_boxed">
                         <div >
                             <h4>Catégories de produits</h4>
-                            {isLoading ? (<LinearProgress color="inherit" />
+                            {isLoading ? (<LinearProgress color="primary" />
                             ) : (<FormGroup >
                                 {rows.map((item, index) => (
                                     item.catPere == null ? (

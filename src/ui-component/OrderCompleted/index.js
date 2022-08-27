@@ -31,7 +31,7 @@ const OrderComplete = () => {
     return (
         <>
             {errorCommande === 0 ? (<>
-                {load || loading ? (<Loading />) : (<>
+                {loading ? (<Loading />) : (<>
                     <section id="order_complet_area" className="ptb-100 ">
                         <div className="container">
                             <div className="row justify-content-center">

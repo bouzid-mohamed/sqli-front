@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import AuthService from "services/auth-services/AuthService";
 import { createBrowserHistory } from 'history';
@@ -40,7 +40,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import Google from 'assets/images/icons/social-google.svg';
 import { LoadingButton } from '@mui/lab';
-
+import GoogleLogin from 'react-google-login';
+import { gapi } from 'gapi-script'
 // ============================|| FIREBASE - LOGIN ||============================ //
 
 const FirebaseLogin = ({ ...others }) => {
@@ -99,11 +100,30 @@ const FirebaseLogin = ({ ...others }) => {
             }
         );
     }
+    const responseGoogle = (response) => {
+        console.log(response);
+    }
 
+    useEffect(() => {
+        function start() {
+            gapi.client.init({
+                clientId: '889784527769-g9eb4fv1cit4324icjrnj5j7uimhbtch.apps.googleusercontent.com',
+                scope: ""
+            })
+            gapi.load('client:auth2', start)
+        }
+    })
     return (
         <>
             <Grid container direction="column" justifyContent="center" spacing={2}>
                 <Grid item xs={12}>
+                    <GoogleLogin
+                        clientId="889784527769-g9eb4fv1cit4324icjrnj5j7uimhbtch.apps.googleusercontent.com"
+                        buttonText="Login"
+                        onSuccess={responseGoogle}
+                        onFailure={responseGoogle}
+                        cookiePolicy={'single_host_origin'}
+                    />,
                     <AnimateButton>
                         <Button
                             disableElevation

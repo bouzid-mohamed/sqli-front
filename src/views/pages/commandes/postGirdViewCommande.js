@@ -22,6 +22,7 @@ import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import SearchIcon from '@mui/icons-material/Search';
 import ConfirmationDialogRaw from './affecterLivreur/ConfirmationDialogRaw';
+import NotificationServices from 'services/notification-services/NotificationServices';
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -69,11 +70,21 @@ export default function CollapsibleTable() {
         if (query.get('search') != null) {
             setSearchValue(query.get('search'))
         }
-        commandeServices.getAllRolePoste(query.get("page"), query.get("search")).then((res) => {
-            setRows(res.data[0]);
-            setNumberPages(res.data["pagination"])
-            setIsloading(false);
-        })
+        if (query.get("byId")) {
+            NotificationServices.showPoste(query.get("byId")).then((res) => {
+                setRows(res.data);
+                setNumberPages(0)
+
+                setIsloading(false);
+            })
+        } else {
+            commandeServices.getAllRolePoste(query.get("page"), query.get("search")).then((res) => {
+                setRows(res.data[0]);
+                setNumberPages(res.data["pagination"])
+                setIsloading(false);
+            })
+        }
+
     }, []);
 
     // etat commande vers confirmer
@@ -272,17 +283,20 @@ export default function CollapsibleTable() {
                             </Table>
                         </>
                     )}
-                    <Stack direction="row-reverse" marginTop={"2%"}>
+                    {numberPages > 0 ? (<Stack direction="row-reverse" marginTop={"2%"}>
                         <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
-                    </Stack>
+                    </Stack>) : (null)}
+
                 </TableContainer>
                 {openForm ? (<Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
                     <List component="div" role="group">
 
 
                         <ConfirmationDialogRaw
+
                             id="ringtone-menu"
                             keepMounted
+                            commande={commande}
                             open={openForm}
                             onClose={handleCloseForm}
                             value={value}

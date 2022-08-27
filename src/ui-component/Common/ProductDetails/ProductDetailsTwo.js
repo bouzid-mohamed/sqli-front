@@ -143,6 +143,9 @@ const ProductDetailsTwo = () => {
         ]
     };
     const handleChange = (e) => {
+        setPchecked(0)
+        setStockChoisit(null);
+
         let col = []
         product.stoks.map((s) => {
             if (s.taille === e.target.value) {
@@ -165,7 +168,7 @@ const ProductDetailsTwo = () => {
     return (
         <>
             {errorProduct === 0 ? (<>
-                {load || loadSingle ? (<Loading></Loading>) : (<>  <section id="product_single_two" className="ptb-100">
+                {loadSingle ? (<Loading></Loading>) : (<>  <section id="product_single_two" className="ptb-100">
                     <div className="container">
                         <div className="row area_boxed">
                             <div className="col-lg-4">
@@ -267,11 +270,6 @@ const ProductDetailsTwo = () => {
                                                     </li>
                                                 </ul>
                                             </div></>)}
-
-
-
-
-
                                     </div>
                                 </div>
                             </div>

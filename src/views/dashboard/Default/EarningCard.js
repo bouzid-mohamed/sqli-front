@@ -93,7 +93,7 @@ const EarningCard = ({ isLoading, enCours, nbrEnCours }) => {
 
 
                                             <NumberFormat
-                                                value={enCours}
+                                                value={enCours.toFixed(3)}
                                                 thousandSeparator="."
                                                 decimalSeparator=","
                                                 prefix="Dt "

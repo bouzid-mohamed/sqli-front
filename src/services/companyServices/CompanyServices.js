@@ -24,6 +24,7 @@ class CompanyService {
     //update un company
     updateCompany(nom, email, numTel, gouvernerat, delegation, newPassword, password, bodyFormData, id) {
 
+
         bodyFormData.append('nom', nom)
         bodyFormData.append('email', email)
         bodyFormData.append('numTel', numTel)
@@ -51,6 +52,17 @@ class CompanyService {
     //afficher entreprise 
     show(id) {
         return axios.get(API_URL3 + 'show_entreprise/' + id)
+    }
+    //modifier note
+    updateNote(note, id) {
+
+        return axios
+            .post(API_URL3 + "update_Note/" + id, {
+                note
+            })
+            .then(response => {
+                return response.data;
+            });
     }
 
 }
