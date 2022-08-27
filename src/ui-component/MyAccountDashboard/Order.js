@@ -11,6 +11,8 @@ import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
+import MessengerCustomerChat from 'react-messenger-customer-chat';
+
 import { Box } from '@mui/system'
 const style = {
     position: 'absolute',
@@ -194,7 +196,12 @@ const Order = () => {
                                                 : (null)}
                                         </td>
                                         <td>Dt {c.prix}.00 </td>
-                                        <td><a href="#" className="view" onClick={() => { handleOpen(c) }}>Consulter</a></td>
+                                        <td><a href="#" className="view" onClick={() => { handleOpen(c) }}>Consulter</a>   <MessengerCustomerChat
+                                            pageId="2201133689918394"
+                                            appId="369880261852133"
+
+                                        />  </td>
+
                                     </tr>
                                 ))}
 
