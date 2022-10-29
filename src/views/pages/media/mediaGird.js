@@ -16,6 +16,7 @@ import GirdSkeleton from 'ui-component/cards/Skeleton/MediaGirdSkeleton';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
 import MediaServices from 'services/media-services/MediaServices';
+import { Link } from 'react-router-dom';
 
 
 
@@ -114,13 +115,12 @@ export default function MediaGird() {
                                             {row.description === null ? (<StyledTableCell align="center">--</StyledTableCell>) : (<StyledTableCell align="center">{row.description}</StyledTableCell>)}
                                             {row.url === null ? (<StyledTableCell align="center">--</StyledTableCell>) : (<StyledTableCell align="center">{row.url}</StyledTableCell>)}
 
-
-
                                             <StyledTableCell align="center" scope="row"  >
-
-                                                <IconButton aria-label="edit" size="large" color="success" href={"/media/edit/" + row.id}>
-                                                    <EditIcon />
-                                                </IconButton>
+                                                <Link to={"/media/edit/" + row.id} style={{ textDecoration: 'none' }}>
+                                                    <IconButton aria-label="edit" size="large" color="success">
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                </Link>
 
                                             </StyledTableCell>
                                         </StyledTableRow>

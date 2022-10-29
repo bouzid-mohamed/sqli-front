@@ -32,6 +32,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
+import { Link } from 'react-router-dom';
 
 
 
@@ -117,31 +118,26 @@ function ChildModal(props) {
 }
 export default function GirdViewCategorie() {
     let query = useQuery();
-
     const history = createBrowserHistory();
-
     const [open, setOpen] = React.useState(false);
     const [openChild, setOpenChild] = React.useState(false);
-
     const [rows, setRows] = useState([]);
     const [page, setPage] = React.useState(query.get("page") != null ? parseInt(query.get("page")) : 1);
     const [isLoading, setIsloading] = useState(true);
     const [numberPages, setNumberPages] = useState(0);
     const [idDelete, setIdDelete] = useState(0);
     const [catDelete, setCatDelete] = useState(null);
-    const [searchValue, setSearchValue] = useState('');
-
+    const [searchValue, setSearchValue] = useState(query.get("search") != null ? (query.get("search")) : '');
+    const [reload, setRelaoad] = useState(1);
 
     const handleChange = (event, value) => {
         setPage(value);
         const history = createBrowserHistory();
-        if (query.get('search') != null) {
+        if (searchValue != '') {
             history.push("/girdView/categories?page=" + value + "&search=" + searchValue);
         } else {
             history.push("/girdView/categories?page=" + value);
         }
-
-        window.location.reload();
     };
 
     const handleOpen = () => {
@@ -157,16 +153,14 @@ export default function GirdViewCategorie() {
 
 
     useEffect(() => {
-        if (query.get('search') != null) {
-            setSearchValue(query.get('search'))
-        }
-        CategorieServices.getAllPagination(query.get("page"), query.get("search")).then((res) => {
+        setIsloading(true);
+        CategorieServices.getAllPagination(page, searchValue).then((res) => {
             setRows(res.data[0]);
             setNumberPages(res.data["pagination"])
             setIsloading(false);
         })
 
-    }, []);
+    }, [page, reload]);
 
     const deleteCategorie = () => {
         setOpen(false);
@@ -201,7 +195,7 @@ export default function GirdViewCategorie() {
             e.preventDefault();
             const history = createBrowserHistory();
             history.push("/girdView/categories?page=1&search=" + searchValue);
-            window.location.reload();
+            setRelaoad(reload + 1)
         }
     }
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1) {
@@ -217,13 +211,12 @@ export default function GirdViewCategorie() {
                         sx={{ mb: 5 }}
 
                     >
-
-
                         <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
-                            <Button href={'/categorie/add'} variant="outlined" startIcon={<AddIcon />}>
-                                Ajouter</Button>
+                            <Link to={'/categorie/add'} style={{ textDecoration: 'none' }}>
+                                <Button variant="outlined" startIcon={<AddIcon />}>
+                                    Ajouter</Button>
+                            </Link>
                         </Stack>
-
                     </Stack>
                     <Stack
                         direction="row"
@@ -253,7 +246,10 @@ export default function GirdViewCategorie() {
 
 
                                 />
-                                <IconButton onClick={event => window.location.href = "/girdView/categories?page=1&search=" + searchValue
+                                <IconButton onClick={event => {
+                                    history.push("/girdView/categories?page=1&search=" + searchValue);
+                                    setRelaoad(reload + 1)
+                                }
                                 }
 
                                     aria-label="search">
@@ -272,7 +268,7 @@ export default function GirdViewCategorie() {
 
 
                             <>
-                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((index) => (
+                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
                                     <GirdSkeleton key={index} />
 
                                 ))}
@@ -379,7 +375,7 @@ export default function GirdViewCategorie() {
                                 </Modal>
                             </div>) : (null)}
                         <Stack direction="row-reverse" marginTop={"2%"}>
-                            <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
+                            <Pagination color="primary" page={page} count={numberPages} variant="outlined" onChange={handleChange} />
                         </Stack>
                     </TableContainer>
                     <ToastContainer />

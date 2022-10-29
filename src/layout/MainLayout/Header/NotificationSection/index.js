@@ -87,9 +87,7 @@ const NotificationSection = () => {
         () => {
             NotificationServices.getAll().then((res) => {
                 setVu(res.data[1]);
-
                 //  console.log(res.data)
-
             })
         }, [],
         () => {
@@ -207,7 +205,7 @@ const NotificationSection = () => {
                                                         <Divider sx={{ my: 0 }} />
                                                     </Grid>
                                                 </Grid>
-                                                <NotificationList rows={rows.slice(0, 20)} isLoading={isLoading} />
+                                                <NotificationList handleToggle={handleToggle} rows={rows.slice(0, 20)} isLoading={isLoading} />
                                             </PerfectScrollbar>
                                         </Grid>
                                     </Grid>

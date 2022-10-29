@@ -30,6 +30,7 @@ import { useLocation } from 'react-router';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SearchIcon from '@mui/icons-material/Search';
+import { Link } from 'react-router-dom';
 
 
 
@@ -70,26 +71,21 @@ export default function GirdViewPromotion() {
     const [open, setOpen] = React.useState(false);
     const history = createBrowserHistory();
     const [rows, setRows] = useState([]);
-    const [page, setPage] = React.useState(parseInt(query.get("page")));
+    const [page, setPage] = React.useState(query.get("page") != null ? parseInt(query.get("page")) : 1);
     const [isLoading, setIsloading] = useState(true);
     const [idDelete, setIdDelete] = useState(0);
-    const [searchValue, setSearchValue] = useState('');
-
-
+    const [searchValue, setSearchValue] = useState(query.get("search") != null ? (query.get("search")) : '');
+    const [reload, setRelaoad] = useState(1);
 
     const handleChange = (event, value) => {
         setPage(value);
-        if (query.get('search') != null) {
+        if (searchValue != '') {
             history.push("/girdView/promotion?page=" + value + "&search=" + searchValue);
         } else {
             history.push("/girdView/promotion?page=" + value);
 
         }
-        window.location.reload();
     };
-
-
-
 
     const handleClose = () => {
         setOpen(false);
@@ -98,18 +94,14 @@ export default function GirdViewPromotion() {
 
 
     useEffect(() => {
-        if (query.get('search') != null) {
-            setSearchValue(query.get('search'))
-        }
-
-        promotionServices.getAllList(query.get("page"), query.get("search")).then((res) => {
+        setIsloading(true);
+        promotionServices.getAllList(page, searchValue).then((res) => {
             setRows(res.data[0]);
             setNumberPages(res.data["pagination"])
             setIsloading(false);
         })
-        //setTimeout(() => { setLoading(false); }, 2000);
 
-    }, []);
+    }, [page, reload]);
 
     const deletePromotion = () => {
         setOpen(false);
@@ -138,17 +130,12 @@ export default function GirdViewPromotion() {
             e.preventDefault();
             const history = createBrowserHistory();
             history.push("/girdView/promotion?page=1&search=" + searchValue);
-            window.location.reload();
+            setRelaoad(reload + 1)
         }
     }
 
 
-
-
-
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
-
-
         return (
             <>
                 <MainCard title="Liste des promotions">
@@ -160,12 +147,13 @@ export default function GirdViewPromotion() {
                         justifyContent="flex-end"
                         sx={{ mb: 5 }}
                     >
-
                         <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
 
                             <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
-                                <Button href={'/promotion/add'} variant="outlined" startIcon={<AddIcon />}>
-                                    Ajouter</Button>
+                                <Link to={'/promotion/add'} style={{ textDecoration: 'none' }}>
+                                    <Button variant="outlined" startIcon={<AddIcon />}>
+                                        Ajouter</Button>
+                                </Link>
                             </Stack>
 
 
@@ -180,14 +168,11 @@ export default function GirdViewPromotion() {
                         sx={{ mb: 5 }}
 
                     >
-
-
                         <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
                             <Paper style={{ 'border': "1px solid #5e35b1" }}
                                 component="form"
                                 sx={{ display: 'flex', alignItems: 'center', width: 400 }}
                             >
-
                                 <InputBase
                                     sx={{ ml: 1, flex: 1 }}
                                     placeholder="Rechercher"
@@ -197,11 +182,11 @@ export default function GirdViewPromotion() {
                                     value={searchValue}
                                     onChange={handleSearchChange}
                                     onKeyDown={handleKeyDown}
-
-
                                 />
-                                <IconButton onClick={event => window.location.href = "/girdView/promotion?page=1&search=" + searchValue
-                                }
+                                <IconButton onClick={event => {
+                                    history.push("/girdView/promotion?page=1&search=" + searchValue);
+                                    setRelaoad(reload + 1)
+                                }}
                                     aria-label="search">
                                     <SearchIcon />
                                 </IconButton>
@@ -219,7 +204,7 @@ export default function GirdViewPromotion() {
 
 
                             <>
-                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((index) => (
+                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
                                     <GirdSkeleton key={index} />
 
                                 ))}
@@ -253,10 +238,11 @@ export default function GirdViewPromotion() {
                                             <StyledTableCell align="right">{row.dateDebut}</StyledTableCell>
                                             <StyledTableCell align="right">{row.dateFin}</StyledTableCell>
                                             <StyledTableCell align="right" scope="row"  >
-
-                                                <IconButton aria-label="edit" size="large" color="success" href={"/promotion/edit/" + row.id}>
-                                                    <EditIcon />
-                                                </IconButton>
+                                                <Link to={"/promotion/edit/" + row.id} style={{ textDecoration: 'none' }}>
+                                                    <IconButton aria-label="edit" size="large" color="success">
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                </Link>
                                                 <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true); setIdDelete(row) }}>
                                                     <DeleteIcon />
                                                 </IconButton>
@@ -296,7 +282,7 @@ export default function GirdViewPromotion() {
                                 </Dialog>
                             </div>) : (null)}
                         <Stack direction="row-reverse" marginTop={"2%"}>
-                            <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
+                            <Pagination color="primary" page={page} count={numberPages} variant="outlined" onChange={handleChange} />
                         </Stack>
                     </TableContainer>
                     <ToastContainer />

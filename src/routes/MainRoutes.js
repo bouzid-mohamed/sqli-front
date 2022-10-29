@@ -3,7 +3,9 @@ import { lazy } from 'react';
 // project imports
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
+import { createBrowserHistory } from 'history';
 
+const history = createBrowserHistory();
 
 
 // dashboard routing
@@ -124,7 +126,7 @@ const MainRoutes = {
         },
         {
             path: '/stock/add',
-            element: <AddStock />
+            element: <AddStock history={history} />
         },
         {
             path: '/stock/edit/:id',

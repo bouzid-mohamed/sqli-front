@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import InfoIcon from '@mui/icons-material/Info';
@@ -206,68 +206,71 @@ const ProfileSection = (props) => {
 
 
 
+                                                            <Link to={'/about'} style={{ textDecoration: 'none' }}>
+                                                                <ListItemButton
+                                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                                    selected={selectedIndex === 2}
+                                                                >
+                                                                    <ListItemIcon>
+                                                                        <InfoIcon stroke={1.5} size="1.3rem" />
+                                                                    </ListItemIcon>
+                                                                    <ListItemText
+                                                                        primary={
 
-                                                            <ListItemButton
-                                                                sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                                selected={selectedIndex === 2}
-                                                                onClick={(event) => handleListItemClick(event, 2, '/about')}
-                                                            >
-                                                                <ListItemIcon>
-                                                                    <InfoIcon stroke={1.5} size="1.3rem" />
-                                                                </ListItemIcon>
-                                                                <ListItemText
-                                                                    primary={
+                                                                            <Typography variant="body2">À propos {user?.nom}</Typography>
 
-                                                                        <Typography variant="body2">À propos {user?.nom}</Typography>
+                                                                        }
+                                                                    />
+                                                                </ListItemButton>
+                                                            </Link>
+                                                            <Link to={'/girdView/commandes?page=1'} style={{ textDecoration: 'none' }}>
+                                                                <ListItemButton
+                                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                                    selected={selectedIndex === 1}
+                                                                >
+                                                                    <ListItemIcon>
 
-                                                                    }
-                                                                />
-                                                            </ListItemButton>
-                                                            <ListItemButton
-                                                                sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                                selected={selectedIndex === 1}
-                                                                onClick={(event) => handleListItemClick(event, 1, '/girdView/commandes?page=1')}
-                                                            >
-                                                                <ListItemIcon>
+                                                                        <LocalShippingIcon stroke={1.5} size="1.3rem" />
+                                                                    </ListItemIcon>
+                                                                    <ListItemText
+                                                                        primary={
 
-                                                                    <LocalShippingIcon stroke={1.5} size="1.3rem" />
-                                                                </ListItemIcon>
-                                                                <ListItemText
-                                                                    primary={
+                                                                            <Typography variant="body2">Mes commandes</Typography>
 
-                                                                        <Typography variant="body2">Mes commandes</Typography>
+                                                                        }
+                                                                    />
+                                                                </ListItemButton>
+                                                            </Link>
+                                                            <Link to={'/home/' + user?.id} target="_blank" style={{ textDecoration: 'none' }}>
+                                                                <ListItemButton
+                                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                                    selected={selectedIndex === 3}
 
-                                                                    }
-                                                                />
-                                                            </ListItemButton>
-                                                            <ListItemButton
-                                                                sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                                selected={selectedIndex === 3}
-                                                                onClick={(event) => handleListItemClick(event, 3, '/home/' + user?.id)}
-                                                            >
-                                                                <ListItemIcon>
+                                                                >
+                                                                    <ListItemIcon>
 
-                                                                    <AddShoppingCartIcon stroke={1.5} size="1.3rem" />
-                                                                </ListItemIcon>
-                                                                <ListItemText
-                                                                    primary={
+                                                                        <AddShoppingCartIcon stroke={1.5} size="1.3rem" />
+                                                                    </ListItemIcon>
+                                                                    <ListItemText
+                                                                        primary={
 
-                                                                        <Typography variant="body2">Ma boutique</Typography>
+                                                                            <Typography variant="body2">Ma boutique</Typography>
 
-                                                                    }
-                                                                />
-                                                            </ListItemButton>
-
-                                                            <ListItemButton
-                                                                sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                                selected={selectedIndex === 0}
-                                                                onClick={(event) => handleListItemClick(event, 0, '/account/edit')}
-                                                            >
-                                                                <ListItemIcon>
-                                                                    <IconSettings stroke={1.5} size="1.3rem" />
-                                                                </ListItemIcon>
-                                                                <ListItemText primary={<Typography variant="body2">Paramètres du compte</Typography>} />
-                                                            </ListItemButton>
+                                                                        }
+                                                                    />
+                                                                </ListItemButton>
+                                                            </Link>
+                                                            <Link to={'/account/edit'} style={{ textDecoration: 'none' }}>
+                                                                <ListItemButton
+                                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                                    selected={selectedIndex === 0}
+                                                                >
+                                                                    <ListItemIcon>
+                                                                        <IconSettings stroke={1.5} size="1.3rem" />
+                                                                    </ListItemIcon>
+                                                                    <ListItemText primary={<Typography variant="body2">Paramètres du compte</Typography>} />
+                                                                </ListItemButton>
+                                                            </Link>
 
                                                         </>
                                                     )
@@ -279,34 +282,36 @@ const ProfileSection = (props) => {
                                                     (AuthService.getCurrentUser().roles.indexOf("ROLE_POSTE") > -1) ? (
 
                                                         <>
-                                                            <ListItemButton
-                                                                sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                                selected={selectedIndex === 0}
-                                                                onClick={(event) => handleListItemClick(event, 0, '/post/girdView/commandes?page=1')}
-                                                            >
-                                                                <ListItemIcon>
+                                                            <Link to={'/post/girdView/commandes?page=1'} style={{ textDecoration: 'none' }}>
+                                                                <ListItemButton
+                                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                                    selected={selectedIndex === 0}
+                                                                >
+                                                                    <ListItemIcon>
 
-                                                                    <LocalShippingIcon stroke={1.5} size="1.3rem" />
-                                                                </ListItemIcon>
-                                                                <ListItemText
-                                                                    primary={
+                                                                        <LocalShippingIcon stroke={1.5} size="1.3rem" />
+                                                                    </ListItemIcon>
+                                                                    <ListItemText
+                                                                        primary={
 
-                                                                        <Typography variant="body2">Mes commandes</Typography>
+                                                                            <Typography variant="body2">Mes commandes</Typography>
 
-                                                                    }
-                                                                />
-                                                            </ListItemButton>
-
-                                                            <ListItemButton
-                                                                sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                                selected={selectedIndex === 1}
-                                                                onClick={(event) => handleListItemClick(event, 1, '/account/post/edit')}
-                                                            >
-                                                                <ListItemIcon>
-                                                                    <IconSettings stroke={1.5} size="1.3rem" />
-                                                                </ListItemIcon>
-                                                                <ListItemText primary={<Typography variant="body2">Paramètres du compte</Typography>} />
-                                                            </ListItemButton>
+                                                                        }
+                                                                    />
+                                                                </ListItemButton>
+                                                            </Link>
+                                                            <Link to={'/account/post/edit'} style={{ textDecoration: 'none' }}>
+                                                                <ListItemButton
+                                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                                    selected={selectedIndex === 1}
+                                                                    onClick={(event) => handleListItemClick(event, 1, '/account/post/edit')}
+                                                                >
+                                                                    <ListItemIcon>
+                                                                        <IconSettings stroke={1.5} size="1.3rem" />
+                                                                    </ListItemIcon>
+                                                                    <ListItemText primary={<Typography variant="body2">Paramètres du compte</Typography>} />
+                                                                </ListItemButton>
+                                                            </Link>
                                                         </>
 
                                                     ) : (null)
@@ -314,33 +319,39 @@ const ProfileSection = (props) => {
                                                 {
                                                     (AuthService.getCurrentUser().roles.indexOf("ROLE_LIVREUR") > -1) ? (
                                                         <>
-                                                            <ListItemButton
-                                                                sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                                selected={selectedIndex === 0}
-                                                                onClick={(event) => handleListItemClick(event, 0, '/livreur/girdView/commandes?page=1')}
-                                                            >
-                                                                <ListItemIcon>
+                                                            <Link to={'/livreur/girdView/commandes?page=1'} style={{ textDecoration: 'none' }}>
 
-                                                                    <LocalShippingIcon stroke={1.5} size="1.3rem" />
-                                                                </ListItemIcon>
-                                                                <ListItemText
-                                                                    primary={
+                                                                <ListItemButton
+                                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                                    selected={selectedIndex === 0}
 
-                                                                        <Typography variant="body2">Mes commandes</Typography>
+                                                                >
+                                                                    <ListItemIcon>
 
-                                                                    }
-                                                                />
-                                                            </ListItemButton>
-                                                            <ListItemButton
-                                                                sx={{ borderRadius: `${customization.borderRadius}px` }}
-                                                                selected={selectedIndex === 1}
-                                                                onClick={(event) => handleListItemClick(event, 1, '/account/livreur/edit')}
-                                                            >
-                                                                <ListItemIcon>
-                                                                    <IconSettings stroke={1.5} size="1.3rem" />
-                                                                </ListItemIcon>
-                                                                <ListItemText primary={<Typography variant="body2">Paramètres du compte</Typography>} />
-                                                            </ListItemButton>
+                                                                        <LocalShippingIcon stroke={1.5} size="1.3rem" />
+                                                                    </ListItemIcon>
+                                                                    <ListItemText
+                                                                        primary={
+
+                                                                            <Typography variant="body2">Mes commandes</Typography>
+
+                                                                        }
+                                                                    />
+                                                                </ListItemButton>
+                                                            </Link>
+                                                            <Link to={'/account/livreur/edit'} style={{ textDecoration: 'none' }}>
+
+                                                                <ListItemButton
+                                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                                    selected={selectedIndex === 1}
+
+                                                                >
+                                                                    <ListItemIcon>
+                                                                        <IconSettings stroke={1.5} size="1.3rem" />
+                                                                    </ListItemIcon>
+                                                                    <ListItemText primary={<Typography variant="body2">Paramètres du compte</Typography>} />
+                                                                </ListItemButton>
+                                                            </Link>
                                                         </>
                                                     ) : (null)
                                                 }

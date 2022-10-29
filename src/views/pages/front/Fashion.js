@@ -48,9 +48,6 @@ const Fashion = () => {
                 }
 
             })
-
-
-
             setIsloading(false)
 
         })

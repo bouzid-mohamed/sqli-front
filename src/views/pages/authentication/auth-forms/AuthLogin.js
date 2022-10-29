@@ -40,8 +40,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import Google from 'assets/images/icons/social-google.svg';
 import { LoadingButton } from '@mui/lab';
-import GoogleLogin from 'react-google-login';
-import { gapi } from 'gapi-script'
+
 // ============================|| FIREBASE - LOGIN ||============================ //
 
 const FirebaseLogin = ({ ...others }) => {
@@ -100,52 +99,13 @@ const FirebaseLogin = ({ ...others }) => {
             }
         );
     }
-    const responseGoogle = (response) => {
-        console.log(response);
-    }
 
-    useEffect(() => {
-        function start() {
-            gapi.client.init({
-                clientId: '889784527769-g9eb4fv1cit4324icjrnj5j7uimhbtch.apps.googleusercontent.com',
-                scope: ""
-            })
-            gapi.load('client:auth2', start)
-        }
-    })
+
+
     return (
         <>
             <Grid container direction="column" justifyContent="center" spacing={2}>
-                <Grid item xs={12}>
-                    <GoogleLogin
-                        clientId="889784527769-g9eb4fv1cit4324icjrnj5j7uimhbtch.apps.googleusercontent.com"
-                        buttonText="Login"
-                        onSuccess={responseGoogle}
-                        onFailure={responseGoogle}
-                        cookiePolicy={'single_host_origin'}
-                    />,
-                    <AnimateButton>
-                        <Button
-                            disableElevation
-                            fullWidth
-                            onClick={googleHandler}
-                            size="large"
-                            variant="outlined"
-                            sx={{
-                                color: 'grey.700',
-                                backgroundColor: theme.palette.grey[50],
-                                borderColor: theme.palette.grey[100]
-                            }}
-                        >
-                            <Box sx={{ mr: { xs: 1, sm: 2, width: 20 } }}>
-                                <img src={Google} alt="google" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
-                            </Box>
-                            Connectez-vous avec Google
-                        </Button>
-                    </AnimateButton>
 
-
-                </Grid>
                 <Grid item xs={12}>
                     <Box
                         sx={{
@@ -170,7 +130,7 @@ const FirebaseLogin = ({ ...others }) => {
                             disableRipple
                             disabled
                         >
-                            OU
+                            Connexion
                         </Button>
 
                         <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
@@ -263,7 +223,9 @@ const FirebaseLogin = ({ ...others }) => {
                                 }
                                 label="Rester connecté"
                             />
-                            <Typography variant="subtitle1" color="secondary" sx={{ textDecoration: 'none', cursor: 'pointer' }}>
+                            <Typography onClick={() => {
+                                window.location.href = '/forgot_password';
+                            }} variant="subtitle1" color="secondary" sx={{ textDecoration: 'none', cursor: 'pointer' }}>
                                 Mot de passe oublié?
                             </Typography>
                         </Stack>

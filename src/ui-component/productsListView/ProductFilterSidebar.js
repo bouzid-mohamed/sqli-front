@@ -68,7 +68,8 @@ export default function ShopFilterSidebar({
     isOpenFilter,
     onOpenFilter,
     onCloseFilter,
-    formik
+    formik,
+    handleSubmit
 }) {
     const { getFieldProps } = formik;
     const [rows, setRows] = React.useState([]);
@@ -348,7 +349,8 @@ export default function ShopFilterSidebar({
                                     type="submit"
                                     color="primary"
                                     variant="outlined"
-                                    href={price === 0 ? 'products?page=1&filter=' + list : 'products?page=1&filter=' + list + '&order=' + price}
+                                    onClick={event => handleSubmit(list, price)}
+                                    // href={price === 0 ? 'products?page=1&filter=' + list : 'products?page=1&filter=' + list + '&order=' + price}
                                     startIcon={<FilterAltIcon />}
                                 >
                                     Filtrer

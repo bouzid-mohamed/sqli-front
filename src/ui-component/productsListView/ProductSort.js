@@ -4,6 +4,7 @@ import { Menu, Button, MenuItem, Typography } from '@mui/material';
 // component
 import HeightRoundedIcon from '@mui/icons-material/HeightRounded';
 import { createBrowserHistory } from 'history';
+import { useLocation } from 'react-router';
 
 // ----------------------------------------------------------------------
 
@@ -14,8 +15,14 @@ const SORT_BY_OPTIONS = [
     { value: '2', label: 'Prix : bas-haut', href: 'products?page=1&order=1' }
 ];
 
-export default function ShopProductSort() {
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
+export default function ShopProductSort(props) {
     const [open, setOpen] = useState(null);
+    let query = useQuery();
+
+    const [choice, setChoice] = useState(query.get("order") != null ? (query.get("order")) : 0)
 
     const handleOpen = (event) => {
         setOpen(event.currentTarget);
@@ -35,7 +42,7 @@ export default function ShopProductSort() {
             >
                 Trier par:&nbsp;
                 <Typography component="span" variant="subtitle2" sx={{ color: 'text.secondary' }}>
-                    Le plus récent
+                    {SORT_BY_OPTIONS[choice].label}
                 </Typography>
             </Button>
             <Menu
@@ -46,24 +53,23 @@ export default function ShopProductSort() {
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-                {SORT_BY_OPTIONS.map((option) => (
-                    <a href={option.href} style={{ 'textDecoration': 'none' }} key={option.value}>
-                        <MenuItem
+                {SORT_BY_OPTIONS.map((option, index) => (
 
-                            selected={option.value === 'recent'}
-                            onClick={() => {
-                                handleClose();
-                                const history = createBrowserHistory();
-                                history.push("products");
-                                window.location.reload();
+                    <MenuItem
 
-                            }}
-                            sx={{ typography: 'body2' }}
+                        selected={option.value === SORT_BY_OPTIONS[choice].value}
+                        onClick={() => {
+                            setChoice(index)
+                            handleClose();
+                            props.handleOrder(option.value);
 
-                        >
-                            {option.label}
-                        </MenuItem>
-                    </a>
+                        }}
+                        sx={{ typography: 'body2' }}
+
+                    >
+                        {option.label}
+                    </MenuItem>
+
                 ))}
             </Menu>
         </>

@@ -57,6 +57,7 @@ const BillingsInfo = (props) => {
     const handleChangeAddresse = (e) => {
         setAddresse(e.target.value)
     }
+    const [numTel, setNumTel] = useState('')
     const handleSubmit = () => {
         if (lignesCommande().length < 1) {
             Swal.fire({
@@ -90,7 +91,7 @@ const BillingsInfo = (props) => {
                 if (result.isConfirmed) {
 
                     setSubmitting(true)
-                    CommandeServices.addCommande(addresse, gouv, delegation, lignesCommande(), bon()).then(
+                    CommandeServices.addCommande(numTel, addresse, gouv, delegation, lignesCommande(), bon()).then(
                         () => {
                             localStorage.removeItem('coupon' + params.idE)
                             setSubmitting(false);
@@ -161,13 +162,20 @@ const BillingsInfo = (props) => {
                                             defaultValue={props.user?.email} disabled />
                                     </div>
                                 </div>
-                                <div className="col-lg-12 col-md-12 col-sm-=12 col-12">
+                                {props.user?.numTel === null ? (<div className="col-lg-12 col-md-12 col-sm-=12 col-12">
+                                    <div className="form-group">
+                                        <label htmlFor="email">Num tel <span className="text-danger">*</span></label>
+                                        <input className="form-control" required="" type="number" id="email"
+                                            placeholder='Num Tel' require min={10000000} max={99999999} value={numTel} onChange={(e) => setNumTel(e.target.value)} />
+                                    </div>
+                                </div>) : (<div className="col-lg-12 col-md-12 col-sm-=12 col-12">
                                     <div className="form-group">
                                         <label htmlFor="email">Num tel <span className="text-danger">*</span></label>
                                         <input className="form-control" required="" type="text" id="email"
                                             defaultValue={props.user?.numTel} disabled />
                                     </div>
-                                </div>
+                                </div>)}
+
                                 <div className="col-lg-6 col-md-12 col-sm-=12 col-12">
                                     <div className="form-group">
                                         <label htmlFor="city">Gouvernerat/Délégation<span className="text-danger">*</span></label>

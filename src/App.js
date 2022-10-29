@@ -18,10 +18,6 @@ import { useParams } from 'react-router';
 // ==============================|| APP ||============================== //
 
 const App = () => {
-    let dispatch = useDispatch();
-    const params = useParams();
-
-    const [listproducts, setListproducts] = useState([])
 
     const customization = useSelector((state) => state.customization);
 

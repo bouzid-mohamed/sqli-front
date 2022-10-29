@@ -26,6 +26,8 @@ import { Box } from '@mui/system';
 import { useState } from 'react';
 import { createBrowserHistory } from 'history';
 import AuthService from 'services/auth-services/AuthService';
+import { Navigate, useNavigate } from 'react-router';
+import { useDispatch, useSelector } from "react-redux";
 
 // styles
 const ListItemWrapper = styled('div')(({ theme }) => ({
@@ -42,21 +44,23 @@ const ListItemWrapper = styled('div')(({ theme }) => ({
 // ==============================|| NOTIFICATION LIST ITEM ||============================== //
 
 const NotificationList = (props) => {
+    let dispatch = useDispatch();
     const theme = useTheme();
     const [countR, setCountR] = useState(10)
+    const [path, setPath] = useState('')
+    const navigate = useNavigate()
     const showNotification = (id) => {
+        props.handleToggle();
         if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1) {
-            const history = createBrowserHistory();
-            history.push("/girdView/commandes?byId=" + id);
-            window.location.reload();
+            dispatch({ type: "notifications/setByid", payload: id })
+            navigate({ pathname: "/girdView/commandes", search: `?byId=${id}` })
         } else if (AuthService.getCurrentUser().roles.indexOf("ROLE_POSTE") > -1) {
-            const history = createBrowserHistory();
-            history.push("/post/girdView/commandes?byId=" + id);
-            window.location.reload();
+            dispatch({ type: "notifications/setByid", payload: id })
+            navigate({ pathname: "/post/girdView/commandes", search: `?byId=${id}` })
         } else if (AuthService.getCurrentUser().roles.indexOf("ROLE_LIVREUR") > -1) {
-            const history = createBrowserHistory();
-            history.push("/livreur/girdView/commandes?byId=" + id);
-            window.location.reload();
+            navigate({ pathname: "/livreur/girdView/commandes", search: `?byId=${id}` })
+            dispatch({ type: "notifications/setByid", payload: id })
+
         }
 
     }

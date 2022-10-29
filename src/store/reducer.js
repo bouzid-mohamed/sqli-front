@@ -1,8 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { combineReducers } from 'redux';
-
 // reducer import
 import customizationReducer from './customizationReducer';
+import notificationsReducer from './slices/notifications';
 import productsReducer from './slices/products';
 import settingsReducer from './slices/settings';
 import userReducer from './slices/user';
@@ -14,7 +13,8 @@ const reducer = configureStore({
         customization: customizationReducer,
         products: productsReducer,
         user: userReducer,
-        settings: settingsReducer
+        settings: settingsReducer,
+        notifications: notificationsReducer
     },
 });
 

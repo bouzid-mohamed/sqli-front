@@ -34,6 +34,7 @@ import MainCard from 'ui-component/cards/MainCard';
 import Swal from 'sweetalert2';
 
 import CompanyServices from 'services/companyServices/CompanyServices';
+import { Link, Navigate } from 'react-router-dom';
 
 const thumbsContainer = {
     display: "flex",
@@ -77,6 +78,7 @@ export default function About({ ...others }) {
     const [user, setUser] = useState(null);
     const [loadcirular, setLoadcirular] = useState(true);
     const formikRef = React.useRef();
+    const [redirect, setRedirect] = useState(false)
 
     // dropzone 
     const [files, setFiles] = useState([]);
@@ -162,10 +164,8 @@ export default function About({ ...others }) {
                         confirmButtonText: 'Ok'
                     }).then((result) => {
                         if (result.isConfirmed) {
+                            setRedirect(true)
 
-                            const history = createBrowserHistory();
-                            history.push("/dashboard/default");
-                            window.location.reload();
                         }
                     })
                     setMessage('');
@@ -180,6 +180,9 @@ export default function About({ ...others }) {
             );
         }
     }
+
+    if (redirect)
+        return (<Navigate push to="/dashboard/default" />)
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
         return (
             loadcirular === true ? (
@@ -268,26 +271,22 @@ export default function About({ ...others }) {
 
                                     <Grid item xs={12} sm={2} >
 
-
-                                        <AnimateButton>
-                                            <Button
-                                                disableElevation
-                                                disabled={isSubmitting}
-                                                fullWidth
-                                                size="large"
-
-                                                color="secondary"
-                                                onClick={() => {
-                                                    const history = createBrowserHistory();
-                                                    history.push("/dashboard/default");
-                                                    window.location.reload();
-                                                }}
-                                                variant="outlined"
-                                            >
-                                                Annuler
-                                            </Button>
-                                        </AnimateButton>
+                                        <Link to={'/dashboard/default'} style={{ textDecoration: 'none' }}>
+                                            <AnimateButton>
+                                                <Button
+                                                    disableElevation
+                                                    disabled={isSubmitting}
+                                                    fullWidth
+                                                    size="large"
+                                                    color="secondary"
+                                                    variant="outlined"
+                                                >
+                                                    Annuler
+                                                </Button>
+                                            </AnimateButton>
+                                        </Link>
                                     </Grid>
+
                                     <Grid item xs={12} sm={2} >
                                         <AnimateButton>
                                             <LoadingButton

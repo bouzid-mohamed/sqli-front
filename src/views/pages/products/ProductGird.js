@@ -37,6 +37,7 @@ import ReactImageZoom from 'react-image-zoom';
 import 'react-toastify/dist/ReactToastify.css';
 import SearchIcon from '@mui/icons-material/Search';
 import { makeStyles } from "@material-ui/core/styles";
+import { Link } from 'react-router-dom';
 
 
 
@@ -80,47 +81,40 @@ export default function ProductGird() {
     const [page, setPage] = React.useState(query.get("page") != null ? parseInt(query.get("page")) : 1);
     const [isLoading, setLoading] = useState(true);
     const [idDelete, setIdDelete] = useState(0);
-    const [filter, setFilter] = React.useState([]);
-    const [searchValue, setSearchValue] = useState('');
+    const [filter, setFilter] = React.useState(query.get("filter") != null ? (query.get("filter")) : []);
+    const [order, setOrder] = React.useState(query.get("order") != null ? (query.get("order")) : 0);
+    const [searchValue, setSearchValue] = useState(query.get("search") != null ? (query.get("search")) : '');
+    const [reload, setRelaoad] = useState(1);
+    const [openFilter, setOpenFilter] = useState(false);
 
     const handleChange = (event, value) => {
-        if (query.get('filter')) {
-            var myArray = query.get("filter").split(',');
-            myArray.filter((e) => {
-                filter.push(parseInt(e))
-            })
-        }
+        setPage(value);
         const history = createBrowserHistory();
         if (filter.length > 0) {
             history.push("/tableView/products?page=" + value + '&filter=' + filter);
-        } else if (query.get('search') != null) {
+        } else if (searchValue != '') {
             history.push("/tableView/products?page=" + value + "&search=" + searchValue);
         }
         else {
             history.push("/tableView/products?page=" + value);
         }
-        window.location.reload();
     };
     useEffect(
         () => {
-
-            if (query.get('search') != null) {
-                setSearchValue(query.get('search'))
-            }
-            ProductServices.getAll(query.get("page"), query.getAll("filter"), query.get('order'), query.get('search')).then((res) => {
+            setLoading(true);
+            ProductServices.getAll(page, filter, order, searchValue).then((res) => {
                 setListProducts(res.data[0]);
                 setNumberPages(res.data["pagination"])
                 setLoading(false)
 
             })
-        }, [],
+        }, [page, reload],
     );
 
     const handleClose = () => {
         setOpen(false);
     };
 
-    const [openFilter, setOpenFilter] = useState(false);
 
     const formik = useFormik({
         initialValues: {
@@ -171,10 +165,25 @@ export default function ProductGird() {
             e.preventDefault();
             const history = createBrowserHistory();
             history.push("/tableView/products?page=1&search=" + searchValue);
-            window.location.reload();
+            setRelaoad(reload + 1)
         }
     }
 
+    const handleSubmitFilter = (list, price) => {
+        setFilter(list)
+        setOrder(price)
+        let link = price === 0 ? 'products?page=1&filter=' + list : 'products?page=1&filter=' + list + '&order=' + price
+        const history = createBrowserHistory();
+        history.push(link);
+        setRelaoad(reload + 1)
+    }
+    const handleOrder = (value) => {
+        let link = value === 'recent' ? 'products?page=1' : 'products?page=1&order=' + value
+        const history = createBrowserHistory();
+        history.push(link);
+        setRelaoad(reload + 1)
+
+    }
 
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
         return (
@@ -191,8 +200,10 @@ export default function ProductGird() {
                         <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
 
                             <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
-                                <Button href={'/products/add'} variant="outlined" startIcon={<AddIcon />}>
-                                    Ajouter</Button>
+                                <Link to={'/products/add'} style={{ textDecoration: 'none' }}>
+                                    <Button variant="outlined" startIcon={<AddIcon />}>
+                                        Ajouter</Button>
+                                </Link>
                             </Stack>
 
                             <ProductFilterSidebar
@@ -201,8 +212,9 @@ export default function ProductGird() {
                                 onResetFilter={handleResetFilter}
                                 onOpenFilter={handleOpenFilter}
                                 onCloseFilter={handleCloseFilter}
+                                handleSubmit={handleSubmitFilter}
                             />
-                            <ProductSort />
+                            <ProductSort handleOrder={handleOrder} />
                         </Stack>
                     </Stack>
 
@@ -232,7 +244,10 @@ export default function ProductGird() {
 
 
                                 />
-                                <IconButton onClick={event => window.location.href = "/tableView/products?page=1&search=" + searchValue}
+                                <IconButton onClick={event => {
+                                    history.push("/tableView/products?page=1&search=" + searchValue);
+                                    setRelaoad(reload + 1)
+                                }}
 
                                     aria-label="search">
                                     <SearchIcon />
@@ -247,10 +262,8 @@ export default function ProductGird() {
 
                     <TableContainer component={Paper}>
                         {isLoading ? (
-
-
                             <>
-                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((index) => (
+                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
                                     <GirdSkeleton key={index} />
 
                                 ))}
@@ -284,8 +297,8 @@ export default function ProductGird() {
 
                                                     <ReactImageZoom
                                                         style={{ zIndex: '50' }}
-                                                        width={200}
-                                                        height={150}
+                                                        width={150}
+                                                        height={130}
                                                         scale={2}
                                                         img={"http://localhost:8000/uploads/" + product.images[0].nom}
                                                     />
@@ -330,13 +343,20 @@ export default function ProductGird() {
 
                                                 ) : (<StyledTableCell align="right">Produit non soldés</StyledTableCell>
                                                 )}
+
                                                 <StyledTableCell align="right" scope="row"  >
-                                                    <IconButton aria-label="show" size="large" color="primary" href={"/products/show/" + product.id} >
-                                                        <VisibilityIcon />
-                                                    </IconButton>
-                                                    <IconButton aria-label="edit" size="large" color="success" href={"/products/edit/" + product.id}>
-                                                        <EditIcon />
-                                                    </IconButton>
+                                                    <Link to={"/products/show/" + product.id} style={{ textDecoration: 'none' }}>
+                                                        <IconButton aria-label="show" size="large" color="primary" href={"/products/show/" + product.id} >
+                                                            <VisibilityIcon />
+                                                        </IconButton>
+                                                    </Link>
+
+                                                    <Link to={"/products/edit/" + product.id} style={{ textDecoration: 'none' }}>
+                                                        <IconButton aria-label="edit" size="large" color="success">
+                                                            <EditIcon />
+                                                        </IconButton>
+                                                    </Link>
+
                                                     <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true); setIdDelete(product) }}>
                                                         <DeleteIcon />
                                                     </IconButton>
@@ -380,7 +400,7 @@ export default function ProductGird() {
                                 </Dialog>
                             </div>) : (null)}
                         <Stack direction="row-reverse" marginTop={"2%"}>
-                            <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
+                            <Pagination color="primary" page={page} count={numberPages} variant="outlined" onChange={handleChange} />
                         </Stack>
                     </TableContainer>
                     <ToastContainer />

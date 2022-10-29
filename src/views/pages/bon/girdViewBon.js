@@ -29,6 +29,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SearchIcon from '@mui/icons-material/Search';
+import { Link } from 'react-router-dom';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -61,25 +62,23 @@ export default function GirdViewBon() {
     let query = useQuery();
     const [open, setOpen] = React.useState(false);
     const [rows, setRows] = useState([]);
-    const [page, setPage] = React.useState(parseInt(query.get("page")));
+    const [page, setPage] = React.useState(query.get("page") != null ? parseInt(query.get("page")) : 1);
     const [isLoading, setIsloading] = useState(true);
     const [numberPages, setNumberPages] = useState(0);
     const history = createBrowserHistory();
     const [idDelete, setIdDelete] = useState(0);
-    const [searchValue, setSearchValue] = useState('');
-
+    const [searchValue, setSearchValue] = useState(query.get("search") != null ? (query.get("search")) : '');
+    const [reload, setRelaoad] = useState(1);
     const handleClose = () => {
         setOpen(false);
     };
     const handleChange = (event, value) => {
         setPage(value);
-        if (query.get('search') != null) {
+        if (searchValue != '') {
             history.push("/girdView/bons?page=" + value + "&search=" + searchValue);
         } else {
             history.push("/girdView/bons?page=" + value);
-
         }
-        window.location.reload();
     };
 
     const deleteBon = () => {
@@ -102,18 +101,15 @@ export default function GirdViewBon() {
     }
 
     useEffect(() => {
-
-        if (query.get('search') != null) {
-            setSearchValue(query.get('search'))
-        }
-        BonServices.getAll(query.get("page"), query.get("search")).then((res) => {
+        setIsloading(true);
+        BonServices.getAll(page, searchValue).then((res) => {
             setRows(res.data[0]);
             setNumberPages(res.data["pagination"])
             setIsloading(false);
 
         })
 
-    }, []);
+    }, [page, reload]);
 
 
     const handleSearchChange = (e) => {
@@ -125,7 +121,7 @@ export default function GirdViewBon() {
             e.preventDefault();
             const history = createBrowserHistory();
             history.push("/girdView/bons?page=1&search=" + searchValue);
-            window.location.reload();
+            setRelaoad(reload + 1)
         }
     }
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
@@ -143,8 +139,10 @@ export default function GirdViewBon() {
                         <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
 
                             <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
-                                <Button href={'/bon/add'} variant="outlined" startIcon={<AddIcon />}>
-                                    Ajouter</Button>
+                                <Link to={'/bon/add'} style={{ textDecoration: 'none' }}>
+                                    <Button variant="outlined" startIcon={<AddIcon />}>
+                                        Ajouter</Button>
+                                </Link>
                             </Stack>
 
 
@@ -178,7 +176,10 @@ export default function GirdViewBon() {
 
 
                                 />
-                                <IconButton onClick={event => window.location.href = "/girdView/bons?page=1&search=" + searchValue
+                                <IconButton onClick={event => {
+                                    history.push("/girdView/bons?page=1&search=" + searchValue);
+                                    setRelaoad(reload + 1)
+                                }
                                 }
                                     aria-label="search">
                                     <SearchIcon />
@@ -194,7 +195,7 @@ export default function GirdViewBon() {
                     <TableContainer component={Paper}>
                         {isLoading ? (
                             <>
-                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((index) => (
+                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
                                     <GirdSkeleton key={index} />
 
                                 ))}
@@ -213,11 +214,12 @@ export default function GirdViewBon() {
                                         <StyledTableRow key={row.id} >
                                             <StyledTableCell >{row.code}</StyledTableCell>
                                             <StyledTableCell align="right">{row.reduction}dt</StyledTableCell>
-
                                             <StyledTableCell key={Math.floor(Math.random())} align="right" scope="row"  >
-                                                <IconButton aria-label="edit" size="large" color="success" href={"/bon/edit/" + row.id}>
-                                                    <EditIcon />
-                                                </IconButton>
+                                                <Link to={"/bon/edit/" + row.id} style={{ textDecoration: 'none' }}>
+                                                    <IconButton aria-label="edit" size="large" color="success">
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                </Link>
                                                 <IconButton aria-label="delete" size="large" color="error" onClick={() => { setOpen(true); setIdDelete(row) }}>
                                                     <DeleteIcon />
                                                 </IconButton>
@@ -256,7 +258,7 @@ export default function GirdViewBon() {
                                 </Dialog>
                             </div>) : (null)}
                         <Stack direction="row-reverse" marginTop={"2%"}>
-                            <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
+                            <Pagination color="primary" page={page} count={numberPages} variant="outlined" onChange={handleChange} />
                         </Stack>
                     </TableContainer>
                     <ToastContainer />

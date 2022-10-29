@@ -41,6 +41,8 @@ import AnimateButton from 'ui-component/extended/AnimateButton';
 // assets
 import MainCard from 'ui-component/cards/MainCard';
 import Swal from 'sweetalert2';
+import { Navigate } from 'react-router';
+import { Link } from 'react-router-dom';
 
 
 
@@ -90,8 +92,7 @@ export default function AddPromotion({ ...others }) {
     const [level] = useState();
     const [value, setValue] = React.useState([null, null]);
     const [message, setMessage] = useState(null);
-    const [dd, setDd] = useState(null);
-    const [df, setDf] = useState(null);
+    const [redirect, setRedirect] = useState(false)
 
 
 
@@ -157,10 +158,7 @@ export default function AddPromotion({ ...others }) {
                         confirmButtonText: 'Ok'
                     }).then((result) => {
                         if (result.isConfirmed) {
-
-                            const history = createBrowserHistory();
-                            history.push("/girdView/promotion");
-                            window.location.reload();
+                            setRedirect(true)
                         }
                     })
                     setMessage('');
@@ -175,6 +173,8 @@ export default function AddPromotion({ ...others }) {
             );
         }
     }
+    if (redirect)
+        return (<Navigate push to="/girdView/promotion?page=1" />)
 
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
         return (<MainCard >
@@ -350,26 +350,20 @@ export default function AddPromotion({ ...others }) {
                             </Grid>
 
                             <Grid item xs={12} sm={2} >
-
-
-                                <AnimateButton>
-                                    <Button
-                                        disableElevation
-                                        disabled={isSubmitting}
-                                        fullWidth
-                                        size="large"
-
-                                        color="secondary"
-                                        onClick={() => {
-                                            const history = createBrowserHistory();
-                                            history.push("/girdView/promotion?page=1");
-                                            window.location.reload();
-                                        }}
-                                        variant="outlined"
-                                    >
-                                        Annuler
-                                    </Button>
-                                </AnimateButton>
+                                <Link to={'/girdView/promotion?page=1'} style={{ textDecoration: 'none' }}>
+                                    <AnimateButton>
+                                        <Button
+                                            disableElevation
+                                            disabled={isSubmitting}
+                                            fullWidth
+                                            size="large"
+                                            color="secondary"
+                                            variant="outlined"
+                                        >
+                                            Annuler
+                                        </Button>
+                                    </AnimateButton>
+                                </Link>
                             </Grid>
                             <Grid item xs={12} sm={2} >
                                 <AnimateButton>

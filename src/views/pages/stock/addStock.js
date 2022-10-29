@@ -36,6 +36,7 @@ import StockServices from 'services/stock-services/stockServices';
 import MainCard from 'ui-component/cards/MainCard';
 import Swal from 'sweetalert2';
 import AnimateButton from 'ui-component/extended/AnimateButton';
+import { Link, Navigate } from 'react-router-dom';
 
 
 const ITEM_HEIGHT = 48;
@@ -59,6 +60,7 @@ export default function AddStock({ ...others }) {
     const [productsNames, setProductsNames] = useState([]);
     const [strength] = useState(0);
     const [level] = useState();
+    const [redirect, setRedirect] = useState(false)
     const handleChangeSelect = (event) => {
         const {
             target: { value },
@@ -86,10 +88,7 @@ export default function AddStock({ ...others }) {
                     confirmButtonText: 'Ok'
                 }).then((result) => {
                     if (result.isConfirmed) {
-
-                        const history = createBrowserHistory();
-                        history.push("/girdView/stock?page=1");
-                        window.location.reload();
+                        setRedirect(true)
                     }
                 })
                 setMessage('');
@@ -116,7 +115,8 @@ export default function AddStock({ ...others }) {
 
 
 
-
+    if (redirect)
+        return (<Navigate push to="/girdView/stock" />)
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
         return (<MainCard >
 
@@ -273,25 +273,23 @@ export default function AddStock({ ...others }) {
 
                             <Grid item xs={12} sm={2} >
 
+                                <Link to={"/girdView/stock?page=1"} style={{ textDecoration: 'none' }}>
+                                    <AnimateButton>
+                                        <Button
+                                            disableElevation
+                                            disabled={isSubmitting}
+                                            fullWidth
+                                            size="large"
+                                            color="secondary"
+                                            variant="outlined"
+                                        >
+                                            Annuler
+                                        </Button>
+                                    </AnimateButton>
+                                </Link>
 
-                                <AnimateButton>
-                                    <Button
-                                        disableElevation
-                                        disabled={isSubmitting}
-                                        fullWidth
-                                        size="large"
 
-                                        color="secondary"
-                                        onClick={() => {
-                                            const history = createBrowserHistory();
-                                            history.push("/girdView/stock?page=1");
-                                            window.location.reload();
-                                        }}
-                                        variant="outlined"
-                                    >
-                                        Annuler
-                                    </Button>
-                                </AnimateButton>
+
                             </Grid>
                             <Grid item xs={12} sm={2} >
                                 <AnimateButton>

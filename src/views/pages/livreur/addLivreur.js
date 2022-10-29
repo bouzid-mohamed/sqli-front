@@ -39,7 +39,7 @@ import AnimateButton from 'ui-component/extended/AnimateButton';
 import MainCard from 'ui-component/cards/MainCard';
 import BonServices from 'services/bons-services/BonServices';
 import Swal from 'sweetalert2';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 import postServices from 'services/post-services/postServices';
 import LivreurServices from 'services/livreur-services/LivreurServices';
@@ -58,6 +58,7 @@ export default function AddLivreur({ ...others }) {
     const [dataGouvernerat, setDataGouvernerat] = useState([]);
     const [strength, setStrength] = useState(0);
     const [level, setLevel] = useState();
+    const [redirect, setRedirect] = useState(false)
 
 
 
@@ -116,10 +117,7 @@ export default function AddLivreur({ ...others }) {
                     confirmButtonText: 'Ok'
                 }).then((result) => {
                     if (result.isConfirmed) {
-
-                        const history = createBrowserHistory();
-                        history.push("/post/livreur/list?page=1");
-                        window.location.reload();
+                        setRedirect(true)
                     }
                 })
                 setMessage('');
@@ -133,6 +131,8 @@ export default function AddLivreur({ ...others }) {
             }
         );
     }
+    if (redirect)
+        return (<Navigate push to="/post/livreur/list?page=1" />)
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_POSTE") > -1)
         return (<MainCard >
 
@@ -349,26 +349,21 @@ export default function AddLivreur({ ...others }) {
                             </Grid>
 
                             <Grid item xs={12} sm={2} >
+                                <Link to={'/post/livreur/list'} style={{ textDecoration: 'none' }}>
+                                    <AnimateButton>
+                                        <Button
+                                            disableElevation
+                                            disabled={isSubmitting}
+                                            fullWidth
+                                            size="large"
+                                            color="secondary"
+                                            variant="outlined"
+                                        >
+                                            Annuler
+                                        </Button>
+                                    </AnimateButton>
+                                </Link>
 
-
-                                <AnimateButton>
-                                    <Button
-                                        disableElevation
-                                        disabled={isSubmitting}
-                                        fullWidth
-                                        size="large"
-
-                                        color="secondary"
-                                        onClick={() => {
-                                            const history = createBrowserHistory();
-                                            history.push("/post/livreur/list?page=1");
-                                            window.location.reload();
-                                        }}
-                                        variant="outlined"
-                                    >
-                                        Annuler
-                                    </Button>
-                                </AnimateButton>
                             </Grid>
                             <Grid item xs={12} sm={2} >
                                 <AnimateButton>

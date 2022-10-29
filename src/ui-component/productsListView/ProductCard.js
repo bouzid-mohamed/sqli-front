@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, Navigate } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 
 // material
@@ -9,6 +9,7 @@ import { styled } from '@mui/material/styles';
 //
 import Label from '../label/Label';
 import ColorPreview from '../ColorPreview/ColorPreview';
+import { useState } from 'react';
 
 
 
@@ -30,9 +31,12 @@ ShopProductCard.propTypes = {
 
 export default function ShopProductCard(props) {
     const product = props.product;
+    const [redirect, setRedirect] = useState(false)
+    const [idRedirect, setIdRedirect] = useState(false)
 
 
-
+    if (redirect)
+        return (<Navigate push to={"/products/show/" + idRedirect} />)
     return (
         <>
 
@@ -56,8 +60,9 @@ export default function ShopProductCard(props) {
 
                     <ProductImgStyle style={{ cursor: 'pointer' }} onClick={() => {
                         const history = createBrowserHistory();
+                        setIdRedirect(product.id)
                         history.push("/products/show/" + product.id);
-                        window.location.reload();
+                        setRedirect(true)
                     }} alt={product.nom} src={"http://localhost:8000/uploads/" + product.images[0].nom} />
                 </Box>
 

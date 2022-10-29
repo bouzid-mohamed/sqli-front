@@ -3,7 +3,7 @@ import jwt_decode from 'jwt-decode';
 import { createBrowserHistory } from 'history';
 import authHeader from "./auth-header";
 const API_URL = "http://localhost:8000/api/";
-
+const API_URL2 = "http://localhost:8000/"
 
 export const history = createBrowserHistory();
 
@@ -27,6 +27,35 @@ class AuthService {
                 return response.data;
             });
     }
+    forgotPassword(email) {
+        return axios
+            .post(API_URL2 + 'forgot_password/', {
+                email,
+            })
+            .then((response) => {
+                return response.data;
+            });
+    }
+    forgotPasswordFront(email, id) {
+        return axios
+            .post(API_URL2 + 'forgot_password/?idE=' + id, {
+                email,
+            })
+            .then((response) => {
+                return response.data;
+            });
+    }
+    changePassword(password, token) {
+        return axios
+            .post(API_URL2 + 'forgot_password/' + token, {
+                password,
+            })
+            .then((response) => {
+                return response.data;
+            });
+    }
+
+
     logout() {
         localStorage.removeItem("token");
         if (localStorage.getItem('user')) {

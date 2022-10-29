@@ -10,7 +10,7 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider'
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
 import PromotionServices from 'services/promotion-services/promotionServices';
-import { useParams } from 'react-router';
+import { Navigate, useParams } from 'react-router';
 import Moment from 'moment';
 
 
@@ -43,6 +43,7 @@ import AnimateButton from 'ui-component/extended/AnimateButton';
 // assets
 import MainCard from 'ui-component/cards/MainCard';
 import Swal from 'sweetalert2';
+import { Link } from 'react-router-dom';
 
 
 
@@ -90,6 +91,7 @@ export default function EditPromotion({ ...others }) {
     const [files, setFiles] = useState([]);
     const params = useParams();
     const [loadcirular, setLoadcirular] = useState(true);
+    const [redirect, setRedirect] = useState(false)
 
     const formikRef = React.useRef();
     const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
@@ -174,9 +176,8 @@ export default function EditPromotion({ ...others }) {
                     confirmButtonText: 'Ok'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        const history = createBrowserHistory();
-                        history.push("/girdView/promotion?page=1");
-                        window.location.reload();
+                        setRedirect(true)
+
                     }
                 })
                 setMessage('');
@@ -191,7 +192,8 @@ export default function EditPromotion({ ...others }) {
         );
 
     }
-
+    if (redirect)
+        return (<Navigate push to="/girdView/promotion?page=1" />)
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
         return (
             loadcirular === true ? (
@@ -367,25 +369,20 @@ export default function EditPromotion({ ...others }) {
 
                                     <Grid item xs={12} sm={2} >
 
-
-                                        <AnimateButton>
-                                            <Button
-                                                disableElevation
-                                                disabled={isSubmitting}
-                                                fullWidth
-                                                size="large"
-
-                                                color="secondary"
-                                                onClick={() => {
-                                                    const history = createBrowserHistory();
-                                                    history.push("/girdView/promotion?page=1");
-                                                    window.location.reload();
-                                                }}
-                                                variant="outlined"
-                                            >
-                                                Annuler
-                                            </Button>
-                                        </AnimateButton>
+                                        <Link to={'/girdView/promotion?page=1'} style={{ textDecoration: 'none' }}>
+                                            <AnimateButton>
+                                                <Button
+                                                    disableElevation
+                                                    disabled={isSubmitting}
+                                                    fullWidth
+                                                    size="large"
+                                                    color="secondary"
+                                                    variant="outlined"
+                                                >
+                                                    Annuler
+                                                </Button>
+                                            </AnimateButton>
+                                        </Link>
                                     </Grid>
                                     <Grid item xs={12} sm={2} >
                                         <AnimateButton>

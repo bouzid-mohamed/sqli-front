@@ -14,6 +14,10 @@ const Login = loadable(() => pMinDelay(import('views/pages/authentication/login'
 
 const AuthRegister3 = Loadable(lazy(() => import('views/pages/authentication/authentication3/Register3')));
 const RegisterCompany = Loadable(lazy(() => import('views/pages/authentication/authentication3/RegisterCompany')));
+const ForgotPassword = Loadable(lazy(() => import('views/pages/authentication/Forgot-password/Forgot-password')));
+const ChangePassword = Loadable(lazy(() => import('views/pages/authentication/Forgot-password/Change-password')));
+const Forgot = Loadable(lazy(() => import('views/pages/authentication/Forgot')));
+const ChangePass = Loadable(lazy(() => import('views/pages/authentication/ChangePassword')));
 
 // ==============================|| AUTHENTICATION ROUTING ||============================== //
 
@@ -36,6 +40,22 @@ const AuthenticationRoutes = {
         {
             path: '/register/company',
             element: <RegisterCompany />
+        },
+        {
+            path: '/forgot_password',
+            element: <ForgotPassword />
+        },
+        {
+            path: '/forgot_password/:token',
+            element: <ChangePassword />
+        },
+        {
+            path: '/forgot/:idE',
+            element: <Forgot />
+        },
+        {
+            path: '/forgot/:token/:idE',
+            element: <ChangePass />
         }
 
 

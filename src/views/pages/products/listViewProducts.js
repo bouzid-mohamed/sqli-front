@@ -14,7 +14,7 @@ import AddIcon from '@mui/icons-material/Add';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
 import ProductServices from 'services/productServices/ProductServices';
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import SearchIcon from '@mui/icons-material/Search';
 // project imports
 // ==============================|| SAMPLE PAGE ||============================== //
@@ -28,30 +28,32 @@ export default function ListViewProducts() {
     const [numberPages, setNumberPages] = useState(0);
     let query = useQuery();
     const [page, setPage] = React.useState(query.get("page") != null ? parseInt(query.get("page")) : 1);
-    const [filter, setFilter] = React.useState([]);
+    const [filter, setFilter] = React.useState(query.get("filter") != null ? (query.get("filter")) : []);
     const [isLoading, setLoading] = useState(true);
-    const [searchValue, setSearchValue] = useState('');
+    const [searchValue, setSearchValue] = useState(query.get("search") != null ? (query.get("search")) : '');
+    const [reload, setRelaoad] = useState(1);
+    const [order, setOrder] = React.useState(query.get("order") != null ? (query.get("order")) : 0);
 
 
 
+    const handleOrder = (value) => {
+        let link = value === 'recent' ? 'products?page=1' : 'products?page=1&order=' + value
+        const history = createBrowserHistory();
+        history.push(link);
+        setRelaoad(reload + 1)
 
+    }
     const handleChange = (event, value) => {
-        if (query.get('filter')) {
-            var myArray = query.get("filter").split(',');
-            myArray.filter((e) => {
-                filter.push(parseInt(e))
-            })
-        }
+        setPage(value);
         const history = createBrowserHistory();
         if (filter.length > 0) {
             history.push("/listView/products?page=" + value + '&filter=' + filter);
-        } else if (query.get('search') != null) {
+        } else if (searchValue != '') {
             history.push("/listView/products?page=" + value + "&search=" + searchValue);
         }
         else {
             history.push("/listView/products?page=" + value);
         }
-        window.location.reload();
     };
     const formik = useFormik({
         initialValues: {
@@ -82,16 +84,14 @@ export default function ListViewProducts() {
 
     useEffect(
         () => {
-            if (query.get('search') != null) {
-                setSearchValue(query.get('search'))
-            }
-            ProductServices.getAll(query.get("page"), query.getAll("filter"), query.get('order'), query.get('search')).then((res) => {
+            setLoading(true);
+            ProductServices.getAll(page, filter, order, searchValue).then((res) => {
                 setListProducts(res.data[0]);
                 setNumberPages(res.data["pagination"])
                 setLoading(false)
 
             })
-        }, [],
+        }, [page, reload],
     );
 
     const handleSearchChange = (e) => {
@@ -102,8 +102,16 @@ export default function ListViewProducts() {
             e.preventDefault();
             const history = createBrowserHistory();
             history.push("/listView/products?page=1&search=" + searchValue);
-            window.location.reload();
+            setRelaoad(reload + 1)
         }
+    }
+    const handleSubmitFilter = (list, price) => {
+        setFilter(list)
+        setOrder(price)
+        let link = price === 0 ? 'products?page=1&filter=' + list : 'products?page=1&filter=' + list + '&order=' + price
+        const history = createBrowserHistory();
+        history.push(link);
+        setRelaoad(reload + 1)
     }
 
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
@@ -120,16 +128,22 @@ export default function ListViewProducts() {
                     <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
 
                         <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
-                            <Button href={'/products/add'} variant="outlined" startIcon={<AddIcon />}>
-                                Ajouter</Button></Stack>
+                            <Link to={'/products/add'} style={{ textDecoration: 'none' }}>
+                                <Button variant="outlined" startIcon={<AddIcon />}>
+                                    Ajouter
+                                </Button>
+                            </Link>
+                        </Stack>
                         <ProductFilterSidebar
                             formik={formik}
                             isOpenFilter={openFilter}
                             onResetFilter={handleResetFilter}
                             onOpenFilter={handleOpenFilter}
                             onCloseFilter={handleCloseFilter}
+                            handleSubmit={handleSubmitFilter}
                         />
-                        <ProductSort />
+                        <ProductSort handleOrder={handleOrder} />
+
                     </Stack>
                 </Stack>
 
@@ -159,7 +173,10 @@ export default function ListViewProducts() {
 
 
                             />
-                            <IconButton onClick={event => window.location.href = "/listView/products?page=1&search=" + searchValue}
+                            <IconButton onClick={event => {
+                                history.push("/listView/products?page=1&search=" + searchValue);
+                                setRelaoad(reload + 1)
+                            }}
 
                                 aria-label="search">
                                 <SearchIcon />
@@ -173,8 +190,8 @@ export default function ListViewProducts() {
 
                 <ProductList products={listproducts} isLoading={isLoading} />
                 <ProductCartWidget />
-                <Stack direction="row-reverse" marginTop={"3%"}>
-                    <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
+                <Stack direction="row-reverse" marginTop={"2%"}>
+                    <Pagination color="primary" page={page} count={numberPages} variant="outlined" onChange={handleChange} />
                 </Stack>
 
             </MainCard>);

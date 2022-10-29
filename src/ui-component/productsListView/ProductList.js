@@ -24,7 +24,7 @@ export default function ProductList({ products, isLoading, ...other }) {
 
 
                 <>
-                    {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((product) => (
+                    {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((product) => (
                         <Grid key={product} item xs={12} sm={6} md={3}>
                             <ProductSkeleton />
                         </Grid>

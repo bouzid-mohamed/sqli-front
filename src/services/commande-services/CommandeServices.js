@@ -136,11 +136,11 @@ class CommandesServices {
     }
     //ajouter une commande role client 
     //ajouter un stock 
-    addCommande(addresse, gouvernerat, delegation, lignesCommande, bon) {
+    addCommande(numTel, addresse, gouvernerat, delegation, lignesCommande, bon) {
         console.log(lignesCommande)
         return axios
             .post(API_URL1 + "client/commande/add", {
-                addresse, gouvernerat, delegation, lignesCommande, bon
+                numTel, addresse, gouvernerat, delegation, lignesCommande, bon
             }, { headers: authHeader() })
             .then(response => {
                 return response.data;

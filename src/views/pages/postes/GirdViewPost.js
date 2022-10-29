@@ -11,13 +11,6 @@ import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import MainCard from 'ui-component/cards/MainCard';
 import { useEffect, useState } from 'react';
@@ -30,6 +23,7 @@ import { useLocation } from 'react-router';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SearchIcon from '@mui/icons-material/Search';
+import { Link } from 'react-router-dom';
 
 
 
@@ -60,28 +54,23 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     },
 }));
 
-
-
-
-
 export default function GirdViewPromotion() {
     let query = useQuery();
     const [numberPages, setNumberPages] = useState(0);
     const history = createBrowserHistory();
     const [rows, setRows] = useState([]);
-    const [page, setPage] = React.useState(parseInt(query.get("page")));
+    const [page, setPage] = React.useState(query.get("page") != null ? parseInt(query.get("page")) : 1);
     const [isLoading, setIsloading] = useState(true);
-    const [searchValue, setSearchValue] = React.useState('');
-
+    const [searchValue, setSearchValue] = useState(query.get("search") != null ? (query.get("search")) : '');
+    const [reload, setRelaoad] = useState(1);
     const handleChange = (event, value) => {
         setPage(value);
         const history = createBrowserHistory();
-        if (query.get('search') != null) {
+        if (searchValue != '') {
             history.push("/post/list?page=" + value + "&search=" + searchValue);
         } else {
             history.push("/post/list?page=" + value);
         }
-        window.location.reload();
     };
     const handleSearchChange = (e) => {
         setSearchValue(e.target.value)
@@ -91,23 +80,20 @@ export default function GirdViewPromotion() {
             e.preventDefault();
             const history = createBrowserHistory();
             history.push("/post/list?page=1&search=" + searchValue);
-            window.location.reload();
+            setRelaoad(reload + 1)
         }
     }
 
 
     useEffect(() => {
-        if (query.get('search') != null) {
-            setSearchValue(query.get('search'))
-        }
-        postServices.getAll(query.get("page"), query.get("search")).then((res) => {
+        setIsloading(true);
+        postServices.getAll(page, searchValue).then((res) => {
             setRows(res.data[0]);
             setNumberPages(res.data["pagination"])
             setIsloading(false);
         })
-        //setTimeout(() => { setLoading(false); }, 2000);
 
-    }, []);
+    }, [page, reload]);
 
 
 
@@ -133,10 +119,11 @@ export default function GirdViewPromotion() {
                     >
 
                         <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
-
                             <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
-                                <Button href='/post/add' variant="outlined" startIcon={<AddIcon />}>
-                                    Ajouter</Button>
+                                <Link to={'/post/add'} style={{ textDecoration: 'none' }}>
+                                    <Button variant="outlined" startIcon={<AddIcon />}>
+                                        Ajouter</Button>
+                                </Link>
                             </Stack>
 
 
@@ -171,7 +158,10 @@ export default function GirdViewPromotion() {
 
 
                                 />
-                                <IconButton onClick={event => window.location.href = "/post/list?page=1&search=" + searchValue
+                                <IconButton onClick={event => {
+                                    history.push("/post/list?page=1&search=" + searchValue)
+                                    setRelaoad(reload + 1)
+                                }
                                 }
                                     aria-label="search">
                                     <SearchIcon />
@@ -188,7 +178,7 @@ export default function GirdViewPromotion() {
 
 
                             <>
-                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((index) => (
+                                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
                                     <GirdSkeleton key={index} />
 
                                 ))}
@@ -228,7 +218,7 @@ export default function GirdViewPromotion() {
                             </Table>
                         )}
                         <Stack direction="row-reverse" marginTop={"2%"}>
-                            <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
+                            <Pagination color="primary" page={page} count={numberPages} variant="outlined" onChange={handleChange} />
                         </Stack>
                     </TableContainer>
                     <ToastContainer />

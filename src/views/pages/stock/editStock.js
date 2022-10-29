@@ -3,7 +3,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
 import ProductServices from 'services/productServices/ProductServices';
-import { useParams } from 'react-router';
+import { Navigate, useParams } from 'react-router';
 
 // material-ui
 import { useState, useEffect } from 'react';
@@ -38,6 +38,7 @@ import StockServices from 'services/stock-services/stockServices';
 import MainCard from 'ui-component/cards/MainCard';
 import Swal from 'sweetalert2';
 import AnimateButton from 'ui-component/extended/AnimateButton';
+import { Link } from 'react-router-dom';
 
 
 const ITEM_HEIGHT = 48;
@@ -65,6 +66,7 @@ export default function EditStock({ ...others }) {
     const params = useParams();
     const [loadcirular, setLoadcirular] = useState(true);
     const formikRef = React.useRef();
+    const [redirect, setRedirect] = useState(false)
 
 
     const handleChangeSelect = (event) => {
@@ -72,7 +74,6 @@ export default function EditStock({ ...others }) {
             target: { value },
         } = event;
         setProduitName(
-            // On autofill we get a stringified value.
             typeof value === 'string' ? value.split(',') : value,
         );
 
@@ -93,10 +94,8 @@ export default function EditStock({ ...others }) {
                     confirmButtonText: 'Ok'
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        setRedirect(true)
 
-                        const history = createBrowserHistory();
-                        history.push("/girdView/stock?page=1");
-                        window.location.reload();
                     }
                 })
                 setMessage('');
@@ -138,6 +137,9 @@ export default function EditStock({ ...others }) {
             })
         }, []
     );
+    if (redirect)
+
+        return (<Navigate push to="/girdView/stock" />)
 
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
 
@@ -301,24 +303,24 @@ export default function EditStock({ ...others }) {
                                     </Grid>
 
                                     <Grid item xs={12} sm={2} >
-                                        <AnimateButton>
-                                            <Button
-                                                disableElevation
-                                                disabled={isSubmitting}
-                                                fullWidth
-                                                size="large"
 
-                                                color="secondary"
-                                                onClick={() => {
-                                                    const history = createBrowserHistory();
-                                                    history.push("/girdView/stock?page=1");
-                                                    window.location.reload();
-                                                }}
-                                                variant="outlined"
-                                            >
-                                                Annuler
-                                            </Button>
-                                        </AnimateButton>
+                                        <Link to={"/girdView/stock?page=1"} style={{ textDecoration: 'none' }}>
+                                            <AnimateButton>
+                                                <Button
+                                                    disableElevation
+                                                    disabled={isSubmitting}
+                                                    fullWidth
+                                                    size="large"
+                                                    color="secondary"
+                                                    variant="outlined"
+                                                >
+                                                    Annuler
+                                                </Button>
+                                            </AnimateButton>
+                                        </Link>
+
+
+
                                     </Grid>
                                     <Grid item xs={12} sm={2} >
                                         <AnimateButton>

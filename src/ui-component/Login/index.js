@@ -4,6 +4,13 @@ import { useSelector } from "react-redux";
 import Swal from 'sweetalert2';
 import { createBrowserHistory } from 'history';
 import AuthService from 'services/auth-services/AuthService';
+import AnimateButton from 'ui-component/extended/AnimateButton';
+import { Box } from '@mui/system';
+import { useTheme } from '@mui/material/styles';
+import Google from 'assets/images/icons/social-google.svg';
+import Facebook from 'assets/images/icons/Facebook_F_icon.svg.png';
+
+import { useMediaQuery, Button } from '@mui/material';
 
 const LoginArea = () => {
     const [email, setEmail] = useState('')
@@ -11,6 +18,8 @@ const LoginArea = () => {
     const [password, setPassword] = useState('')
     const [message, setMessage] = useState('');
     const [submitting, setSubmitting] = useState(false)
+    const theme = useTheme();
+    const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
 
     const handleChangeEmail = (e) => {
         setEmail(e.target.value)
@@ -62,7 +71,14 @@ const LoginArea = () => {
     }
 
 
-
+    const googleHandler = async (e) => {
+        e.preventDefault();
+        window.location.href = 'http://localhost:8000/connect/google?idE=' + params.idE;
+    };
+    const facebookHandler = async (e) => {
+        e.preventDefault();
+        window.location.href = 'http://localhost:8000/connect/facebook?idE=' + params.idE;
+    };
     return (
         <>
 
@@ -85,12 +101,49 @@ const LoginArea = () => {
                                         <button className="theme-btn-one btn-black-overlay btn_md" type="submit" disabled={submitting}>{submitting ? 'Loading...' : 'Connexion'}</button>
                                     </div>
                                     <div className="remember_area">
-                                        <div className="form-check">
-                                            <input type="checkbox" className="form-check-input" id="materialUnchecked" />
-                                            <label className="form-check-label" htmlFor="materialUnchecked">Remember me</label>
-                                        </div>
+
+                                        <Link to={'/forgot/' + params.idE} className="form-check-label" htmlFor="materialUnchecked" >Mot de passe oublié?</Link>
+
                                     </div>
-                                    <Link to={'/' + params.idE + "/register/client"} className="active">Créez votre compte?</Link>
+                                    <AnimateButton>
+                                        <Button
+                                            disableElevation
+                                            fullWidth
+                                            onClick={googleHandler}
+                                            size="large"
+                                            variant="outlined"
+                                            sx={{
+                                                color: 'grey.700',
+                                                backgroundColor: theme.palette.grey[50],
+                                                borderColor: theme.palette.grey[100]
+                                            }}
+                                        >
+                                            <Box sx={{ mr: { xs: 1, sm: 2, width: 20 } }}>
+                                                <img src={Google} alt="google" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
+                                            </Box>
+                                            Connectez-vous avec Google
+                                        </Button>
+                                    </AnimateButton>
+                                    <AnimateButton>
+                                        <Button
+                                            disableElevation
+                                            fullWidth
+                                            onClick={facebookHandler}
+                                            size="large"
+                                            variant="outlined"
+                                            sx={{
+                                                color: 'grey.700',
+                                                backgroundColor: theme.palette.grey[50],
+                                                borderColor: theme.palette.grey[100]
+                                            }}
+                                        >
+                                            <Box sx={{ mr: { xs: 1, sm: 2, width: 20 } }}>
+                                                <img src={Facebook} alt="google" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
+                                            </Box>
+                                            Connectez-vous avec Facebook
+                                        </Button>
+                                    </AnimateButton>
+
                                 </form>
                             </div>
                         </div>

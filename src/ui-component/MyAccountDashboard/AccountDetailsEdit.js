@@ -95,7 +95,10 @@ const AccountDetailsEdit = () => {
         if (newPassword != confirmNewPassword) {
             setMessage('Confirmer votre nouveau mot de passe ')
         } else {
+
             setSubmitting(true)
+            if (user.password === null)
+                setPassword(null)
             ClientServices.updateClient(nom, prenom, email, numTel, newPassword, password, formData, user.id).then(
                 (res) => {
 
@@ -144,7 +147,7 @@ const AccountDetailsEdit = () => {
                             <div className="col-lg-3">
                                 <div className="account_thumd">
                                     <div className="account_thumb_img">
-                                        <img src={img} alt="img" />
+                                        <img src={user?.photo?.startsWith('https://') ? user?.photo : img} alt="img" />
                                         <div className="fixed_icon"><input type="file" onChange={onImageChange} accept="image/png, image/gif, image/jpeg" /><i className="fa fa-camera"></i></div>
                                     </div>
                                     <h4>{user.nom}  {user.prenom} </h4>
@@ -175,9 +178,10 @@ const AccountDetailsEdit = () => {
                                         {showPasswordEdit ? (
 
                                             <div className="form-group">
-                                                <label htmlFor="current_password">Mot de passe actuel</label>
-                                                <input type="password" className="form-control" id="current_password" value={password} onChange={handleChangePassword}
-                                                    placeholder="mot de passe " required />
+                                                {user.password === null ? (null) : (<> <label htmlFor="current_password">Mot de passe actuel</label>
+                                                    <input type="password" className="form-control" id="current_password" value={password} onChange={handleChangePassword}
+                                                        placeholder="mot de passe " required={user.password === null ? false : true} /></>)}
+
                                                 <label htmlFor="new_password">Nouveau mot de passe</label>
                                                 <input type="password" className="form-control" id="new_password" value={newPassword} onChange={handleChangeNewPassword}
                                                     placeholder="Nouveau mot de passe" required />

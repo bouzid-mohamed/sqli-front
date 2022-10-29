@@ -23,6 +23,7 @@ import List from '@mui/material/List';
 import SearchIcon from '@mui/icons-material/Search';
 import ConfirmationDialogRaw from './affecterLivreur/ConfirmationDialogRaw';
 import NotificationServices from 'services/notification-services/NotificationServices';
+import { useSelector } from 'react-redux';
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -33,33 +34,33 @@ export default function CollapsibleTable() {
     const [rows, setRows] = React.useState([]);
     const [numberPages, setNumberPages] = React.useState(0);
     const [isLoading, setIsloading] = React.useState(true);
-    const [page, setPage] = React.useState(parseInt(query.get("page")));
+    const [page, setPage] = React.useState(query.get("page") != null ? parseInt(query.get("page")) : 1);
     const [openForm, setOpenForm] = React.useState(false);
     const [value, setValue] = React.useState(-1);
     const [openAlert, setOpenAlert] = React.useState(false);
     const [commande, setCommande] = React.useState(0);
-    const [searchValue, setSearchValue] = React.useState('');
+    const [searchValue, setSearchValue] = React.useState(query.get("search") != null ? (query.get("search")) : '');
+    const [reload, setRelaoad] = React.useState(1);
+    let byId = useSelector((state) => state.notifications.byId);
 
 
     const handleChange = (event, v) => {
         setPage(v);
         const history = createBrowserHistory();
-
-        if (query.get('search') != null) {
+        if (searchValue != '') {
             history.push("/post/girdView/commandes?page=" + v + "&search=" + searchValue);
         } else {
             history.push("/post/girdView/commandes?page=" + v);
 
-        }
 
-        window.location.reload();
+        }
     };
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             const history = createBrowserHistory();
             history.push("/post/girdView/commandes?page=1&search=" + searchValue);
-            window.location.reload();
+            setRelaoad(reload + 1)
         }
     }
 
@@ -67,9 +68,8 @@ export default function CollapsibleTable() {
         setSearchValue(e.target.value)
     }
     React.useEffect(() => {
-        if (query.get('search') != null) {
-            setSearchValue(query.get('search'))
-        }
+        setIsloading(true);
+
         if (query.get("byId")) {
             NotificationServices.showPoste(query.get("byId")).then((res) => {
                 setRows(res.data);
@@ -78,14 +78,14 @@ export default function CollapsibleTable() {
                 setIsloading(false);
             })
         } else {
-            commandeServices.getAllRolePoste(query.get("page"), query.get("search")).then((res) => {
+            commandeServices.getAllRolePoste(page, searchValue).then((res) => {
                 setRows(res.data[0]);
                 setNumberPages(res.data["pagination"])
                 setIsloading(false);
             })
         }
 
-    }, []);
+    }, [page, reload, byId]);
 
     // etat commande vers confirmer
     const handleAffecterLivreur = (row) => {
@@ -238,7 +238,11 @@ export default function CollapsibleTable() {
 
 
                                 />
-                                <IconButton onClick={event => window.location.href = "/post/girdView/commandes?page=1&search=" + searchValue
+                                <IconButton onClick={event => {
+                                    window.location.href = "/post/girdView/commandes?page=1&search=" + searchValue;
+                                    setRelaoad(reload + 1)
+
+                                }
                                 }
                                     aria-label="search">
                                     <SearchIcon />
@@ -251,7 +255,7 @@ export default function CollapsibleTable() {
                     </Stack>
                     {isLoading ? (
                         <>
-                            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((index) => (
+                            {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) => (
                                 <GirdSkeleton key={index} />
                             ))}
                         </>
@@ -284,7 +288,7 @@ export default function CollapsibleTable() {
                         </>
                     )}
                     {numberPages > 0 ? (<Stack direction="row-reverse" marginTop={"2%"}>
-                        <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
+                        <Pagination color="primary" page={page} count={numberPages} variant="outlined" onChange={handleChange} />
                     </Stack>) : (null)}
 
                 </TableContainer>

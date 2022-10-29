@@ -247,6 +247,8 @@ export default function EditEntreprise({ ...others }) {
         }
         if (values.newPassword != values.confirmNewPassword) {
             setMessage('Confirmer votre nouveau mot de passe ')
+            setSubmitting(false);
+
         } else {
             CompanyServices.updateCompany(values.nom, values.email, values.numTel, gouv, values.delegation, values.newPassword, values.password, formData, user.id).then(
                 () => {

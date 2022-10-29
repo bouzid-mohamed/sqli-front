@@ -82,7 +82,7 @@ export default function ConfirmationDialogRaw(props) {
                 {loading ? (<Box sx={{ width: '100%' }}>
                     <LinearProgress />
                 </Box>) : (
-                    options[0] == null ? ('vous n avez pas des livreurs') : (<RadioGroup
+                    options?.length <= 0 ? ('vous n avez pas des livreurs') : (<RadioGroup
                         ref={radioGroupRef}
                         aria-label="ringtone"
                         name="ringtone"
@@ -91,7 +91,7 @@ export default function ConfirmationDialogRaw(props) {
                     >
                         {options.map((option) => (
 
-                            option?.id != props.commande.livreur.id ? (<FormControlLabel
+                            option?.id != props.commande?.livreur?.id ? (<FormControlLabel
                                 value={option.id}
                                 key={option.id}
                                 control={<Radio />}

@@ -2,7 +2,7 @@ import * as React from 'react';
 import LoadingButton from '@mui/lab/LoadingButton';
 import AuthService from 'services/auth-services/AuthService';
 import { createBrowserHistory } from 'history';
-import { useParams } from 'react-router';
+import { Navigate, useParams } from 'react-router';
 
 
 // material-ui
@@ -35,6 +35,7 @@ import AnimateButton from 'ui-component/extended/AnimateButton';
 import MainCard from 'ui-component/cards/MainCard';
 import BonServices from 'services/bons-services/BonServices';
 import Swal from 'sweetalert2';
+import { Link } from 'react-router-dom';
 
 export default function AddBon({ ...others }) {
     const history = createBrowserHistory();
@@ -43,10 +44,11 @@ export default function AddBon({ ...others }) {
     const [strength] = useState(0);
     const [level] = useState();
     const [message, setMessage] = useState(null);
-    const [setBon] = useState(null);
+    const [bon, setBon] = useState(null);
     const params = useParams();
     const [loadcirular, setLoadcirular] = useState(true);
     const formikRef = React.useRef();
+    const [redirect, setRedirect] = useState(false)
 
 
 
@@ -86,10 +88,8 @@ export default function AddBon({ ...others }) {
                     confirmButtonText: 'Ok'
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        setRedirect(true)
 
-                        const history = createBrowserHistory();
-                        history.push("/girdView/bons?page=1");
-                        window.location.reload();
                     }
                 })
                 setMessage('');
@@ -103,6 +103,8 @@ export default function AddBon({ ...others }) {
             }
         );
     }
+    if (redirect)
+        return (<Navigate push to="/girdView/bons?page=1" />)
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
         return (
 
@@ -204,30 +206,23 @@ export default function AddBon({ ...others }) {
 
                                             )}
                                         </Box>
-
                                     </Grid>
-
                                     <Grid item xs={12} sm={2} >
 
-
-                                        <AnimateButton>
-                                            <Button
-                                                disableElevation
-                                                disabled={isSubmitting}
-                                                fullWidth
-                                                size="large"
-
-                                                color="secondary"
-                                                onClick={() => {
-                                                    const history = createBrowserHistory();
-                                                    history.push("/girdView/bons?page=1");
-                                                    window.location.reload();
-                                                }}
-                                                variant="outlined"
-                                            >
-                                                Annuler
-                                            </Button>
-                                        </AnimateButton>
+                                        <Link to={'/girdView/bons?page=1'} style={{ textDecoration: 'none' }}>
+                                            <AnimateButton>
+                                                <Button
+                                                    disableElevation
+                                                    disabled={isSubmitting}
+                                                    fullWidth
+                                                    size="large"
+                                                    color="secondary"
+                                                    variant="outlined"
+                                                >
+                                                    Annuler
+                                                </Button>
+                                            </AnimateButton>
+                                        </Link>
                                     </Grid>
                                     <Grid item xs={12} sm={2} >
                                         <AnimateButton>

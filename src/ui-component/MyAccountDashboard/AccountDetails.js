@@ -30,7 +30,7 @@ const AccountDetails = () => {
                         <div className="account_details_form">
                             <form action="#">
                                 <div className="img_profiles">
-                                    <img src={"http://localhost:8000/uploads/" + user?.photo} alt="img" />
+                                    <img src={user?.photo?.startsWith('https://') ? user?.photo : "http://localhost:8000/uploads/" + user?.photo} alt="img" />
                                 </div>
 
                                 <div className="default-form-box mb-20">
@@ -53,11 +53,13 @@ const AccountDetails = () => {
                                     <input type="text" name="email-name" defaultValue={user.email}
                                         className="form-control" readOnly />
                                 </div>
-                                <div className="default-form-box mb-20">
-                                    <label>Mot de passe</label>
-                                    <input type="password" name="user-password" defaultValue="123456789"
-                                        className="form-control" readOnly />
-                                </div>
+                                {user.password != null ? (
+                                    <div className="default-form-box mb-20">
+                                        <label>Mot de passe</label>
+                                        <input type="password" name="user-password" defaultValue="123456789"
+                                            className="form-control" readOnly />
+                                    </div>) : (null)}
+
 
 
                                 <br />

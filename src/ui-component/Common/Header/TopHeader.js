@@ -34,12 +34,12 @@ const TopHeader = () => {
                                         <ul className="right_list_fix">
                                             <li><Link to={"/compare/" + params.idE}><i className="fa fa-refresh"></i> Comparer</Link></li>
                                             <li><Link to={"/login/" + params.idE}><i className="fa fa-user"></i> Connexion</Link></li>
-                                            <li><Link to={params.idE + "/register/client"}><i className="fa fa-lock"></i> S'inscrire</Link></li>
+                                            <li><Link to={'/' + params.idE + "/register/client"}><i className="fa fa-lock"></i> S'inscrire</Link></li>
                                         </ul>
                                         :
                                         <ul className="right_list_fix">
                                             <li><Link to={"/order-tracking/" + params.idE}><i className="fa fa-truck"></i> Suivre votre commande</Link></li>
-                                            <li className="after_login"><img src={"http://localhost:8000/uploads/" + user?.photo} alt="avater" /> {user.name || ''} <i className="fa fa-angle-down"></i>
+                                            <li className="after_login"><img src={user?.photo?.startsWith('https://') ? user?.photo : "http://localhost:8000/uploads/" + user?.photo} alt="avater" /> {user.name || ''} <i className="fa fa-angle-down"></i>
                                                 <ul className="custom_dropdown">
                                                     <li><Link to={"/my-account/customer-account-details/" + params.idE}><i className="fa fa-tachometer"></i> Compte</Link></li>
                                                     <li><Link to={"/my-account/customer-order/" + params.idE}><i className="fa fa-cubes"></i>Mes commandes</Link></li>

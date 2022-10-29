@@ -1,4 +1,4 @@
-import { Link as RouterLink } from 'react-router-dom';
+import { Link, Link as RouterLink } from 'react-router-dom';
 // material
 import { Grid, Button, Stack, Pagination, Paper, InputBase, IconButton, Divider, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 // components
@@ -29,10 +29,12 @@ export default function Blog() {
     const [livreurs, setLivreurs] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
     const [numberPages, setNumberPages] = React.useState(0);
-    const [page, setPage] = React.useState(parseInt(query.get("page")));
-    const [searchValue, setSearchValue] = React.useState('');
+    const [page, setPage] = React.useState(query.get("page") != null ? parseInt(query.get("page")) : 1);
+    const [searchValue, setSearchValue] = React.useState(query.get("search") != null ? (query.get("search")) : '');
     const [open, setOpen] = React.useState(false);
     const [idDelete, setIdDelete] = React.useState(null);
+    const [reload, setRelaoad] = React.useState(1);
+    const history = createBrowserHistory();
 
     const handleClose = () => {
         setOpen(false);
@@ -61,27 +63,26 @@ export default function Blog() {
 
     React.useEffect(
         () => {
-            if (query.get('search') != null) {
-                setSearchValue(query.get('search'))
-            }
-            LivreurServices.getAll(query.get("page"), query.get("search")).then((res) => {
+            setLoading(true);
+            LivreurServices.getAll(page, searchValue).then((res) => {
                 setLivreurs(res.data[0]);
                 setNumberPages(res.data["pagination"])
                 setLoading(false);
             });
 
 
-        }, []);
+        }, [page, reload]);
     const handleChange = (event, value) => {
         setPage(value);
-        const history = createBrowserHistory();
-        if (query.get('search') != null) {
+
+        if (searchValue != '') {
+            const history = createBrowserHistory();
             history.push("/post/livreur/list?page=" + value + "&search=" + searchValue);
         } else {
+            const history = createBrowserHistory();
             history.push("/post/livreur/list?page=" + value);
 
         }
-        window.location.reload();
     };
     const handleSearchChange = (e) => {
         setSearchValue(e.target.value)
@@ -92,7 +93,7 @@ export default function Blog() {
             e.preventDefault();
             const history = createBrowserHistory();
             history.push("/post/livreur/list?page=1&search=" + searchValue);
-            window.location.reload();
+            setRelaoad(reload + 1)
         }
     }
 
@@ -107,13 +108,12 @@ export default function Blog() {
             >
 
                 <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
-
                     <Stack direction="row" spacing={3} flexShrink={0} sx={{ my: 1 }}>
-                        <Button href={'/post/livreur/add'} variant="outlined" startIcon={<AddIcon />}>
-                            Ajouter</Button>
+                        <Link to={'/post/livreur/add'} style={{ textDecoration: 'none' }}>
+                            <Button variant="outlined" startIcon={<AddIcon />}>
+                                Ajouter</Button>
+                        </Link>
                     </Stack>
-
-
                 </Stack>
             </Stack>
             <Stack
@@ -144,7 +144,11 @@ export default function Blog() {
 
 
                         />
-                        <IconButton onClick={event => window.location.href = "/post/livreur/list?page=1&search=" + searchValue
+                        <IconButton onClick={event => {
+                            history.push("/post/livreur/list?page=1&search=" + searchValue)
+                            setRelaoad(reload + 1)
+
+                        }
                         }
                             aria-label="search">
                             <SearchIcon />
@@ -160,7 +164,7 @@ export default function Blog() {
 
 
                     <>
-                        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((product) => (
+                        {[0, 1, 2, 3, 4, 5, 6].map((product) => (
                             <Grid key={product} item xs={12} sm={6} md={3}>
                                 <ProductSkeleton />
                             </Grid>
@@ -174,7 +178,7 @@ export default function Blog() {
                 )}
             </Grid>
             <Stack direction="row-reverse" marginTop={"2%"}>
-                <Pagination color="primary" defaultPage={page} count={numberPages} variant="outlined" onChange={handleChange} />
+                <Pagination color="primary" page={page} count={numberPages} variant="outlined" onChange={handleChange} />
             </Stack>
 
             {

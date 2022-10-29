@@ -35,7 +35,8 @@ import Swal from 'sweetalert2';
 
 import CompanyServices from 'services/companyServices/CompanyServices';
 import MediaServices from 'services/media-services/MediaServices';
-import { useParams } from 'react-router';
+import { Navigate, useParams } from 'react-router';
+import { Link } from 'react-router-dom';
 
 const thumbsContainer = {
     display: "flex",
@@ -80,6 +81,7 @@ export default function EditMedia({ ...others }) {
     const [loadcirular, setLoadcirular] = useState(true);
     const [isCover, setIsCover] = useState(false)
     const formikRef = React.useRef();
+    const [redirect, setRedirect] = useState(false)
 
     // dropzone 
     const [files, setFiles] = useState([]);
@@ -171,10 +173,8 @@ export default function EditMedia({ ...others }) {
                     confirmButtonText: 'Ok'
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        setRedirect(true)
 
-                        const history = createBrowserHistory();
-                        history.push("/media");
-                        window.location.reload();
                     }
                 })
                 setMessage('');
@@ -189,6 +189,8 @@ export default function EditMedia({ ...others }) {
         );
 
     }
+    if (redirect)
+        return (<Navigate push to="/media" />)
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
         return (
             loadcirular === true ? (
@@ -317,29 +319,24 @@ export default function EditMedia({ ...others }) {
                                         </Box>
 
                                     </Grid>
-
                                     <Grid item xs={12} sm={2} >
 
-
-                                        <AnimateButton>
-                                            <Button
-                                                disableElevation
-                                                disabled={isSubmitting}
-                                                fullWidth
-                                                size="large"
-
-                                                color="secondary"
-                                                onClick={() => {
-                                                    const history = createBrowserHistory();
-                                                    history.push("/media");
-                                                    window.location.reload();
-                                                }}
-                                                variant="outlined"
-                                            >
-                                                Annuler
-                                            </Button>
-                                        </AnimateButton>
+                                        <Link to={'/media'} style={{ textDecoration: 'none' }}>
+                                            <AnimateButton>
+                                                <Button
+                                                    disableElevation
+                                                    disabled={isSubmitting}
+                                                    fullWidth
+                                                    size="large"
+                                                    color="secondary"
+                                                    variant="outlined"
+                                                >
+                                                    Annuler
+                                                </Button>
+                                            </AnimateButton>
+                                        </Link>
                                     </Grid>
+
                                     <Grid item xs={12} sm={2} >
                                         <AnimateButton>
                                             <LoadingButton
