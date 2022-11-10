@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 import AuthService from 'services/auth-services/AuthService'
 import Loading from '../Common/loader'
@@ -8,12 +7,10 @@ const AccountDetails = () => {
     const params = useParams()
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
-    let load = useSelector((state) => state.products.loading)
 
     useEffect(() => {
         AuthService.show().then((res) => {
             setUser(res.data);
-
             setLoading(false);
         })
     }, [])
@@ -24,7 +21,7 @@ const AccountDetails = () => {
                 <div className="myaccount-content">
                     <div className="save_button mt-3 d-flex align-items-center justify-content-between">
                         <h4 className="title">Détails du compte</h4>
-                        <Link to={"/account-edit/" + params.idE} className="theme-btn-one bg-black btn_sm">Modifier le compte</Link>
+                        <Link to={'/' + params.idE + "/account-edit/"} className="theme-btn-one bg-black btn_sm">Modifier le compte</Link>
                     </div>
                     <div className="login_form_container">
                         <div className="account_details_form">
@@ -59,13 +56,8 @@ const AccountDetails = () => {
                                         <input type="password" name="user-password" defaultValue="123456789"
                                             className="form-control" readOnly />
                                     </div>) : (null)}
-
-
-
                                 <br />
-
                                 <br />
-
                             </form>
                         </div>
                     </div>

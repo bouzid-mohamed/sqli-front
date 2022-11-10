@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import Swal from 'sweetalert2'
 import { Rating } from '@mui/material'
 import CompanyServices from 'services/companyServices/CompanyServices'
@@ -18,6 +18,8 @@ const Footer = () => {
     const [fData, setFData] = useState([])
     const params = useParams()
     const [submitting, setSubmitting] = useState(false)
+    let dispatch = useDispatch();
+
 
     useEffect(
 
@@ -27,20 +29,19 @@ const Footer = () => {
             let d = []
             categories.filter((c) => {
                 if (c.catPere === null) {
-                    cat.push({ linkTitle: c.nom, link: "/shop/1?page=1&filter=" + c.id },)
+                    cat.push({ linkTitle: c.nom, link: '/' + params.idE + "/shop/?page=1&filter=" + c.id },)
                 }
-
             })
 
             const infos = {
                 title: "INFORMATIONS",
                 links: [
-                    { linkTitle: "Acceuil", link: "/home/" + params.idE },
-                    { linkTitle: "Produits", link: "/shop/" + params.idE },
-                    { linkTitle: "À PROPOS", link: "/aboutUs/" + params.idE },
-                    { linkTitle: "Panier", link: "/cart/" + params.idE },
-                    { linkTitle: "Favoris", link: "/wishlist/" + params.idE },
-                    { linkTitle: "Comparaison", link: "/compare/" + params.idE }
+                    { linkTitle: "Acceuil", link: '/' + params.idE + "/home" },
+                    { linkTitle: "Produits", link: '/' + params.idE + "/shop" },
+                    { linkTitle: "À PROPOS", link: '/' + params.idE + "/aboutUs" },
+                    { linkTitle: "Panier", link: '/' + params.idE + "/cart" },
+                    { linkTitle: "Favoris", link: '/' + params.idE + "/wishlist" },
+                    { linkTitle: "Comparaison", link: '/' + params.idE + "/compare" }
                 ]
             }
             d.push(infos)
@@ -56,11 +57,9 @@ const Footer = () => {
         }, [load],
 
     );
-
-
-
-
-
+    const changeCtegory = () => {
+        dispatch({ type: "products/changeCategorie", payload: 1 })
+    }
     const handleChangeNote = (newValue) => {
         setValue(newValue);
         CompanyServices.updateNote(newValue, params.idE).then(
@@ -83,7 +82,7 @@ const Footer = () => {
 
     return (
         <>
-            <footer id="footer_one">
+            {load ? (null) : (<>  <footer id="footer_one">
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-4 col-md-12 col-sm-12 col-12">
@@ -91,7 +90,7 @@ const Footer = () => {
 
                                 {loadingEntreprise ? (null) : (
 
-                                    entreprise.textAbout.length > 235 ? (<>  <Link to={"/home/" + params.idE} ><img style={{ maxHeight: '80px' }} src={"http://localhost:8000/uploads/" + entreprise.photo} alt="logo" /></Link><p>{entreprise.textAbout.slice(0, 235)} ....  </p> </>) : (<>  <Link to="/" ><img style={{ maxWidth: '255px' }} src={"http://localhost:8000/uploads/" + entreprise.photo} alt="logo" /></Link><p>{entreprise.textAbout}</p></>)
+                                    entreprise.textAbout?.length > 235 ? (<>  <Link to={'/' + params.idE + "/home"} ><img style={{ maxHeight: '80px' }} src={"http://localhost:8000/uploads/" + entreprise.photo} alt="logo" /></Link><p>{entreprise.textAbout.slice(0, 235)} ....  </p> </>) : (<>  <Link to="/" ><img style={{ maxWidth: '255px' }} src={"http://localhost:8000/uploads/" + entreprise.photo} alt="logo" /></Link><p>{entreprise.textAbout}</p></>)
                                 )}
 
 
@@ -103,7 +102,7 @@ const Footer = () => {
                                     <h3>{data.title}</h3>
                                     <ul>
                                         {data.links.map((link, index) => (
-                                            <li key={index}><Link to={link.link}>{link.linkTitle}</Link></li>
+                                            <li key={index}><Link onClick={changeCtegory} to={link.link}>{link.linkTitle}</Link></li>
                                         ))}
                                     </ul>
                                 </div>
@@ -117,7 +116,7 @@ const Footer = () => {
                                     <h3>{data.title}</h3>
                                     <ul>
                                         {data.links.map((link, index) => (
-                                            <li key={index}><Link to={link.link}>{link.linkTitle}</Link></li>
+                                            <li key={index}><Link onClick={changeCtegory} to={link.link}>{link.linkTitle}</Link></li>
                                         ))}
                                     </ul>
                                 </div>
@@ -148,18 +147,19 @@ const Footer = () => {
                 </div>
             </footer>
 
-            <section id="copyright_one">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-lg-6 col-md-6 col-sm-6 col-12">
-                            <div className="copyright_left">
-                                <h6>© CopyRight 2022 <span> SQLI</span></h6>
+                <section id="copyright_one">
+                    <div className="container">
+                        <div className="row">
+                            <div className="col-lg-6 col-md-6 col-sm-6 col-12">
+                                <div className="copyright_left">
+                                    <h6>© CopyRight 2022 <span> SQLI</span></h6>
+                                </div>
                             </div>
-                        </div>
 
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </>)}
 
         </>
     )

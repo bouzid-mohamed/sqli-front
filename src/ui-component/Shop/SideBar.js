@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 // Import Img
-import search from '../../assets/img/svg/search.svg'
+import searchImg from '../../assets/img/svg/search.svg'
 import { useSelector } from "react-redux";
 import { useLocation, useParams } from 'react-router';
 import { Checkbox, CircularProgress, createMuiTheme, FormControlLabel, FormGroup, LinearProgress, Radio, RadioGroup } from '@mui/material';
@@ -43,19 +43,19 @@ const SideBar = (props) => {
 
     const [rows, setRows] = React.useState([]);
     let query = useQuery();
-    const [list] = React.useState([]);
+    const [list, setList] = React.useState([]);
     const [pChecked, setPChecked] = React.useState(0);
-
+    let choosenCat = useSelector((state) => state.products.choosenCat);
     const [ch, setch] = React.useState([]);
     const [price, setPrice] = useState(0)
     const [isLoading, setIsloading] = React.useState(true);
     const params = useParams();
-    const [searchValue, setSearchValue] = useState('');
+    const [search, setSearch] = useState('');
 
     useEffect(
         () => {
             if (query.get('search') != null) {
-                setSearchValue(query.get('search'))
+                setSearch(query.get('search'))
             }
             if (query.get("filter")) {
                 var myArray = query.get("filter").split(',');
@@ -69,26 +69,27 @@ const SideBar = (props) => {
             var i = 0;
             CategorieServices.getAllFront(params.idE).then((res) => {
                 var a = [];
-                res.data.filter((c) => {
-
+                res.data[0].filter((c) => {
                     if (c.catPere == null) {
                         c.num = i;
                         if (list.indexOf(parseInt(c.id)) > -1) {
-                            ch.push(true)
+                            ch.push({ in: true, id: c.id })
                         }
                         else {
-                            ch.push(false)
+                            ch.push({ in: false, id: c.id })
                         }
                         i = i + 1;
                         var a1 = [];
                         if (c.catFils.length > 0) {
+
                             c.catFils.filter((fils1) => {
+
                                 fils1.num = i;
-                                if (list.indexOf(parseInt(fils1.id)) > -1) {
-                                    ch.push(true)
+                                if (list.indexOf(parseInt(fils1.id)) > -1 || ch[i - 1].in === true) {
+                                    ch.push({ in: true, id: fils1.id })
                                 }
                                 else {
-                                    ch.push(false)
+                                    ch.push({ in: false, id: fils1.id })
                                 }
 
                                 i = i + 1;
@@ -96,11 +97,11 @@ const SideBar = (props) => {
                                 if (fils1.catFils.length > 0) {
                                     fils1.catFils.filter((fils2) => {
                                         fils2.num = i;
-                                        if (list.indexOf(parseInt(fils2.id)) > -1) {
-                                            ch.push(true)
+                                        if (list.indexOf(parseInt(fils2.id)) > -1 || ch[i - 1].in === true) {
+                                            ch.push({ in: true, id: fils2.id })
                                         }
                                         else {
-                                            ch.push(false)
+                                            ch.push({ in: false, id: fils2.id })
                                         }
 
                                         i = i + 1;
@@ -117,7 +118,6 @@ const SideBar = (props) => {
                         c.catFils = a1
                         a.push(c)
                     }
-
                 })
                 setRows(a);
                 setIsloading(false);
@@ -126,10 +126,31 @@ const SideBar = (props) => {
         }, [],
     )
 
+    useEffect(() => {
+        let l = []
+        ch.forEach((c) => {
+            c.in = false
+        })
+        if (query.get("filter") && choosenCat > 0) {
+            var myArray = query.get("filter").split(',');
+            myArray.filter((e) => {
+                l.push(parseInt(e))
+                ch.forEach((c) => {
+                    if (c.id === parseInt(e)) {
+                        c.in = true
+                    }
+                })
+
+            })
+
+            props.refrchOrderFilter(l, price)
+        }
+
+    }, [choosenCat])
+
 
     const handleChangePrice = (e) => {
         if (price === 1) {
-
             setPrice(2)
             setPChecked(2)
         }
@@ -138,70 +159,96 @@ const SideBar = (props) => {
             setPChecked(1)
         }
     }
-    const handleChangeParent = (e, item) => {
-        if (ch[item.num] === false) {
+    const handleChangeParent = (e, item, fother, grandF) => {
+        console.log(grandF)
+        if (ch[item.num].in === false) {
             const updatedArray = [...ch];
-            updatedArray[item.num] = true;
-            //  setch(updatedArray);
+            updatedArray[item.num].in = true;
             list.push(e.target.value)
             if (item.catFils.length > 0) {
                 item.catFils.map((enfant) => {
-                    updatedArray[enfant.num] = true;
+                    updatedArray[enfant.num].in = true;
                     if (enfant.catFils.length > 0) {
                         enfant.catFils.map((enfant2) => {
-                            updatedArray[enfant2.num] = true;
+                            updatedArray[enfant2.num].in = true;
                         })
                     }
                 })
             }
+
             setch(updatedArray);
-            console.log(ch)
         }
         else {
             const updatedArray = [...ch];
-            updatedArray[item.num] = false;
+            updatedArray[item.num].in = false;
+            if (item.catFils.length > 0) {
+                item.catFils.map((enfant) => {
+                    updatedArray[enfant.num].in = false;
+                    if (enfant.catFils.length > 0) {
+                        enfant.catFils.map((enfant2) => {
+                            updatedArray[enfant2.num].in = false;
+                        })
+                    }
+
+                })
+            }
+            if (item.catPere != null) {
+                updatedArray.forEach((p) => {
+
+                    if (p.id === item.catPere) {
+                        p.in = false
+                        if (grandF != null) {
+
+                            updatedArray.forEach((gf) => {
+                                if (gf.id === grandF.id) {
+                                    gf.in = false
+                                }
+                            })
+                        }
+
+                    }
+                })
+
+            }
+
             setch(updatedArray);
-            console.log(ch)
             list.splice(list.indexOf(e.target.value))
         }
     }
+
     const handleClicFilter = () => {
-        const history = createBrowserHistory();
-        if (price === 0) {
-            history.push(params.idE + '?page=1&filter=' + list);
+        var l = []
+        ch.filter((elem) => {
+            if (elem.in == true)
+                l.push(elem.id)
+        })
+        props.refrchOrderFilter(l, price)
 
-        } else {
-            history.push(params.idE + '?page=1&filter=' + list + '&order=' + price);
-
-        }
-        window.location.reload();
     }
     const handleSearchChange = (e) => {
-        setSearchValue(e.target.value)
+        setSearch(e.target.value)
     }
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            const history = createBrowserHistory();
-            history.push(params.idE + "?page=1&search=" + searchValue);
-            window.location.reload();
+            props.refrchSearch(search)
         }
     }
     return (
         <>
-            <div className="col-lg-3">
+            <div className="col-lg-3" >
                 <div className="shop_sidebar_wrapper">
                     <div className="shop_Search">
-                        <form>
-                            <input type="text" className="form-control" placeholder="Chercher..." value={searchValue}
+                        <form action='#'>
+                            <input type="text" className="form-control" placeholder="Chercher..." value={search}
                                 onChange={handleSearchChange}
                                 onKeyDown={handleKeyDown} />
-                            <button onClick={(e) => { e.preventDefault(); window.location.href = params.idE + "?page=1&search=" + searchValue }} ><img src={search} alt="img" /></button>
+                            <button type="button" onClick={() => { props.refrchSearch(search) }} ><img src={searchImg} alt="img" /></button>
                         </form>
                     </div>
                     <div className="shop_sidebar_boxed">
                         <div >
-                            <h4>Catégories de produits</h4>
+                            <h4>Catégories </h4>
                             {isLoading ? (<LinearProgress color="primary" />
                             ) : (<FormGroup >
                                 {rows.map((item, index) => (
@@ -214,8 +261,8 @@ const SideBar = (props) => {
                                                         icon={<CircleUnchecked />}
                                                         checkedIcon={<RadioButtonCheckedIcon style={{ color: '#ff7004' }} />}
                                                         value={item.id}
-                                                        onChange={(e, i) => handleChangeParent(e, item)}
-                                                        checked={ch[item.num]}
+                                                        onChange={(e, i) => handleChangeParent(e, item, null, null)}
+                                                        checked={ch[item.num].in}
                                                     />
                                                 }
                                                 label={item.nom}
@@ -232,8 +279,8 @@ const SideBar = (props) => {
                                                                             icon={<CircleUnchecked />}
                                                                             checkedIcon={<RadioButtonCheckedIcon style={{ color: '#ff7004' }} />}
                                                                             value={fils.id}
-                                                                            onChange={(e, item) => handleChangeParent(e, fils)}
-                                                                            checked={ch[fils.num]}
+                                                                            onChange={(e, item) => handleChangeParent(e, fils, item, null)}
+                                                                            checked={ch[fils.num].in}
                                                                         />
                                                                     }
                                                                     label={fils.nom}
@@ -246,8 +293,8 @@ const SideBar = (props) => {
                                                                                     icon={<CircleUnchecked />}
                                                                                     checkedIcon={<RadioButtonCheckedIcon style={{ color: '#ff7004' }} />}
                                                                                     value={f.id}
-                                                                                    onChange={(e, item) => handleChangeParent(e, f)}
-                                                                                    checked={ch[f.num]}
+                                                                                    onChange={(e, item) => handleChangeParent(e, f, fils, rows[index])}
+                                                                                    checked={ch[f.num].in}
                                                                                 />
                                                                             }
                                                                             label={f.nom}

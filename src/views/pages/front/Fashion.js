@@ -217,14 +217,13 @@ const Fashion = () => {
     }, []);
     return (
         <>
-            <Header />
-            {load || isLoading || isLoading2 || isLoading3 || isLoading4 ? (<Loading />) : (<>
+            {isLoading || isLoading2 || isLoading3 || isLoading4 ? (<Loading />) : (<>
                 {error404 === 0 ? (<> <Banner medias={topmedia} />
                     {promos.length >= 5 ? (<BannerBottom promos={promos} />) : (null)}
                     <HotProduct prods={[prodsPrix, prodsNouveaux, prodsPromotion, prodsVendu.length > 7 ? prodsVendu.slice(0, 7) : prodsVendu]} />
                     <TodayDeal prods={prodsNouveaux} />
                     <Trending medias={bottommedia} />
-                    <Footer /></>) : (<Error404></Error404>)}
+                </>) : (<Error404></Error404>)}
             </>)
             }
 

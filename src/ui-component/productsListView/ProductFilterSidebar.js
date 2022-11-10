@@ -82,7 +82,6 @@ export default function ShopFilterSidebar({
 
     React.useEffect(() => {
         if (query.get("filter")) {
-
             var myArray = query.get("filter").split(',');
             myArray.filter((e) => {
                 list.push(parseInt(e))
@@ -95,38 +94,36 @@ export default function ShopFilterSidebar({
         CategorieServices.getAll().then((res) => {
             var a = [];
             res.data.filter((c) => {
-
                 if (c.catPere == null) {
                     c.num = i;
                     if (list.indexOf(parseInt(c.id)) > -1) {
-                        ch.push(true)
+                        ch.push({ in: true, id: c.id })
                     }
                     else {
-                        ch.push(false)
+                        ch.push({ in: false, id: c.id })
                     }
                     i = i + 1;
                     var a1 = [];
-                    if (c.catFils[0] != null) {
-                        console.log(c)
+                    if (c.catFils.length > 0) {
                         c.catFils.filter((fils1) => {
                             fils1.num = i;
                             if (list.indexOf(parseInt(fils1.id)) > -1) {
-                                ch.push(true)
+                                ch.push({ in: true, id: fils1.id })
                             }
                             else {
-                                ch.push(false)
+                                ch.push({ in: false, id: fils1.id })
                             }
 
                             i = i + 1;
                             var a2 = [];
-                            if (fils1.catFils[0] != null) {
+                            if (fils1.catFils.length > 0) {
                                 fils1.catFils.filter((fils2) => {
                                     fils2.num = i;
                                     if (list.indexOf(parseInt(fils2.id)) > -1) {
-                                        ch.push(true)
+                                        ch.push({ in: true, id: fils2.id })
                                     }
                                     else {
-                                        ch.push(false)
+                                        ch.push({ in: false, id: fils2.id })
                                     }
 
                                     i = i + 1;
@@ -143,36 +140,59 @@ export default function ShopFilterSidebar({
                     c.catFils = a1
                     a.push(c)
                 }
-
             })
             setRows(a);
             setIsloading(false);
 
         })
     }, []);
-    const handleChangeParent = (e, item) => {
-
-        if (ch[item.num] === false) {
+    const handleChangeParent = (e, item, fother, grandF) => {
+        if (ch[item.num].in === false) {
             const updatedArray = [...ch];
-            updatedArray[item.num] = true;
-            //  setch(updatedArray);
+            updatedArray[item.num].in = true;
             list.push(e.target.value)
-            if (item.catFils[0] != null) {
+            if (item.catFils.length > 0) {
                 item.catFils.map((enfant) => {
-                    updatedArray[enfant.num] = true;
-                    if (enfant.catFils[0] != null) {
+                    updatedArray[enfant.num].in = true;
+                    if (enfant.catFils.length > 0) {
                         enfant.catFils.map((enfant2) => {
-                            updatedArray[enfant2.num] = true;
+                            updatedArray[enfant2.num].in = true;
                         })
                     }
                 })
             }
             setch(updatedArray);
-
         }
         else {
             const updatedArray = [...ch];
-            updatedArray[item.num] = false;
+            updatedArray[item.num].in = false;
+            if (item.catFils.length > 0) {
+                item.catFils.map((enfant) => {
+                    updatedArray[enfant.num].in = false;
+                    if (enfant.catFils.length > 0) {
+                        enfant.catFils.map((enfant2) => {
+                            updatedArray[enfant2.num].in = false;
+                        })
+                    }
+                })
+            }
+            if (item.catPere != null) {
+                updatedArray.forEach((p) => {
+
+                    if (p.id === item.catPere) {
+                        p.in = false
+                        if (grandF != null) {
+                            updatedArray.forEach((gf) => {
+                                if (gf.id === grandF.id) {
+                                    gf.in = false
+                                }
+                            })
+                        }
+
+                    }
+                })
+
+            }
             setch(updatedArray);
             list.splice(list.indexOf(e.target.value))
         }
@@ -187,6 +207,15 @@ export default function ShopFilterSidebar({
             setPrice(1)
             setPChecked(1)
         }
+    }
+    const handleClicFilter = () => {
+        var l = []
+        ch.filter((elem) => {
+            if (elem.in == true)
+                l.push(elem.id)
+        })
+        handleSubmit(l, price)
+
     }
 
     return (
@@ -245,9 +274,9 @@ export default function ShopFilterSidebar({
                                                             < Checkbox
                                                                 {...getFieldProps('gender')}
                                                                 value={item.id}
-                                                                onChange={(e, i) => handleChangeParent(e, item)}
+                                                                onChange={(e, i) => handleChangeParent(e, item, null, null)}
                                                                 // defaultChecked={list.indexOf(item.id) > -1}
-                                                                checked={ch[item.num]}
+                                                                checked={ch[item.num].in}
 
 
                                                             />
@@ -267,10 +296,10 @@ export default function ShopFilterSidebar({
                                                                                 < Checkbox
                                                                                     {...getFieldProps('gender')}
                                                                                     value={fils.id}
-                                                                                    onChange={(e, item) => handleChangeParent(e, fils)}
+                                                                                    onChange={(e, item) => handleChangeParent(e, fils, item, null)}
                                                                                     //  defaultChecked={list.indexOf(fils.id) > -1}
 
-                                                                                    checked={ch[fils.num]}
+                                                                                    checked={ch[fils.num].in}
 
                                                                                 />
                                                                             }
@@ -285,10 +314,10 @@ export default function ShopFilterSidebar({
                                                                                         < Checkbox
                                                                                             {...getFieldProps('gender')}
                                                                                             value={f.id}
-                                                                                            onChange={(e, item) => handleChangeParent(e, f)}
+                                                                                            onChange={(e, item) => handleChangeParent(e, f, fils, rows[index])}
                                                                                             //  defaultChecked={list.indexOf(f.id) > -1}
 
-                                                                                            checked={ch[f.num]}
+                                                                                            checked={ch[f.num].in}
 
 
                                                                                         />
@@ -349,7 +378,7 @@ export default function ShopFilterSidebar({
                                     type="submit"
                                     color="primary"
                                     variant="outlined"
-                                    onClick={event => handleSubmit(list, price)}
+                                    onClick={handleClicFilter}
                                     // href={price === 0 ? 'products?page=1&filter=' + list : 'products?page=1&filter=' + list + '&order=' + price}
                                     startIcon={<FilterAltIcon />}
                                 >

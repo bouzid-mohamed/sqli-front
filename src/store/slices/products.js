@@ -25,9 +25,11 @@ const productsSlice = createSlice({
         loadingSingle: true,
         loadingEntreprise: true,
         errorPage: 0,
-
+        reload: 0,
+        choosenCat: 0
     },
     reducers: {
+
         // Get Single Product
         getProductById: (state, action) => {
             let { id } = action.payload;
@@ -36,12 +38,15 @@ const productsSlice = createSlice({
             state.loadingSingle = false
 
         },
+        reloadElements: (state, action) => {
+            state.reload = state.reload + 1;
+        },
+        changeCategorie: (state, action) => {
+            state.choosenCat = state.choosenCat + 1;
+        },
         getSingleProduct: (state, action) => {
-            //let { id } = action.payload;
-            // let arr = state.products.find(item => item.id === parseInt(id))
             state.single = action.payload
             state.loadingSingle = false
-
         },
         addProducts: (state, action) => {
             Object.assign(state.products, { ...action.payload });
@@ -57,7 +62,6 @@ const productsSlice = createSlice({
 
             Object.assign(state.categories, { ...action.payload });
             state.loadingCategorie = false
-
         },
         setNumberPages: (state, action) => {
             state.numberPages = action.payload
@@ -181,8 +185,7 @@ const productsSlice = createSlice({
         // Clear Cart
         clearCart: (state) => {
             state.carts = []
-            let item2 = state.products[0]
-            localStorage.setItem('cart' + item2.entreprise.id, JSON.stringify(state.carts));
+            localStorage.setItem('cart' + state.entreprise.id, JSON.stringify(state.carts));
 
         },
         // Add to Favorite / Wishlist

@@ -56,7 +56,7 @@ export default function ShopProductSort(props) {
                 {SORT_BY_OPTIONS.map((option, index) => (
 
                     <MenuItem
-
+                        key={index}
                         selected={option.value === SORT_BY_OPTIONS[choice].value}
                         onClick={() => {
                             setChoice(index)

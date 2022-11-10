@@ -5,7 +5,7 @@ import AccountDetailsEdit from '../../../ui-component/MyAccountDashboard/Account
 import Footer from '../../../ui-component/Common/Footer'
 import AuthService from 'services/auth-services/AuthService'
 import { createBrowserHistory } from 'history'
-import { useParams } from 'react-router'
+import { Navigate, useParams } from 'react-router'
 import Loading from '../../../ui-component/Common/loader';
 import Error404 from 'views/pages/error/error404'
 import { useSelector } from 'react-redux'
@@ -17,21 +17,18 @@ const AccountEdit = () => {
 
   if (AuthService.getCurrentClient(params.idE).roles.indexOf("ROLE_CLIENT") > -1) {
     return (
-      <>
-        <Header />
-        {load ? (<Loading />) : (<>{error404 === 0 ? (
-          <>
-            <Banner title="Modifier mon compte" />
-            <AccountDetailsEdit />
-            <Footer />
-          </>) : (<Error404></Error404>)}</>)}
+
+      <>{error404 === 0 ? (
+        <>
+          <Banner title="Modifier mon compte" />
+          <AccountDetailsEdit />
+        </>) : (<Error404></Error404>)}</>
 
 
-      </>
+
     )
   } else {
-    history.push("/login/" + params.idE);
-    window.location.reload();
+    <Navigate to={'/' + params.idE + ' /login'} />
   }
 }
 

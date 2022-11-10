@@ -175,7 +175,9 @@ export default function ProductGird() {
         let link = price === 0 ? 'products?page=1&filter=' + list : 'products?page=1&filter=' + list + '&order=' + price
         const history = createBrowserHistory();
         history.push(link);
+        setPage(1)
         setRelaoad(reload + 1)
+
     }
     const handleOrder = (value) => {
         let link = value === 'recent' ? 'products?page=1' : 'products?page=1&order=' + value
@@ -346,7 +348,7 @@ export default function ProductGird() {
 
                                                 <StyledTableCell align="right" scope="row"  >
                                                     <Link to={"/products/show/" + product.id} style={{ textDecoration: 'none' }}>
-                                                        <IconButton aria-label="show" size="large" color="primary" href={"/products/show/" + product.id} >
+                                                        <IconButton aria-label="show" size="large" color="primary" >
                                                             <VisibilityIcon />
                                                         </IconButton>
                                                     </Link>

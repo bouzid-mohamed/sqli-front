@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import { useSelector } from "react-redux";
 import Swal from 'sweetalert2';
 import { createBrowserHistory } from 'history';
@@ -18,7 +18,7 @@ const ForgotPassword = () => {
     const [password, setPassword] = useState('')
     const [message, setMessage] = useState('');
     const [submitting, setSubmitting] = useState(false)
-
+    const [redirect, setRedirect] = useState(false)
     const handleChangeEmail = (e) => {
         setEmail(e.target.value)
     }
@@ -35,10 +35,9 @@ const ForgotPassword = () => {
                     showConfirmButton: false,
                     timer: 5000
                 }).then(() => {
-                    const history = createBrowserHistory();
-                    history.push("/login/" + params.idE);
-                    window.location.reload();
                     setSubmitting(false);
+                    setRedirect(true)
+
 
                 })
 
@@ -59,7 +58,8 @@ const ForgotPassword = () => {
     }
 
 
-
+    if (redirect)
+        return (<Navigate push to={'/' + params.idE + '/login'} />)
     return (
         <>
 

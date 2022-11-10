@@ -10,7 +10,7 @@ const Layout = (props) => {
                         <div className="col-sm-12 col-md-12 col-lg-9">
                             <div className="tab-content dashboard_content">
                                 <div className="tab-pane fade show active" id="dashboard">
-                                   {props.children}
+                                    {props.children}
                                 </div>
                             </div>
                         </div>

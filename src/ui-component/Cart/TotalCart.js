@@ -13,12 +13,7 @@ const TotalCart = (props) => {
             return total + ((item.quantity || 1) * item.price)
         }, 0)
     }
-    const passerCommande = () => {
-        if (AuthService.getCurrentClient(params.idE).roles.indexOf("ROLE_CLIENT") > -1) {
-            history.push("/checkout/" + params.idE);
-            window.location.reload();
-        }
-    }
+
     return (
         <>
             {props.fullGrid ? (
@@ -43,7 +38,7 @@ const TotalCart = (props) => {
                             </div>
                             <div className="checkout_btn">
 
-                                <Link to="/checkout" className="theme-btn-one btn-black-overlay btn_sm">
+                                <Link to={'/' + params.idE + "/checkout"} className="theme-btn-one btn-black-overlay btn_sm">
                                     Passer la commande
                                 </Link>
                             </div>
@@ -72,9 +67,9 @@ const TotalCart = (props) => {
                             </div>
                             <div className="checkout_btn">
 
-                                <button className="theme-btn-one btn-black-overlay btn_sm" onClick={passerCommande}>
+                                <Link to={'/' + params.idE + "/checkout"} className="theme-btn-one btn-black-overlay btn_sm" >
                                     Passer la commande
-                                </button>
+                                </Link>
                             </div>
                         </div>
                     </div>

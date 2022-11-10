@@ -1,7 +1,7 @@
 import { createBrowserHistory } from 'history';
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { Navigate, useParams } from 'react-router';
 import CommandeServices from 'services/commande-services/CommandeServices';
 import Swal from 'sweetalert2';
 var data = require('../../data/gouvernerat.json')
@@ -15,6 +15,8 @@ const BillingsInfo = (props) => {
     const params = useParams()
     const [submitting, setSubmitting] = useState(false)
     let carts = useSelector((state) => state.products.carts);
+    const [redirect, setRedirect] = useState(false)
+    let dispatch = useDispatch();
 
     const lignesCommande = () => {
         let a = []
@@ -104,14 +106,10 @@ const BillingsInfo = (props) => {
                                 confirmButtonText: 'Ok'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-
                                     const history = createBrowserHistory();
-                                    history.push("/my-account/customer-order/" + params.idE);
-                                    window.location.reload();
-                                } else {
-                                    const history = createBrowserHistory();
-                                    history.push("/my-account/customer-order/" + params.idE);
-                                    window.location.reload();
+                                    history.push('/' + params.idE + "/my-account/customer-order/");
+                                    dispatch({ type: "products/clearCart" });
+                                    setRedirect(true)
                                 }
                             })
 
@@ -127,11 +125,10 @@ const BillingsInfo = (props) => {
             })
 
         }
-
-
-
     }
-    return (
+    if (redirect)
+        return (<Navigate push to={'/' + params.idE + "/my-account/customer-order/"} />)
+    else return (
         <>
             <div className="col-lg-6 col-md-12 col-sm-12 col-12">
                 <div className="checkout-area-bg bg-white">

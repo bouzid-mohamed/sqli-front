@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { useSelector } from "react-redux";
 import Swal from 'sweetalert2';
 import { createBrowserHistory } from 'history';
 import AuthService from 'services/auth-services/AuthService';
@@ -102,7 +101,7 @@ const LoginArea = () => {
                                     </div>
                                     <div className="remember_area">
 
-                                        <Link to={'/forgot/' + params.idE} className="form-check-label" htmlFor="materialUnchecked" >Mot de passe oublié?</Link>
+                                        <Link to={'/' + params.idE + '/forgot/'} className="form-check-label" htmlFor="materialUnchecked" >Mot de passe oublié?</Link>
 
                                     </div>
                                     <AnimateButton>

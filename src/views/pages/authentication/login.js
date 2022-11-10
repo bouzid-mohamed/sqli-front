@@ -11,14 +11,12 @@ const Login = () => {
     let load = useSelector((state) => state.products.loading)
     return (
         <>
-            <Header />
-            {load ? (<Loading />) : (<>{error404 === 0 ? (
+            {error404 === 0 ? (
                 <>
                     <Banner title="Login" />
                     <LoginArea />
-                    <Footer />
-                </>) : (<Error404></Error404>)}</>)}
-        </>
+                </>) : (<Error404></Error404>)}</>
+
     )
 }
 

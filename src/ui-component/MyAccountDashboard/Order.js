@@ -1,6 +1,5 @@
 import { CardContent, Chip, LinearProgress, Modal, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 import CommandeServices from 'services/commande-services/CommandeServices'
 import Loading from '../Common/loader'
@@ -11,7 +10,7 @@ import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
-import MessengerCustomerChat from 'react-messenger-customer-chat';
+
 
 import { Box } from '@mui/system'
 const style = {
@@ -33,7 +32,6 @@ const Order = () => {
     const [data, setdata] = useState([])
     const [loading, setLoading] = useState(true)
     const params = useParams()
-    let load = useSelector((state) => state.products.loading)
     // User is currently on this page
     const [currentPage, setCurrentPage] = useState(1);
     // No of Records to be displayed on each page   
@@ -196,11 +194,7 @@ const Order = () => {
                                                 : (null)}
                                         </td>
                                         <td>Dt {c.prix}.00 </td>
-                                        <td><a href="#" className="view" onClick={() => { handleOpen(c) }}>Consulter</a>   <MessengerCustomerChat
-                                            pageId="2201133689918394"
-                                            appId="369880261852133"
-
-                                        />  </td>
+                                        <td><a href="#" className="view" onClick={() => { handleOpen(c) }}>Consulter</a>   </td>
 
                                     </tr>
                                 ))}
@@ -267,7 +261,6 @@ const Order = () => {
 
                                     </tbody>
                                 </table>)}
-
                             </div>
                         </CardContent>
 

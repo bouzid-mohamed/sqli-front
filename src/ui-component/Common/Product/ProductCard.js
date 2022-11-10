@@ -28,7 +28,7 @@ const ProductCard = (props) => {
         <>
             <div className="product_wrappers_one">
                 <div className="thumb">
-                    <Link to={`/product-details/${params.idE}/${props.data.id}`} className="image">
+                    <Link to={'/' + params.idE + '/product-details/' + props.data.id} className="image">
                         <img src={props.data.img} alt="Product" style={{ height: 360 }} />
 
                         <img className="hover-image" src={props.data.hover_img}
@@ -42,11 +42,11 @@ const ProductCard = (props) => {
                         <a href="#!" className="action quickview" title="Quick view" onClick={() => setModalShow(true)}><AiOutlineExpand /></a>
                         <a href="#!" className="action compare" title="Compare" onClick={() => addToComp(props.data)}><FaExchangeAlt /></a>
                     </div>
-                    <button type="button" className="add-to-cart offcanvas1-toggle" onClick={(e) => { e.preventDefault(); window.location.href = '/product-details/' + params.idE + '/' + props.data.id }} >Ajouter au panier</button>
+                    <Link to={'/' + params.idE + '/product-details/' + props.data.id} type="button" className="add-to-cart offcanvas1-toggle"  >Ajouter au panier</Link>
                 </div>
                 <div className="content">
                     <h5 className="title">
-                        <Link to={`/product-details/${props.data.id}`}>{props.data.title}</Link>
+                        <Link to={'/' + params.idE + '/product-details/' + props.data.id}>{props.data.title}</Link>
                     </h5>
                     <span className="price">
                         <span className="new">Dt{' ' + props.data.price}.00</span>

@@ -102,8 +102,7 @@ class AuthService {
             var decoded = jwt_decode(token);
             return decoded;
         } catch (err) {
-            history.push('/login/' + id);
-            window.location.reload();
+            return ({ roles: ['any'] })
         }
     }
     show() {

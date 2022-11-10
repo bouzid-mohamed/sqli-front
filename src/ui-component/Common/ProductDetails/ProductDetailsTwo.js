@@ -10,7 +10,6 @@ import { useParams } from 'react-router-dom';
 import Loading from '../../Common/loader'
 import img404 from '../../../assets/img/Na_Nov_26.jpg'
 import ProductServices from 'services/productServices/ProductServices';
-import { IconFrame } from '@tabler/icons';
 import Swal from 'sweetalert2';
 
 const ProductDetailsTwo = () => {
@@ -18,13 +17,12 @@ const ProductDetailsTwo = () => {
     let dispatch = useDispatch();
     const params = useParams()
     const [product, setProduct] = useState(null)
-    let load = useSelector((state) => state.products.loading)
     const [taille, setTaille] = useState([])
     const [couleur, setCouleur] = useState([])
     const [stockChoisit, setStockChoisit] = useState(null)
     const [pchecked, setPchecked] = useState(0)
 
-    let loadSingle = useSelector((state) => state.products.loadingSingle)
+    const [loadSingle, setLoadSingle] = useState(true)
     useEffect(() => {
         ProductServices.showProductFront(params.idE, params.id).then((res) => {
             let tstoks = []
@@ -70,14 +68,11 @@ const ProductDetailsTwo = () => {
                 color: im
 
             })
-
-
-            dispatch({ type: "products/getSingleProduct", payload: { product } });
-
-
+            dispatch({ type: "products/getSingleProduct", payload: res.data[0] });
+            setLoadSingle(false)
 
         }).catch(err => setErrorProduct(1))
-    }, [])
+    }, [params.id])
     // Add to cart
     const addToCart = async (id) => {
         if (stockChoisit === null) {

@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import img from '../../../assets/img/common/empty-cart.png'
 
 const Wishlist = () => {
-    let load = useSelector((state) => state.products.loading)
     let dispatch = useDispatch();
     const params = useParams();
     let favorites = useSelector((state) => state.products.favorites);
@@ -13,11 +12,7 @@ const Wishlist = () => {
         dispatch({ type: "products/removeFav", payload: { id } });
     }
 
-    // Add to cart
-    const addToCart = async (id) => {
-        dispatch({ type: "products/addToCart", payload: { id } })
-        dispatch({ type: "products/removeFav", payload: { id } });
-    }
+
     const InStock = (d) => {
         let sum = 0;
         if (d.stoks.length > 0) {
@@ -56,12 +51,12 @@ const Wishlist = () => {
                                                             <i className="fa fa-trash text-danger" onClick={() => rmProduct(data)} style={{ 'cursor': 'pointer' }} onKeyPress={() => rmProduct(data)} role="button" tabIndex={0}></i>
                                                         </td>
                                                         <td className="product_thumb">
-                                                            <Link to={'/product-details/' + params.idE + '/' + data.id}>
+                                                            <Link to={'/' + params.idE + '/product-details/' + data.id}>
                                                                 <img src={data.img} alt="img" />
                                                             </Link>
                                                         </td>
                                                         <td className="product_name">
-                                                            <Link to={'/product-details/' + params.idE + '/' + data.id}>
+                                                            <Link to={'/' + params.idE + '/product-details/' + data.id}>
                                                                 {data.title}
                                                             </Link>
                                                         </td>
@@ -70,7 +65,7 @@ const Wishlist = () => {
                                                         ) : (<td className="product_stock"> <h6 style={{ color: 'red' }}>Non Disponible</h6></td>
                                                         )}
                                                         <td className="product_addcart">
-                                                            <button type="button" className="theme-btn-one btn-black-overlay btn_sm" onClick={(e) => { e.preventDefault(); window.location.href = '/product-details/' + params.idE + '/' + data.id }}>Ajouter Au panier</button>
+                                                            <Link to={'/' + params.idE + '/product-details/' + data.id} type="button" className="theme-btn-one btn-black-overlay btn_sm" >Ajouter Au panier</Link>
                                                         </td>
                                                     </tr>
                                                 ))}

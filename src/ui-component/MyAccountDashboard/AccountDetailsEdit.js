@@ -2,7 +2,7 @@ import { Alert, Checkbox, FormControlLabel } from '@mui/material';
 import { createBrowserHistory } from 'history';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
-import { Link, useHistory, useParams } from 'react-router-dom'
+import { Link, Navigate, useHistory, useParams } from 'react-router-dom'
 import AuthService from 'services/auth-services/AuthService';
 import ClientServices from 'services/user-services/ClientServices';
 import Swal from 'sweetalert2';
@@ -27,7 +27,7 @@ const AccountDetailsEdit = () => {
     const [password, setPassword] = useState('')
     const [newPassword, setNewPassword] = useState('')
     const [confirmNewPassword, setConfirmNewPassword] = useState('')
-
+    const [redirect, setRedirect] = useState(false)
 
     useEffect(() => {
         AuthService.show().then((res) => {
@@ -111,9 +111,7 @@ const AccountDetailsEdit = () => {
                         confirmButtonText: 'Ok'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            const history = createBrowserHistory();
-                            history.push("/my-account/customer-account-details/" + params.idE);
-                            window.location.reload();
+                            setRedirect(true)
                         }
                     })
                     setMessage('');
@@ -129,7 +127,8 @@ const AccountDetailsEdit = () => {
         }
     }
 
-
+    if (redirect)
+        return (<Navigate push to={'/' + params.idE + "/my-account/customer-account-details"} />)
     return (
 
         <>
@@ -139,7 +138,7 @@ const AccountDetailsEdit = () => {
                         <div className="row">
                             <div className="col-lg-6">
                                 <div className="back_btn">
-                                    <Link to={"/my-account/customer-account-details/" + params.idE} ><i className="fa fa-arrow-left"></i>Retour</Link>
+                                    <Link to={'/' + params.idE + "/my-account/customer-account-details"} ><i className="fa fa-arrow-left"></i>Retour</Link>
                                 </div>
                             </div>
                         </div>

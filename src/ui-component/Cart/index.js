@@ -58,12 +58,12 @@ const CartArea = () => {
                                                                 className="fa fa-trash text-danger" onClick={() => rmProduct(data)} style={{ 'cursor': 'pointer' }} onKeyPress={() => rmProduct(data)}   ></i>
                                                         </td>
                                                         <td className="product_thumb">
-                                                            <Link to={'/product-details/' + params.idE + '/' + data.id}>
+                                                            <Link to={'/' + params.idE + '/product-details/' + data.id}>
                                                                 <img src={data.img} alt="img" />
                                                             </Link>
                                                         </td>
                                                         <td className="product_name">
-                                                            <Link to={'/product-details/' + params.idE + '/' + data.id}>
+                                                            <Link to={'/' + params.idE + '/product-details/' + data.id}>
                                                                 {data.title}
                                                             </Link>
                                                         </td>
@@ -101,7 +101,7 @@ const CartArea = () => {
                                     <img src={img} alt="img" />
                                     <h2>VOTRE PANIER EST VIDE</h2>
                                     <h3>Désolé ... Aucun article trouvé dans votre panier !</h3>
-                                    <Link to={"/shop/" + params.idE} className="btn btn-black-overlay btn_sm">Continuer vos achats</Link>
+                                    <Link to={'/' + params.idE + "/shop/"} className="btn btn-black-overlay btn_sm">Continuer vos achats</Link>
                                 </div>
                             </div>
                         </div>

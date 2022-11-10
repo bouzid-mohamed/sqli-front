@@ -111,6 +111,7 @@ export default function ListViewProducts() {
         let link = price === 0 ? 'products?page=1&filter=' + list : 'products?page=1&filter=' + list + '&order=' + price
         const history = createBrowserHistory();
         history.push(link);
+        setPage(1)
         setRelaoad(reload + 1)
     }
 

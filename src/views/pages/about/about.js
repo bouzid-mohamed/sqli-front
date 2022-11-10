@@ -11,18 +11,11 @@ const About = () => {
     let error404 = useSelector((state) => state.products.errorPage)
     let load = useSelector((state) => state.products.loading)
     return (
-        <>
-
-            <Header />
-            {load ? (<Loading />) : (<>{error404 === 0 ? (
-                <>
-                    <Banner title="À PROPOS" />
-                    <AboutComponent />
-                    <Footer />
-                </>) : (<Error404></Error404>)}</>)}
-
-
-        </>
+        <>{error404 === 0 ? (
+            <>
+                <Banner title="À PROPOS" />
+                <AboutComponent />
+            </>) : (<Error404></Error404>)}</>
     )
 }
 

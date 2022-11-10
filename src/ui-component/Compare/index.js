@@ -36,7 +36,7 @@ const Compare = () => {
                                                 {
                                                     products.map((item, index) => (
                                                         <td className="product-image-title" key={index}>
-                                                            <Link to={'/product-details/' + params.idE + '/' + item.id}>
+                                                            <Link to={'/' + params.idE + '/product-details/' + item.id}>
                                                                 {
                                                                     products.length === 3 ?
                                                                         <img src={item.img} alt="Compare_Product" style={{ height: '43vh' }} />
@@ -44,8 +44,8 @@ const Compare = () => {
                                                                         <img src={item.img} alt="Compare_Product" style={{ height: '70vh' }} />
                                                                 }
                                                             </Link>
-                                                            <Link to="/shop-left-bar" className="category">{item.categorie.nom}</Link>
-                                                            <h5><Link to="/shop-left-bar" className="title">{item.title}</Link></h5>
+                                                            <Link to={'/' + params.idE + "/shop?filter=" + item.categorie.id} className="category">{item.categorie.nom}</Link>
+                                                            <h5><Link to={'/' + params.idE + '/product-details/' + item.id} className="title">{item.title}</Link></h5>
                                                         </td>
                                                     ))
                                                 }
@@ -99,11 +99,10 @@ const Compare = () => {
                                                 <td className="first-column">Actions</td>
                                                 {
                                                     products.map((item, index) => (
-                                                        <td className="pro-addtocart" key={index}><a href={'/product-details/' + params.idE + '/' + item.id} className="theme-btn-one btn-black-overlay btn_sm"><span>Ajouter au panier</span></a></td>
+                                                        <td className="pro-addtocart" key={index}><Link to={'/' + params.idE + '/product-details/' + item.id} className="theme-btn-one btn-black-overlay btn_sm"><span>Ajouter au panier</span></Link></td>
                                                     ))
                                                 }
                                             </tr>
-
                                             <tr>
                                                 <td className="first-column">Supprimer</td>
                                                 {
@@ -130,7 +129,7 @@ const Compare = () => {
                                 <img src={img} alt="img" />
                                 <h2>PRODUIT NON TROUVÉ</h2>
                                 <h3>Désolé ... Aucun article trouvé dans votre liste de comparaison !</h3>
-                                <Link to={"/shop/" + params.idE} className="btn btn-black-overlay btn_sm">Continuer vos achats</Link>
+                                <Link to={'/' + params.idE + "/shop"} className="btn btn-black-overlay btn_sm">Continuer vos achats</Link>
                             </div>
                         </div>
                     </div>

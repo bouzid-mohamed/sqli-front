@@ -102,14 +102,13 @@ class ProductService {
     }
 
     getAllProductEntreprise(id, value, filter, order, search) {
-
-
         if (value === null)
             value = 1;
         if (search === null) {
 
             if (order === null) {
                 return axios.get(API_URL1 + 'produits_entreprise/' + id + '?page=' + value + '&filter=' + filter)
+
 
             } else {
                 return axios.get(API_URL1 + 'produits_entreprise/' + id + '?page=' + value + '&filter=' + filter + '&order=' + order)

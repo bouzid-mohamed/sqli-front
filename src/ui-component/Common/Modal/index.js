@@ -168,21 +168,21 @@ const MyVerticallyCenteredModal = (props) => {
 
                                                 </div></>)}
                                             <div className="modal_share_icons_one">
-                                                <h4>SHARE THIS PRODUCT</h4>
+                                                <h4>PARTAGER CE PRODUIT</h4>
                                                 <div className="posted_icons_one">
-                                                    <FacebookShareButton url={"http://localhost:3000/product-details/" + params.idE + '/' + props.data.id} quote={"Best React.js ecommerce Templete"}>
+                                                    <FacebookShareButton url={"http://localhost:3000/" + params.idE + '/product-details/' + props.data.id} quote={"Best React.js ecommerce Templete"}>
                                                         <FacebookIcon size={32} round />
                                                     </FacebookShareButton>
-                                                    <TwitterShareButton url={"http://localhost:3000/product-details/" + params.idE + '/' + props.data.id} title={"Best React.js ecommerce Templete"}>
+                                                    <TwitterShareButton url={"http://localhost:3000/" + params.idE + '/product-details/' + props.data.id} title={"Best React.js ecommerce Templete"}>
                                                         <TwitterIcon size={32} round />
                                                     </TwitterShareButton>
-                                                    <LinkedinShareButton url={"http://localhost:3000/product-details/" + params.idE + '/' + props.data.id} title={"Best React.js ecommerce Templete"}>
+                                                    <LinkedinShareButton url={"http://localhost:3000/" + params.idE + '/product-details/' + props.data.id} title={"Best React.js ecommerce Templete"}>
                                                         <LinkedinIcon size={32} round />
                                                     </LinkedinShareButton>
-                                                    <TelegramShareButton url={"http://localhost:3000/product-details/" + params.idE + '/' + props.data.id} title={"Best React.js ecommerce Templete"}>
+                                                    <TelegramShareButton url={"http://localhost:3000/" + params.idE + '/product-details/' + props.data.id} title={"Best React.js ecommerce Templete"}>
                                                         <TelegramIcon size={32} round />
                                                     </TelegramShareButton>
-                                                    <WhatsappShareButton url={"http://localhost:3000/product-details/" + params.idE + '/' + props.data.id} title={"Best React.js ecommerce Templete"}>
+                                                    <WhatsappShareButton url={"http://localhost:3000/" + params.idE + '/product-details/' + props.data.id} title={"Best React.js ecommerce Templete"}>
                                                         <WhatsappIcon size={32} round />
                                                     </WhatsappShareButton>
                                                 </div>

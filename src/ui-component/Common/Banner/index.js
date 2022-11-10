@@ -43,7 +43,7 @@ const Banner = (props) => {
                             <div className="common_banner_text">
                                 <h2>{props.title}</h2>
                                 <ul>
-                                    <li><Link to={"/home/" + params.idE}>Accueil</Link></li>
+                                    <li><Link to={'/' + params.idE + "/home"}>Accueil</Link></li>
                                     <li className="slash">/</li>
                                     <li className="active">{props.title}</li>
                                 </ul>
