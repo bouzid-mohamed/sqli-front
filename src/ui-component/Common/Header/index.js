@@ -18,6 +18,7 @@ import CategorieServices from 'services/categories-services/CategorieServices'
 import { CssBaseline } from '@mui/material'
 import pMinDelay from 'p-min-delay';
 import loadable from '../loader/loadable';
+import Loading from '../loader';
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -25,7 +26,6 @@ function useQuery() {
 
 const Header = () => {
     const Footer = loadable(() => pMinDelay(import('../Footer'), 350), { fallback: null });
-
     const params = useParams();
     const [click, setClick] = useState(false);
     const [show, setShow] = useState();
@@ -39,6 +39,8 @@ const Header = () => {
     let favorites = useSelector((state) => state.products.favorites);
     let dispatch = useDispatch();
     let loadingEntreprise = useSelector((state) => state.products.loadingEntreprise)
+    let loadingCategorie = useSelector((state) => state.products.loadingCategorie)
+
     let entreprise = useSelector((state) => state.products.entreprise)
     const [rechercheValue, setRechercheValue] = useState('');
     const rmCartProduct = (id) => {
@@ -181,7 +183,8 @@ const Header = () => {
     };
 
     return (
-        <>
+        loadingCategorie ? (<Loading />) : (<>
+
             <CssBaseline />
             {errorPage === 0 && loadingEntreprise === false ? (<>    <TopHeader />
                 <header className="header-section d-none d-xl-block">
@@ -470,8 +473,8 @@ const Header = () => {
                 </div></>) : (null)}
             <Outlet />
             <Footer />
-
         </>
+        )
 
     )
 }

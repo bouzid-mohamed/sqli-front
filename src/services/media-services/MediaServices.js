@@ -9,6 +9,10 @@ class MediaServices {
         return axios.get(API_URL + 'entreprise/medias', { headers: authHeader() })
 
     }
+    getInstagramList() {
+        return axios.get(API_URL + 'entreprise/instagram', { headers: authHeader() })
+
+    }
 
     getAllMedia(id) {
         return axios.get(API_URL2 + 'show_medias/' + id)
@@ -22,8 +26,21 @@ class MediaServices {
             bodyFormData.append('description', description)
             bodyFormData.append('url', url)
         }
+        if (titre == '' && url != '') {
+            bodyFormData.append('url', url)
+
+        }
         return axios
             .post(API_URL + "entreprise/media/edit/" + id,
+                bodyFormData, { headers: authHeader() })
+            .then(response => {
+                return response.data;
+            });
+    }
+    addInstagram(url, bodyFormData) {
+        bodyFormData.append('url', url)
+        return axios
+            .post(API_URL + "entreprise/instagram/add",
                 bodyFormData, { headers: authHeader() })
             .then(response => {
                 return response.data;
@@ -33,6 +50,20 @@ class MediaServices {
     show(id) {
         return axios.get(API_URL + 'entreprise/media/show/' + id, { headers: authHeader() })
     }
+    //afficher instagram section
+    showInstagramSection(id) {
+        return axios.get(API_URL2 + 'instagramSection/' + id, { headers: authHeader() })
+    }
+    //delete stock
+    deleteInstagram(id) {
+        return axios
+            .put(API_URL + "entreprise/instagram/delete/" + id, {
+            }, { headers: authHeader() })
+            .then(response => {
+                return response.data;
+            });
+    }
+
 
 
 

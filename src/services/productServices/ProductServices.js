@@ -127,6 +127,9 @@ class ProductService {
         return axios.get(API_URL1 + 'show_produit/' + idE + '/' + idP)
 
     }
+    showRelatedProducts(idE, idP) {
+        return axios.get(API_URL1 + 'relatedProducts/' + idP + '/' + idE)
+    }
 
     showProductTriHome(idE) {
         return axios.get(API_URL1 + 'show_produits_home/' + idE)

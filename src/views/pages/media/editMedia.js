@@ -37,6 +37,7 @@ import CompanyServices from 'services/companyServices/CompanyServices';
 import MediaServices from 'services/media-services/MediaServices';
 import { Navigate, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
+import Error404 from '../error/error404back';
 
 const thumbsContainer = {
     display: "flex",
@@ -80,9 +81,10 @@ export default function EditMedia({ ...others }) {
     const [media, setMedia] = useState(null);
     const [loadcirular, setLoadcirular] = useState(true);
     const [isCover, setIsCover] = useState(false)
+    const [isInstagram, setIsInstagram] = useState(false)
     const formikRef = React.useRef();
     const [redirect, setRedirect] = useState(false)
-
+    const [error, setError] = useState(false)
     // dropzone 
     const [files, setFiles] = useState([]);
     const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
@@ -111,12 +113,14 @@ export default function EditMedia({ ...others }) {
 
 
     useEffect(() => {
-
         MediaServices.show(params.id).then((res) => {
             setMedia(res.data[0]);
             setFiles([{ preview: "http://localhost:8000/uploads/" + res.data[0].image, name: null }])
             if (res.data[0].nom === 1) {
                 setIsCover(true)
+            }
+            if (res.data[0].nom === 4) {
+                setIsInstagram(true)
             }
             setLoadcirular(false);
 
@@ -142,7 +146,7 @@ export default function EditMedia({ ...others }) {
 
             }
 
-        })
+        }).catch(err => { setError(true); setLoadcirular(false) })
     }, [],
         () => () => {
             // Make sure to revoke the data uris to avoid memory leaks
@@ -190,7 +194,8 @@ export default function EditMedia({ ...others }) {
 
     }
     if (redirect)
-        return (<Navigate push to="/media" />)
+        return (<Navigate push to={media.nom != 4 ? "/media" : '/instagram'} />)
+
     if (AuthService.getCurrentUser().roles.indexOf("ROLE_ENTREPRISE") > -1)
         return (
             loadcirular === true ? (
@@ -198,8 +203,7 @@ export default function EditMedia({ ...others }) {
                     <CircularProgress />
                 </Box>
             ) : (
-
-                <MainCard >
+                error ? (<Error404 style={{ maxHeight: '100px' }}></Error404>) : (<MainCard >
 
                     <Formik
                         innerRef={formikRef}
@@ -211,8 +215,8 @@ export default function EditMedia({ ...others }) {
                             submit: null
                         }}
                         validationSchema={Yup.object().shape({
-                            titre: isCover ? Yup.string() : Yup.string().max(20, 'titre media ne doit pas dépasser 20 caractère').min(2, 'Titre média doit contenir au moin 2 caractères').required('Titre est requis'),
-                            description: isCover ? Yup.string() : Yup.string().max(30, 'description média ne doit pas dépasser 30 caractère').min(2, 'description média  doit contenir au moin 2 caractères').required('Text est requis'),
+                            titre: isCover || isInstagram ? Yup.string() : Yup.string().max(20, 'titre media ne doit pas dépasser 20 caractère').min(2, 'Titre média doit contenir au moin 2 caractères').required('Titre est requis'),
+                            description: isCover || isInstagram ? Yup.string() : Yup.string().max(30, 'description média ne doit pas dépasser 30 caractère').min(2, 'description média  doit contenir au moin 2 caractères').required('Text est requis'),
                             url: isCover ? Yup.string() : Yup.string()
                                 .matches(
                                     /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/,
@@ -225,7 +229,7 @@ export default function EditMedia({ ...others }) {
                         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
                             <form noValidate onSubmit={handleSubmit} {...others}>
 
-                                <FormControl fullWidth error={Boolean(touched.titre && errors.titre)} sx={{ ...theme.typography.customInput }} style={{ display: isCover ? 'none' : '' }}>
+                                <FormControl fullWidth error={Boolean(touched.titre && errors.titre)} sx={{ ...theme.typography.customInput }} style={{ display: isCover || isInstagram ? 'none' : '' }}>
                                     <InputLabel htmlFor="titre">Titre </InputLabel>
                                     <OutlinedInput
                                         id="titre"
@@ -242,7 +246,7 @@ export default function EditMedia({ ...others }) {
                                         </FormHelperText>
                                     )}
                                 </FormControl>
-                                <FormControl fullWidth error={Boolean(touched.description && errors.description)} sx={{ ...theme.typography.customInput }} style={{ display: isCover ? 'none' : '' }}>
+                                <FormControl fullWidth error={Boolean(touched.description && errors.description)} sx={{ ...theme.typography.customInput }} style={{ display: isCover || isInstagram ? 'none' : '' }}>
                                     <InputLabel htmlFor="description">description </InputLabel>
                                     <OutlinedInput
                                         id="description"
@@ -321,7 +325,7 @@ export default function EditMedia({ ...others }) {
                                     </Grid>
                                     <Grid item xs={12} sm={2} >
 
-                                        <Link to={'/media'} style={{ textDecoration: 'none' }}>
+                                        <Link to={media.nom != 4 ? '/media' : '/instagram'} style={{ textDecoration: 'none' }}>
                                             <AnimateButton>
                                                 <Button
                                                     disableElevation
@@ -356,7 +360,8 @@ export default function EditMedia({ ...others }) {
                             </form>
                         )}
                     </Formik>
-                </MainCard >));
+                </MainCard >)
+            ));
     else {
         history.push('/login');
         window.location.reload();

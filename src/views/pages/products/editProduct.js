@@ -53,6 +53,7 @@ import ProductServices from 'services/productServices/ProductServices';
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 import AuthService from 'services/auth-services/AuthService';
+import Error404 from '../error/error404back';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -115,6 +116,7 @@ export default function AddProduct({ ...others }) {
     const [open, setOpen] = React.useState(false);
     const [idDelete, setIdDelete] = useState(0);
     const [indexDelete, setIndexDelete] = useState(0);
+    const [error, setError] = useState(false)
 
     const handleClose = () => {
         setOpen(false);
@@ -197,7 +199,7 @@ export default function AddProduct({ ...others }) {
                 res.data[0].images.map((img) => {
                     images.push(img)
                 })
-            })
+            }).catch(err => { setError(true); setLoadcirular(false); })
         }, [], () => {
             files.forEach(file => URL.revokeObjectURL(file.preview));
         }, [files],
@@ -260,281 +262,282 @@ export default function AddProduct({ ...others }) {
                     <CircularProgress />
                 </Box>
             ) : (
-                <MainCard
-                    style={{ height: '100%' }}>
-                    <Formik
-                        innerRef={formikRef}
-                        initialValues={{
-                            nom: '',
-                            description: '',
-                            prix: '',
-                            promotion: '',
-                            categorie: '',
-                            file: { files },
-                            submit: null
-                        }}
-                        validationSchema={Yup.object().shape({
-                            nom: Yup.string().max(255, 'Doit être un nom valide').min(2, 'Doit être un nom valide').required('Nom est requis'),
-                            description: Yup.string().max(300, 'Doit être une description valide').min(5, 'La description doit contenir au moins 5 caractères').required('Description est requis'),
-                            prix: Yup.number().min(0, 'le prix doit etre supérieur à 0 ').required('Prix est requis'),
-                        })}
-                        onSubmit={(values, { setErrors, setStatus, setSubmitting }) => handleSubmit(values, { setErrors, setStatus, setSubmitting })}
-                    >
-                        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-                            <form noValidate onSubmit={handleSubmit} {...others}>
-                                <Grid container spacing={matchDownSM ? 0 : 2}>
-                                </Grid>
-                                <FormControl fullWidth error={Boolean(touched.nom && errors.nom)} sx={{ ...theme.typography.customInput }}>
-                                    <InputLabel htmlFor="nom">Nom produit</InputLabel>
-                                    <OutlinedInput
-                                        id="nom"
-                                        type="text"
-                                        value={values.nom}
-                                        name="nom"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        inputProps={{}}
-                                    />
-                                    {touched.nom && errors.nom && (
-                                        <FormHelperText error id="standard-weight-helper-text-nom-register">
-                                            {errors.nom}
+                error ? (<Error404 ></Error404>) : (
+                    <MainCard
+                        style={{ height: '100%' }}>
+                        <Formik
+                            innerRef={formikRef}
+                            initialValues={{
+                                nom: '',
+                                description: '',
+                                prix: '',
+                                promotion: '',
+                                categorie: '',
+                                file: { files },
+                                submit: null
+                            }}
+                            validationSchema={Yup.object().shape({
+                                nom: Yup.string().max(255, 'Doit être un nom valide').min(2, 'Doit être un nom valide').required('Nom est requis'),
+                                description: Yup.string().max(300, 'Doit être une description valide').min(5, 'La description doit contenir au moins 5 caractères').required('Description est requis'),
+                                prix: Yup.number().min(0, 'le prix doit etre supérieur à 0 ').required('Prix est requis'),
+                            })}
+                            onSubmit={(values, { setErrors, setStatus, setSubmitting }) => handleSubmit(values, { setErrors, setStatus, setSubmitting })}
+                        >
+                            {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+                                <form noValidate onSubmit={handleSubmit} {...others}>
+                                    <Grid container spacing={matchDownSM ? 0 : 2}>
+                                    </Grid>
+                                    <FormControl fullWidth error={Boolean(touched.nom && errors.nom)} sx={{ ...theme.typography.customInput }}>
+                                        <InputLabel htmlFor="nom">Nom produit</InputLabel>
+                                        <OutlinedInput
+                                            id="nom"
+                                            type="text"
+                                            value={values.nom}
+                                            name="nom"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            inputProps={{}}
+                                        />
+                                        {touched.nom && errors.nom && (
+                                            <FormHelperText error id="standard-weight-helper-text-nom-register">
+                                                {errors.nom}
+                                            </FormHelperText>
+                                        )}
+                                    </FormControl>
+                                    <FormControl fullWidth error={Boolean(touched.prix && errors.prix)} sx={{ ...theme.typography.customInput }}>
+                                        <InputLabel htmlFor="nom">Prix produit</InputLabel>
+                                        <OutlinedInput
+                                            id="prix"
+                                            type="number"
+                                            value={values.prix}
+                                            name="prix"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            inputProps={{}}
+                                        />
+                                        {touched.prix && errors.prix && (
+                                            <FormHelperText error id="standard-weight-helper-text-prix-register">
+                                                {errors.prix}
+                                            </FormHelperText>
+                                        )}
+                                    </FormControl>
+                                    <FormControl error={Boolean(touched.categorie && categorieName == 0)} fullWidth sx={{ ...theme.typography.customInput }}>
+                                        <Select
+                                            id="categorieName"
+                                            name="categorieName"
+                                            value={categorieName}
+                                            onChange={handleChangeSelect}
+                                            input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+                                            MenuProps={MenuProps}
+                                        >
+                                            {categoriesNames?.map((name) => (
+                                                name.catFils[0] == null ? (
+                                                    <MenuItem
+                                                        key={name.id}
+                                                        value={name.id}
+                                                    >
+                                                        {name.nom}
+                                                    </MenuItem>) : (null)
+                                            ))}
+                                        </Select>
+                                        <FormHelperText id="helpercat">
+                                            Sélectionner la catégorie
                                         </FormHelperText>
-                                    )}
-                                </FormControl>
-                                <FormControl fullWidth error={Boolean(touched.prix && errors.prix)} sx={{ ...theme.typography.customInput }}>
-                                    <InputLabel htmlFor="nom">Prix produit</InputLabel>
-                                    <OutlinedInput
-                                        id="prix"
-                                        type="number"
-                                        value={values.prix}
-                                        name="prix"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        inputProps={{}}
-                                    />
-                                    {touched.prix && errors.prix && (
-                                        <FormHelperText error id="standard-weight-helper-text-prix-register">
-                                            {errors.prix}
-                                        </FormHelperText>
-                                    )}
-                                </FormControl>
-                                <FormControl error={Boolean(touched.categorie && categorieName == 0)} fullWidth sx={{ ...theme.typography.customInput }}>
-                                    <Select
-                                        id="categorieName"
-                                        name="categorieName"
-                                        value={categorieName}
-                                        onChange={handleChangeSelect}
-                                        input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-                                        MenuProps={MenuProps}
-                                    >
-                                        {categoriesNames?.map((name) => (
-                                            name.catFils[0] == null ? (
+                                    </FormControl>
+                                    <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                                        <Select
+                                            id="promotionName"
+                                            value={promotionName}
+                                            onChange={handleChangeSelectPromotion}
+                                            input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+
+                                            MenuProps={MenuProps}
+
+                                        >
+                                            <MenuItem
+                                                value=""
+                                            >
+                                            </MenuItem>
+                                            {promotionNames?.map((name) => (
                                                 <MenuItem
                                                     key={name.id}
                                                     value={name.id}
                                                 >
-                                                    {name.nom}
-                                                </MenuItem>) : (null)
-                                        ))}
-                                    </Select>
-                                    <FormHelperText id="helpercat">
-                                        Sélectionner la catégorie
-                                    </FormHelperText>
-                                </FormControl>
-                                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                                    <Select
-                                        id="promotionName"
-                                        value={promotionName}
-                                        onChange={handleChangeSelectPromotion}
-                                        input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-
-                                        MenuProps={MenuProps}
-
-                                    >
-                                        <MenuItem
-                                            value=""
-                                        >
-                                        </MenuItem>
-                                        {promotionNames?.map((name) => (
-                                            <MenuItem
-                                                key={name.id}
-                                                value={name.id}
-                                            >
-                                                {name.nom} {name.pourcentage} %
-                                            </MenuItem>
-                                        ))}
+                                                    {name.nom} {name.pourcentage} %
+                                                </MenuItem>
+                                            ))}
 
 
-                                    </Select>
-                                    <FormHelperText id="helpercat">
-                                        Sélectionner la promotion
-                                    </FormHelperText>
-
-                                </FormControl>
-
-                                <FormControl fullWidth error={Boolean(touched.description && errors.description)} sx={{ ...theme.typography.customInput }}>
-                                    <OutlinedInput
-                                        multiline
-                                        placeholder="Description"
-                                        minRows={3}
-                                        id="description"
-                                        type="text"
-                                        value={values.description}
-                                        name="description"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        inputProps={{}}
-                                    />
-                                    {touched.description && errors.description && (
-                                        <FormHelperText error id="standard-weight-helper-text-email-register">
-                                            {errors.description}
+                                        </Select>
+                                        <FormHelperText id="helpercat">
+                                            Sélectionner la promotion
                                         </FormHelperText>
-                                    )}
-                                </FormControl>
 
-                                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                                    <section className="container" style={{ "width": "100%", "minHeight": 120, "border": "0.5px dashed #c0c0c0", "borderRadius": "12px" }}>
-                                        <div {...getRootProps({ className: "dropzone" })}>
-                                            <input {...getInputProps()} />
-                                            <p>Faites glisser et déposez des images ici, ou cliquez pour sélectionner des images</p>
-                                        </div>
-                                        <aside style={thumbsContainer}>{thumbs}</aside>
-                                    </section>
-                                </FormControl>
-
-                                <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
-                                    {loadImage ? (<ImageList sx={{ width: "100%", height: 400 }}>
-                                        <ImageListItem key="Subheader" cols={2}>
-                                            <ListSubheader component="div">Images</ListSubheader>
-                                            <LinearProgress />
-
-                                        </ImageListItem>
-
-                                    </ImageList>) : (<ImageList sx={{ width: "100%", height: 400 }}>
-                                        <ImageListItem key="Subheader" cols={2}>
-                                            <ListSubheader component="div">Images</ListSubheader>
-                                        </ImageListItem>
-                                        {images.map((image, index) => (
-                                            <ImageListItem key={index}>
-                                                <img style={{ "maxHeight": 300 }}
-                                                    src={`http://localhost:8000/uploads/` + image.nom}
-
-                                                    alt="Ecommerce"
-                                                    loading="lazy"
-                                                />
-                                                <ImageListItemBar
-                                                    title={product.nom}
-
-                                                    actionIcon={
-                                                        <IconButton onClick={() => { setOpen(true); setIdDelete(image); setIndexDelete(index) }}
-                                                            sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
-                                                            aria-label={`info about `}
-                                                        >
-                                                            <DeleteIcon color="error" />
-                                                        </IconButton>
-                                                    }
-                                                />
-                                            </ImageListItem>
-                                        ))}
-                                    </ImageList>)}
-
-                                </FormControl>
-                                {strength !== 0 && (
-                                    <FormControl fullWidth>
-                                        <Box sx={{ mb: 2 }}>
-                                            <Grid container spacing={2} alignItems="center">
-                                                <Grid item>
-                                                    <Box
-                                                        style={{ backgroundColor: level?.color }}
-                                                        sx={{ width: 85, height: 8, borderRadius: '7px' }}
-                                                    />
-                                                </Grid>
-                                                <Grid item>
-                                                    <Typography variant="subtitle1" fontSize="0.75rem">
-                                                        {level?.label}
-                                                    </Typography>
-                                                </Grid>
-                                            </Grid>
-                                        </Box>
                                     </FormControl>
-                                )}
-                                {errors.submit && (
-                                    <Box sx={{ mt: 3 }}>
-                                        <FormHelperText error>{errors.submit}</FormHelperText>
-                                    </Box>
-                                )}
-                                <Grid container spacing={matchDownSM ? (0) : 2} direction="row-reverse" style={{ "marginTop": 30 }}>
-                                    <Grid item xs={12} sm={12} >
-                                        <Box sx={{ mt: 2 }}>
 
-                                            {message && (
-                                                <Alert severity="error"  >{message}</Alert>
-                                            )}
+                                    <FormControl fullWidth error={Boolean(touched.description && errors.description)} sx={{ ...theme.typography.customInput }}>
+                                        <OutlinedInput
+                                            multiline
+                                            placeholder="Description"
+                                            minRows={3}
+                                            id="description"
+                                            type="text"
+                                            value={values.description}
+                                            name="description"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            inputProps={{}}
+                                        />
+                                        {touched.description && errors.description && (
+                                            <FormHelperText error id="standard-weight-helper-text-email-register">
+                                                {errors.description}
+                                            </FormHelperText>
+                                        )}
+                                    </FormControl>
+
+                                    <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                                        <section className="container" style={{ "width": "100%", "minHeight": 120, "border": "0.5px dashed #c0c0c0", "borderRadius": "12px" }}>
+                                            <div {...getRootProps({ className: "dropzone" })}>
+                                                <input {...getInputProps()} />
+                                                <p>Faites glisser et déposez des images ici, ou cliquez pour sélectionner des images</p>
+                                            </div>
+                                            <aside style={thumbsContainer}>{thumbs}</aside>
+                                        </section>
+                                    </FormControl>
+
+                                    <FormControl fullWidth sx={{ ...theme.typography.customInput }}>
+                                        {loadImage ? (<ImageList sx={{ width: "100%", height: 400 }}>
+                                            <ImageListItem key="Subheader" cols={2}>
+                                                <ListSubheader component="div">Images</ListSubheader>
+                                                <LinearProgress />
+
+                                            </ImageListItem>
+
+                                        </ImageList>) : (<ImageList sx={{ width: "100%", height: 400 }}>
+                                            <ImageListItem key="Subheader" cols={2}>
+                                                <ListSubheader component="div">Images</ListSubheader>
+                                            </ImageListItem>
+                                            {images.map((image, index) => (
+                                                <ImageListItem key={index}>
+                                                    <img style={{ "maxHeight": 300 }}
+                                                        src={`http://localhost:8000/uploads/` + image.nom}
+
+                                                        alt="Ecommerce"
+                                                        loading="lazy"
+                                                    />
+                                                    <ImageListItemBar
+                                                        title={product.nom}
+
+                                                        actionIcon={
+                                                            <IconButton onClick={() => { setOpen(true); setIdDelete(image); setIndexDelete(index) }}
+                                                                sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+                                                                aria-label={`info about `}
+                                                            >
+                                                                <DeleteIcon color="error" />
+                                                            </IconButton>
+                                                        }
+                                                    />
+                                                </ImageListItem>
+                                            ))}
+                                        </ImageList>)}
+
+                                    </FormControl>
+                                    {strength !== 0 && (
+                                        <FormControl fullWidth>
+                                            <Box sx={{ mb: 2 }}>
+                                                <Grid container spacing={2} alignItems="center">
+                                                    <Grid item>
+                                                        <Box
+                                                            style={{ backgroundColor: level?.color }}
+                                                            sx={{ width: 85, height: 8, borderRadius: '7px' }}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item>
+                                                        <Typography variant="subtitle1" fontSize="0.75rem">
+                                                            {level?.label}
+                                                        </Typography>
+                                                    </Grid>
+                                                </Grid>
+                                            </Box>
+                                        </FormControl>
+                                    )}
+                                    {errors.submit && (
+                                        <Box sx={{ mt: 3 }}>
+                                            <FormHelperText error>{errors.submit}</FormHelperText>
                                         </Box>
-                                    </Grid>
-                                    <Grid item xs={12} sm={2} >
+                                    )}
+                                    <Grid container spacing={matchDownSM ? (0) : 2} direction="row-reverse" style={{ "marginTop": 30 }}>
+                                        <Grid item xs={12} sm={12} >
+                                            <Box sx={{ mt: 2 }}>
 
-                                        <Link to={'/tableView/products?page=1'} style={{ textDecoration: 'none' }}>
+                                                {message && (
+                                                    <Alert severity="error"  >{message}</Alert>
+                                                )}
+                                            </Box>
+                                        </Grid>
+                                        <Grid item xs={12} sm={2} >
+
+                                            <Link to={'/tableView/products?page=1'} style={{ textDecoration: 'none' }}>
+                                                <AnimateButton>
+                                                    <Button
+                                                        disableElevation
+                                                        disabled={isSubmitting}
+                                                        fullWidth
+                                                        size="large"
+                                                        color="secondary"
+                                                        variant="outlined"
+                                                    >
+                                                        Annuler
+                                                    </Button>
+                                                </AnimateButton>
+                                            </Link>
+                                        </Grid>
+                                        <Grid item xs={12} sm={2} >
                                             <AnimateButton>
-                                                <Button
+                                                <LoadingButton
                                                     disableElevation
-                                                    disabled={isSubmitting}
                                                     fullWidth
                                                     size="large"
-                                                    color="secondary"
-                                                    variant="outlined"
+                                                    type="submit"
+                                                    color="primary"
+                                                    loading={isSubmitting}
+                                                    variant="contained"
                                                 >
-                                                    Annuler
-                                                </Button>
+                                                    Modifier
+                                                </LoadingButton>
                                             </AnimateButton>
-                                        </Link>
+                                        </Grid>
                                     </Grid>
-                                    <Grid item xs={12} sm={2} >
-                                        <AnimateButton>
-                                            <LoadingButton
-                                                disableElevation
-                                                fullWidth
-                                                size="large"
-                                                type="submit"
-                                                color="primary"
-                                                loading={isSubmitting}
-                                                variant="contained"
-                                            >
-                                                Modifier
-                                            </LoadingButton>
-                                        </AnimateButton>
-                                    </Grid>
-                                </Grid>
-                            </form>
-                        )}
-                    </Formik>
-                    {
-                        open ? (<div>
+                                </form>
+                            )}
+                        </Formik>
+                        {
+                            open ? (<div>
 
-                            <Dialog
-                                open={open}
-                                onClose={handleClose}
-                                aria-labelledby="alert-dialog-title"
-                                aria-describedby="alert-dialog-description"
-                            >
-                                <DialogTitle id="alert-dialog-title">
-                                    {"Voulez-vous supprimer cette image"}
-                                </DialogTitle>
-                                <DialogContent>
-                                    <DialogContentText id="alert-dialog-description">
-                                        Let Google help apps determine location. This means sending anonymous
-                                        location data to Google, even when no apps are running.
-                                    </DialogContentText>
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={handleClose}>Annuler</Button>
-                                    <Button onClick={deleteImage} autoFocus>
-                                        Confirmer
-                                    </Button>
-                                </DialogActions>
-                            </Dialog>
-                        </div>) : (null)}
-                </MainCard >));
+                                <Dialog
+                                    open={open}
+                                    onClose={handleClose}
+                                    aria-labelledby="alert-dialog-title"
+                                    aria-describedby="alert-dialog-description"
+                                >
+                                    <DialogTitle id="alert-dialog-title">
+                                        {"Voulez-vous supprimer cette image"}
+                                    </DialogTitle>
+                                    <DialogContent>
+                                        <DialogContentText id="alert-dialog-description">
+                                            Let Google help apps determine location. This means sending anonymous
+                                            location data to Google, even when no apps are running.
+                                        </DialogContentText>
+                                    </DialogContent>
+                                    <DialogActions>
+                                        <Button onClick={handleClose}>Annuler</Button>
+                                        <Button onClick={deleteImage} autoFocus>
+                                            Confirmer
+                                        </Button>
+                                    </DialogActions>
+                                </Dialog>
+                            </div>) : (null)}
+                    </MainCard >)));
     else {
         history.push('/login');
         window.location.reload();

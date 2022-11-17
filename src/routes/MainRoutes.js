@@ -5,6 +5,7 @@ import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
 import { createBrowserHistory } from 'history';
 
+
 const history = createBrowserHistory();
 
 
@@ -58,8 +59,8 @@ const AboutBack = Loadable(lazy(() => import('views/pages/contenu/abouts')));
 
 const Media = Loadable(lazy(() => import('views/pages/media/mediaGird')));
 const EditMedia = Loadable(lazy(() => import('views/pages/media/editMedia')));
-
-
+const Instagram = Loadable(lazy(() => import('views/pages/media/intagram')));
+const AddInstagram = Loadable(lazy(() => import('views/pages/media/addInstagram')));
 
 
 
@@ -202,6 +203,14 @@ const MainRoutes = {
         {
             path: '/media',
             element: <Media />
+        },
+        {
+            path: '/instagram',
+            element: <Instagram />
+        },
+        {
+            path: '/instagram/add',
+            element: < AddInstagram />
         },
         {
             path: '/media/edit/:id',

@@ -21,58 +21,111 @@ const ProductDetailsTwo = () => {
     const [couleur, setCouleur] = useState([])
     const [stockChoisit, setStockChoisit] = useState(null)
     const [pchecked, setPchecked] = useState(0)
-
+    const [load, setLoad] = useState(true)
     const [loadSingle, setLoadSingle] = useState(true)
+    const [listproducts, setListproducts] = useState([])
+    const [prods, setProds] = useState([]);
+
     useEffect(() => {
-        ProductServices.showProductFront(params.idE, params.id).then((res) => {
-            let tstoks = []
-            res.data[0].stoks.filter((s) => {
-                if (!tstoks.includes(s.taille) && s.quantite > 0)
-                    tstoks.push(s.taille)
-            })
-            setTaille(tstoks)
-
-            let hov = ''
-            let price = 0
-            let label = ''
-            let im = []
-
-            if (res.data[0].images.length > 1)
-                hov = res.data[0].images[1].nom
-            else hov = res.data[0].images[0].nom
-            if (res.data[0].promotion) {
-                price = Math.trunc(res.data[0].prix - (res.data[0].prix * res.data[0].promotion.pourcentage / 100))
-                label = 'promo' + ' ' + res.data[0].promotion.pourcentage + '%'
-            }
-            else price = res.data[0].prix
-            res.data[0].images.map((i) => {
-                im.push({
-                    color: 'red', img: "http://localhost:8000/uploads/" + i.nom, quantity: 1,
+        setLoad(true)
+        setListproducts([])
+        ProductServices.showRelatedProducts(params.idE, params.id).then((res) => {
+            res.data.filter((p) => {
+                let hov = ''
+                let price = 0
+                let label = ''
+                let im = []
+                if (p.images.length > 1)
+                    hov = p.images[1].nom
+                else hov = p.images[0].nom
+                if (p.promotion) {
+                    price = Math.trunc(p.prix - (p.prix * p.promotion.pourcentage / 100))
+                    label = 'promo' + ' ' + p.promotion.pourcentage + '%'
+                }
+                else price = p.prix
+                p.images.map((i) => {
+                    im.push({
+                        color: 'red', img: "http://localhost:8000/uploads/" + i.nom, quantity: 1,
+                    })
                 })
+
+                listproducts.push({
+                    id: p.id, labels: label, category: "fashion", img: "http://localhost:8000/uploads/" + p.images[0].nom, hover_img: "http://localhost:8000/uploads/" + hov,
+                    title: p.nom,
+                    price: price,
+                    description: p.description,
+                    rating: {
+                        rate: 3.9,
+                        count: 30
+                    },
+                    promotion: p.promotion,
+                    categorie: p.categorie,
+                    stoks: p.stoks,
+                    entreprise: p.Entreprise,
+                    color: im
+
+                })
+
             })
-            let p = res.data[0]
+            setProds(listproducts)
+            setLoad(false)
+        })
 
-            setProduct({
-                id: p.id, labels: label, category: "fashion", img: "http://localhost:8000/uploads/" + p.images[0].nom, hover_img: "http://localhost:8000/uploads/" + hov,
-                title: p.nom,
-                price: price,
-                description: p.description,
-                rating: {
-                    rate: 3.9,
-                    count: 30
-                },
-                promotion: p.promotion,
-                categorie: p.categorie,
-                stoks: p.stoks,
-                entreprise: p.Entreprise,
-                color: im
+    }, [])
 
-            })
-            dispatch({ type: "products/getSingleProduct", payload: res.data[0] });
-            setLoadSingle(false)
+    useEffect(
 
-        }).catch(err => setErrorProduct(1))
-    }, [params.id])
+
+        () => {
+            ProductServices.showProductFront(params.idE, params.id).then((res) => {
+                let tstoks = []
+                res.data[0].stoks.filter((s) => {
+                    if (!tstoks.includes(s.taille) && s.quantite > 0)
+                        tstoks.push(s.taille)
+                })
+                setTaille(tstoks)
+
+                let hov = ''
+                let price = 0
+                let label = ''
+                let im = []
+
+                if (res.data[0].images.length > 1)
+                    hov = res.data[0].images[1].nom
+                else hov = res.data[0].images[0].nom
+                if (res.data[0].promotion) {
+                    price = Math.trunc(res.data[0].prix - (res.data[0].prix * res.data[0].promotion.pourcentage / 100))
+                    label = 'promo' + ' ' + res.data[0].promotion.pourcentage + '%'
+                }
+                else price = res.data[0].prix
+                res.data[0].images.map((i) => {
+                    im.push({
+                        color: 'red', img: "http://localhost:8000/uploads/" + i.nom, quantity: 1,
+                    })
+                })
+                let p = res.data[0]
+
+                setProduct({
+                    id: p.id, labels: label, category: "fashion", img: "http://localhost:8000/uploads/" + p.images[0].nom, hover_img: "http://localhost:8000/uploads/" + hov,
+                    title: p.nom,
+                    price: price,
+                    description: p.description,
+                    rating: {
+                        rate: 3.9,
+                        count: 30
+                    },
+                    promotion: p.promotion,
+                    categorie: p.categorie,
+                    stoks: p.stoks,
+                    entreprise: p.Entreprise,
+                    color: im
+
+                })
+                dispatch({ type: "products/getSingleProduct", payload: res.data[0] });
+                setLoadSingle(false)
+
+            }).catch(err => setErrorProduct(1))
+        }, [params.id])
     // Add to cart
     const addToCart = async (id) => {
         if (stockChoisit === null) {
@@ -272,7 +325,7 @@ const ProductDetailsTwo = () => {
                         <ProductInfo product={product} />
                     </div>
                 </section>
-                    <RelatedProduct />
+                    <RelatedProduct data={prods} load={load} />
 
                 </>)}
 
@@ -289,7 +342,7 @@ const ProductDetailsTwo = () => {
                         </div>
                     </div>
                 </div>
-                <RelatedProduct />
+                <RelatedProduct data={prods} load={load} />
 
             </></>)}
         </>

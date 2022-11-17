@@ -39,6 +39,7 @@ import MainCard from 'ui-component/cards/MainCard';
 import Swal from 'sweetalert2';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import { Link } from 'react-router-dom';
+import Error404 from '../error/error404back';
 
 
 const ITEM_HEIGHT = 48;
@@ -67,7 +68,7 @@ export default function EditStock({ ...others }) {
     const [loadcirular, setLoadcirular] = useState(true);
     const formikRef = React.useRef();
     const [redirect, setRedirect] = useState(false)
-
+    const [error, setError] = useState(false)
 
     const handleChangeSelect = (event) => {
         const {
@@ -134,7 +135,7 @@ export default function EditStock({ ...others }) {
                     );
 
                 }
-            })
+            }).catch(err => { setError(true); setLoadcirular(false); })
         }, []
     );
     if (redirect)
@@ -149,199 +150,200 @@ export default function EditStock({ ...others }) {
                     <CircularProgress />
                 </Box>
             ) : (
-                <MainCard >
+                error ? (<Error404 style={{ maxHeight: '100px' }}></Error404>) : (
+                    <MainCard >
 
-                    <Formik
-                        innerRef={formikRef}
-                        initialValues={{
-                            produit: { produitName },
-                            couleur: '',
-                            taille: '',
-                            quantite: '',
-                            submit: null
+                        <Formik
+                            innerRef={formikRef}
+                            initialValues={{
+                                produit: { produitName },
+                                couleur: '',
+                                taille: '',
+                                quantite: '',
+                                submit: null
 
-                        }}
-                        validationSchema={Yup.object().shape({
-                            couleur: Yup.string().required('Couleur est requis'),
-                            quantite: Yup.number().min(0, 'La quantitée doit etre supérieur à 0 ').required('Quantitéest requis'),
-                            taille: Yup.string().min(1, 'Taille est requis').required('Taille est requis'),
-                        })}
-                        onSubmit={(values, { setErrors, setStatus, setSubmitting }) => handleSubmit(values, { setErrors, setStatus, setSubmitting })}
+                            }}
+                            validationSchema={Yup.object().shape({
+                                couleur: Yup.string().required('Couleur est requis'),
+                                quantite: Yup.number().min(0, 'La quantitée doit etre supérieur à 0 ').required('Quantitéest requis'),
+                                taille: Yup.string().min(1, 'Taille est requis').required('Taille est requis'),
+                            })}
+                            onSubmit={(values, { setErrors, setStatus, setSubmitting }) => handleSubmit(values, { setErrors, setStatus, setSubmitting })}
 
-                    >
-                        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-                            <form noValidate onSubmit={handleSubmit} {...others}>
-                                <Grid container spacing={matchDownSM ? 0 : 2}>
+                        >
+                            {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
+                                <form noValidate onSubmit={handleSubmit} {...others}>
+                                    <Grid container spacing={matchDownSM ? 0 : 2}>
 
-
-                                </Grid>
-                                <FormControl fullWidth error={Boolean(touched.produit && produitName === 0)} sx={{ ...theme.typography.customInput }}>
-
-                                    <Select
-                                        id="produitName"
-                                        name="produitName"
-                                        value={produitName}
-                                        onChange={handleChangeSelect}
-                                        input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-
-                                        MenuProps={MenuProps}
-
-                                    >
-                                        {productsNames.map((name) => (
-                                            <MenuItem
-                                                key={name.id}
-                                                value={name.id}
-                                            >
-                                                {name.nom}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                    <FormHelperText id="helpercat">
-                                        Sélectionner le produit
-                                    </FormHelperText>
-
-                                </FormControl>
-
-
-                                <FormControl fullWidth error={Boolean(touched.couleur && errors.couleur)} sx={{ ...theme.typography.customInput }}>
-                                    <InputLabel htmlFor="nom">Couleur</InputLabel>
-                                    <OutlinedInput
-                                        id="couleur"
-                                        type="color"
-                                        value={values.couleur}
-                                        name="couleur"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        inputProps={{}}
-                                    />
-                                    {touched.couleur && errors.couleur && (
-                                        <FormHelperText error id="standard-weight-helper-text-couleur -register">
-                                            {errors.couleur}
-                                        </FormHelperText>
-                                    )}
-                                </FormControl>
-
-
-
-                                <FormControl fullWidth error={Boolean(touched.taille && errors.taille)} sx={{ ...theme.typography.customInput }}>
-                                    <OutlinedInput
-
-                                        placeholder="taille"
-
-                                        id="taille"
-                                        type="text"
-                                        value={values.taille}
-                                        name="taille"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        inputProps={{}}
-                                    />
-                                    {touched.taille && errors.taille && (
-                                        <FormHelperText error id="standard-weight-helper-text-taille-register">
-                                            {errors.taille}
-                                        </FormHelperText>
-                                    )}
-                                </FormControl>
-
-                                <FormControl fullWidth error={Boolean(touched.quantite && errors.quantite)} sx={{ ...theme.typography.customInput }}>
-                                    <OutlinedInput
-
-                                        placeholder="quantite"
-
-                                        id="quantite"
-                                        type="number"
-                                        value={values.quantite}
-                                        name="quantite"
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        inputProps={{}}
-                                    />
-                                    {touched.quantite && errors.quantite && (
-                                        <FormHelperText error id="standard-weight-helper-text-quantite-register">
-                                            {errors.quantite}
-                                        </FormHelperText>
-                                    )}
-                                </FormControl>
-
-                                {strength !== 0 && (
-                                    <FormControl fullWidth>
-                                        <Box sx={{ mb: 2 }}>
-                                            <Grid container spacing={2} alignItems="center">
-                                                <Grid item>
-                                                    <Box
-                                                        style={{ backgroundColor: level?.color }}
-                                                        sx={{ width: 85, height: 8, borderRadius: '7px' }}
-                                                    />
-                                                </Grid>
-                                                <Grid item>
-                                                    <Typography variant="subtitle1" fontSize="0.75rem">
-                                                        {level?.label}
-                                                    </Typography>
-                                                </Grid>
-                                            </Grid>
-                                        </Box>
-                                    </FormControl>
-                                )}
-                                {errors.submit && (
-                                    <Box sx={{ mt: 3 }}>
-                                        <FormHelperText error>{errors.submit}</FormHelperText>
-                                    </Box>
-                                )}
-                                <Grid container spacing={matchDownSM ? (0) : 2} direction="row-reverse" style={{ "marginTop": 30 }}>
-
-                                    <Grid item xs={12} sm={12} >
-
-
-                                        <Box sx={{ mt: 2 }}>
-
-                                            {message && (
-                                                <Alert severity="error"  >{message}</Alert>
-
-                                            )}
-                                        </Box>
 
                                     </Grid>
+                                    <FormControl fullWidth error={Boolean(touched.produit && produitName === 0)} sx={{ ...theme.typography.customInput }}>
 
-                                    <Grid item xs={12} sm={2} >
+                                        <Select
+                                            id="produitName"
+                                            name="produitName"
+                                            value={produitName}
+                                            onChange={handleChangeSelect}
+                                            input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
 
-                                        <Link to={"/girdView/stock?page=1"} style={{ textDecoration: 'none' }}>
+                                            MenuProps={MenuProps}
+
+                                        >
+                                            {productsNames.map((name) => (
+                                                <MenuItem
+                                                    key={name.id}
+                                                    value={name.id}
+                                                >
+                                                    {name.nom}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                        <FormHelperText id="helpercat">
+                                            Sélectionner le produit
+                                        </FormHelperText>
+
+                                    </FormControl>
+
+
+                                    <FormControl fullWidth error={Boolean(touched.couleur && errors.couleur)} sx={{ ...theme.typography.customInput }}>
+                                        <InputLabel htmlFor="nom">Couleur</InputLabel>
+                                        <OutlinedInput
+                                            id="couleur"
+                                            type="color"
+                                            value={values.couleur}
+                                            name="couleur"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            inputProps={{}}
+                                        />
+                                        {touched.couleur && errors.couleur && (
+                                            <FormHelperText error id="standard-weight-helper-text-couleur -register">
+                                                {errors.couleur}
+                                            </FormHelperText>
+                                        )}
+                                    </FormControl>
+
+
+
+                                    <FormControl fullWidth error={Boolean(touched.taille && errors.taille)} sx={{ ...theme.typography.customInput }}>
+                                        <OutlinedInput
+
+                                            placeholder="taille"
+
+                                            id="taille"
+                                            type="text"
+                                            value={values.taille}
+                                            name="taille"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            inputProps={{}}
+                                        />
+                                        {touched.taille && errors.taille && (
+                                            <FormHelperText error id="standard-weight-helper-text-taille-register">
+                                                {errors.taille}
+                                            </FormHelperText>
+                                        )}
+                                    </FormControl>
+
+                                    <FormControl fullWidth error={Boolean(touched.quantite && errors.quantite)} sx={{ ...theme.typography.customInput }}>
+                                        <OutlinedInput
+
+                                            placeholder="quantite"
+
+                                            id="quantite"
+                                            type="number"
+                                            value={values.quantite}
+                                            name="quantite"
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            inputProps={{}}
+                                        />
+                                        {touched.quantite && errors.quantite && (
+                                            <FormHelperText error id="standard-weight-helper-text-quantite-register">
+                                                {errors.quantite}
+                                            </FormHelperText>
+                                        )}
+                                    </FormControl>
+
+                                    {strength !== 0 && (
+                                        <FormControl fullWidth>
+                                            <Box sx={{ mb: 2 }}>
+                                                <Grid container spacing={2} alignItems="center">
+                                                    <Grid item>
+                                                        <Box
+                                                            style={{ backgroundColor: level?.color }}
+                                                            sx={{ width: 85, height: 8, borderRadius: '7px' }}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item>
+                                                        <Typography variant="subtitle1" fontSize="0.75rem">
+                                                            {level?.label}
+                                                        </Typography>
+                                                    </Grid>
+                                                </Grid>
+                                            </Box>
+                                        </FormControl>
+                                    )}
+                                    {errors.submit && (
+                                        <Box sx={{ mt: 3 }}>
+                                            <FormHelperText error>{errors.submit}</FormHelperText>
+                                        </Box>
+                                    )}
+                                    <Grid container spacing={matchDownSM ? (0) : 2} direction="row-reverse" style={{ "marginTop": 30 }}>
+
+                                        <Grid item xs={12} sm={12} >
+
+
+                                            <Box sx={{ mt: 2 }}>
+
+                                                {message && (
+                                                    <Alert severity="error"  >{message}</Alert>
+
+                                                )}
+                                            </Box>
+
+                                        </Grid>
+
+                                        <Grid item xs={12} sm={2} >
+
+                                            <Link to={"/girdView/stock?page=1"} style={{ textDecoration: 'none' }}>
+                                                <AnimateButton>
+                                                    <Button
+                                                        disableElevation
+                                                        disabled={isSubmitting}
+                                                        fullWidth
+                                                        size="large"
+                                                        color="secondary"
+                                                        variant="outlined"
+                                                    >
+                                                        Annuler
+                                                    </Button>
+                                                </AnimateButton>
+                                            </Link>
+
+
+
+                                        </Grid>
+                                        <Grid item xs={12} sm={2} >
                                             <AnimateButton>
-                                                <Button
+                                                <LoadingButton
                                                     disableElevation
-                                                    disabled={isSubmitting}
                                                     fullWidth
                                                     size="large"
-                                                    color="secondary"
-                                                    variant="outlined"
+                                                    type="submit"
+                                                    color="primary"
+                                                    loading={isSubmitting}
+                                                    variant="contained"
                                                 >
-                                                    Annuler
-                                                </Button>
+                                                    Modifier
+                                                </LoadingButton>
                                             </AnimateButton>
-                                        </Link>
-
-
-
+                                        </Grid>
                                     </Grid>
-                                    <Grid item xs={12} sm={2} >
-                                        <AnimateButton>
-                                            <LoadingButton
-                                                disableElevation
-                                                fullWidth
-                                                size="large"
-                                                type="submit"
-                                                color="primary"
-                                                loading={isSubmitting}
-                                                variant="contained"
-                                            >
-                                                Modifier
-                                            </LoadingButton>
-                                        </AnimateButton>
-                                    </Grid>
-                                </Grid>
-                            </form>
-                        )}
-                    </Formik>
-                </MainCard >));
+                                </form>
+                            )}
+                        </Formik>
+                    </MainCard >)));
     else {
         history.push('/login');
         window.location.reload();

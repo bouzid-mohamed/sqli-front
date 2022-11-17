@@ -1,6 +1,5 @@
 // assets
-import TocIcon from '@mui/icons-material/Toc';
-import InfoIcon from '@mui/icons-material/Info';
+import InstagramIcon from '@mui/icons-material/Instagram'; import InfoIcon from '@mui/icons-material/Info';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import DesignServicesIcon from '@mui/icons-material/DesignServices';
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
@@ -33,7 +32,15 @@ const contents = {
                     icon: BorderColorIcon,
                     url: '/media',
                     target: false
-                }
+                },
+                {
+                    id: 'istagram',
+                    title: 'Instagram section',
+                    type: 'item',
+                    icon: InstagramIcon,
+                    url: '/instagram',
+                    target: false
+                },
             ],
 
 

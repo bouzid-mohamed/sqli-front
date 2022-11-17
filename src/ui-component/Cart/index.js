@@ -3,12 +3,10 @@ import TotalCart from './TotalCart'
 import { Link, useParams } from 'react-router-dom'
 import img from '../../assets/img/common/empty-cart.png'
 import { useDispatch, useSelector } from "react-redux";
-import Loading from '../Common/loader'
 import { useState } from 'react';
 
 const CartArea = () => {
     const [coupon, setCoupon] = useState(null)
-    let load = useSelector((state) => state.products.loading)
     const params = useParams();
     let dispatch = useDispatch();
     let carts = useSelector((state) => state.products.carts);

@@ -13,6 +13,7 @@ import promotionServices from 'services/promotion-services/promotionServices'
 import ProductServices from 'services/productServices/ProductServices'
 import { useSelector } from 'react-redux'
 import Error404 from '../error/error404'
+import InstgramSlider from 'ui-component/Common/Instagram'
 
 const Fashion = () => {
 
@@ -223,6 +224,8 @@ const Fashion = () => {
                     <HotProduct prods={[prodsPrix, prodsNouveaux, prodsPromotion, prodsVendu.length > 7 ? prodsVendu.slice(0, 7) : prodsVendu]} />
                     <TodayDeal prods={prodsNouveaux} />
                     <Trending medias={bottommedia} />
+                    <InstgramSlider />
+
                 </>) : (<Error404></Error404>)}
             </>)
             }
