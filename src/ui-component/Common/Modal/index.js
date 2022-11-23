@@ -32,8 +32,13 @@ const MyVerticallyCenteredModal = (props) => {
         setStockChoisit(i);
     }
     const incNum = () => {
-        console.log(1);
-        setCount(count + 1)
+        if (stockChoisit.quantite >= count + 1) {
+            setCount(count + 1)
+        } else {
+            setCount(count)
+            alert('quantité ' + (count + 1) + ' n est pas disponible dans le stock')
+        }
+
     }
     const decNum = () => {
         console.log(2);
@@ -143,7 +148,7 @@ const MyVerticallyCenteredModal = (props) => {
                                                         </div>
                                                     </div>
                                                     <form id="product_count_form_two">
-                                                        <div className="product_count_one">
+                                                        <div className="product_count_one" style={{ display: stockChoisit != null ? '' : 'none' }}>
                                                             <div className="plus-minus-input">
                                                                 <div className="input-group-button">
                                                                     <button type="button" className="button" onClick={decNum}>

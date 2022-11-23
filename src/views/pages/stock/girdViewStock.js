@@ -312,12 +312,11 @@ export default function StockGird(props) {
                                     aria-describedby="alert-dialog-description"
                                 >
                                     <DialogTitle id="alert-dialog-title">
-                                        {"Voulez-vous supprimer le produit"}
+                                        {"Voulez-vous supprimer le stock"}
                                     </DialogTitle>
                                     <DialogContent>
                                         <DialogContentText id="alert-dialog-description">
-                                            Let Google help apps determine location. This means sending anonymous
-                                            location data to Google, even when no apps are running.
+                                            souhaitez-vous vraiment supprimer ce stock ?
                                         </DialogContentText>
                                     </DialogContent>
                                     <DialogActions>
