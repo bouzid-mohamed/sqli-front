@@ -75,11 +75,21 @@ const Compare = () => {
                                                 <td className="first-column">Couleur</td>
                                                 {
                                                     products.map((item, index) => (
-                                                        item.stoks.length > 0 ? (item.stoks.map((stok) => (
+                                                        item.stoks.length > 0 ? item.stoks.length === 1 ? (item.stoks.map((stok) => (
                                                             <td className="product-variable-color" key={stok.id}><label htmlFor={stok.id}>
                                                                 <span className="product-color-red" style={{ background: stok.couleur }}></span>
-                                                            </label></td>
-                                                        ))) : (<td key={item.id} className="product-variable-color" >n'est pas disponible</td>)
+                                                            </label>
+                                                            </td>
+                                                        ))) : ((
+
+
+                                                            <td className="product-variable-color" >
+                                                                {item.stoks.map((stok) => (
+                                                                    <label key={stok.id} htmlFor={stok.id}>
+                                                                        <span className="product-color-red" style={{ background: stok.couleur }}></span>
+                                                                    </label>
+
+                                                                ))}</td>)) : (<td key={item.id} className="product-variable-color" >n'est pas disponible</td>)
                                                     ))
                                                 }
 

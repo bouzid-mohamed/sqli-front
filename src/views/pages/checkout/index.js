@@ -26,7 +26,7 @@ const CheckoutOne = () => {
 
         )
     } else {
-        history.push("/login/" + params.idE);
+        history.push('/' + params.idE + "/login/");
         window.location.reload();
     }
 

@@ -1,0 +1,5 @@
+input[type="text"], input[type="number"], input[type="password"], input[type="email"], input[type="date"], select {
+    min-height: 0px; 
+   background: #fff;
+   border-color: #ddd; 
+    border: 0px ; }

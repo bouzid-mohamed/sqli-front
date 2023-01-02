@@ -1,7 +1,7 @@
 import { createBrowserHistory } from 'history';
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router';
+import { Navigate, useParams } from 'react-router';
 import Loading from '../Common/loader'
 
 const OrderTracking = () => {
@@ -9,10 +9,13 @@ const OrderTracking = () => {
     const params = useParams()
     const [orderId, setOrderId] = useState('');
     let load = useSelector((state) => state.products.loading)
+    const [redirect, setRedirect] = useState(false)
 
     const onChangeOrder = (e) => {
         setOrderId(e.target.value)
     }
+    if (redirect)
+        return (<Navigate push to={'/' + params.idE + '/order-complete/' + orderId} />)
 
     return (
 
@@ -26,7 +29,9 @@ const OrderTracking = () => {
                                 <h4>Suivi de commande</h4>
                                 <p>Pour suivre votre commande, veuillez entrer votre ID de commande dans la case ci-dessous et appuyez sur le bouton "Suivre".</p>
 
-                                <form onSubmit={(e) => { e.preventDefault(); history.push('/order-complete/' + params.idE + '/' + orderId); window.location.reload(); }}>
+                                <form onSubmit={(e) => {
+                                    e.preventDefault(); setRedirect(true)
+                                }}>
                                     <div className="form-group">
                                         <label htmlFor="order_ID" >Commande ID</label>
                                         <input type="number" id="order_ID" className="form-control" value={orderId} onChange={onChangeOrder} placeholder="Trouvez votre commande" style={{ marginTop: '10px' }} min={1} required />

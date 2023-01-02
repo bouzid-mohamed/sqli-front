@@ -15,16 +15,12 @@ const OrderComplete = () => {
     let load = useSelector((state) => state.products.loading)
     if (AuthService.getCurrentClient(params.idE).roles.indexOf("ROLE_CLIENT") > -1) {
         return (
-            <>
-                {load ? (<Loading />) : (<>{error404 === 0 ? (
-                    <>
-                        <Banner title="Suivi de commande" />
-                        <OrderCompleted />
-                    </>) : (<Error404></Error404>)}</>)}
+            <>{error404 === 0 ? (
+                <>
+                    <Banner title="Suivi de commande" />
+                    <OrderCompleted />
+                </>) : (<Error404></Error404>)}</>)
 
-
-            </>
-        )
     } else {
         return (<Navigate to={'/' + params.idE + ' /login'} />)
     }

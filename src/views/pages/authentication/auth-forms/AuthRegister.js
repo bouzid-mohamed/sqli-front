@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { createBrowserHistory } from 'history';
-
-
+import './styleForm.css'
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import {
@@ -29,9 +28,7 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 
 // project imports
-import useScriptRef from 'hooks/useScriptRef';
-import Google from 'assets/images/icons/social-google.svg';
-import AnimateButton from 'ui-component/extended/AnimateButton';
+
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
 // assets
@@ -45,21 +42,16 @@ import Swal from 'sweetalert2';
 
 const FirebaseRegister = ({ ...others }) => {
     const theme = useTheme();
-    const scriptedRef = useScriptRef();
     const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
     const customization = useSelector((state) => state.customization);
     const [showPassword, setShowPassword] = useState(false);
     const [checked, setChecked] = useState(true);
     const [message, setMessage] = useState(null);
-    const [messageSuccess, setMessageSuccess] = useState(null);
-
-
+    const params = useParams()
     const [strength, setStrength] = useState(0);
     const [level, setLevel] = useState();
 
-    const googleHandler = async () => {
-        console.error('Register');
-    };
+
 
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -95,7 +87,7 @@ const FirebaseRegister = ({ ...others }) => {
                     if (result.isConfirmed) {
 
                         const history = createBrowserHistory();
-                        history.push("/login");
+                        history.push('/' + params.idE + "/login");
                         window.location.reload();
                     }
                 })
@@ -113,36 +105,16 @@ const FirebaseRegister = ({ ...others }) => {
 
     return (
         <>
+
+
             <Grid container direction="column" justifyContent="center" spacing={2}>
 
                 <Grid item xs={12}>
                     <Box sx={{ alignItems: 'center', display: 'flex' }}>
                         <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
-                        <Button
-                            variant="outlined"
-                            sx={{
-                                cursor: 'unset',
-                                m: 2,
-                                py: 0.5,
-                                px: 7,
-                                borderColor: `${theme.palette.grey[100]} !important`,
-                                color: `${theme.palette.grey[900]}!important`,
-                                fontWeight: 500,
-                                borderRadius: `${customization.borderRadius}px`
-                            }}
-                            disableRipple
-                            disabled
-                        >
-                            OU
-                        </Button>
-                        <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
                     </Box>
                 </Grid>
-                <Grid item xs={12} container alignItems="center" justifyContent="center">
-                    <Box sx={{ mb: 2 }}>
-                        <Typography variant="subtitle1">Inscrivez-vous avec l'adresse email</Typography>
-                    </Box>
-                </Grid>
+
             </Grid>
 
             <Formik
@@ -190,7 +162,8 @@ const FirebaseRegister = ({ ...others }) => {
                                 </FormControl>
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <FormControl fullWidth error={Boolean(touched.prenom && errors.prenom)} sx={{ ...theme.typography.customInput }}>
+                                <FormControl style={{ maxHeight: '5px' }}
+                                    fullWidth error={Boolean(touched.prenom && errors.prenom)} sx={{ ...theme.typography.customInput }}>
                                     <InputLabel htmlFor="prenom">Prénom</InputLabel>
 
                                     <OutlinedInput
@@ -203,7 +176,6 @@ const FirebaseRegister = ({ ...others }) => {
                                         onBlur={handleBlur}
                                         onChange={handleChange}
                                         inputProps={{}}
-
                                         sx={{ ...theme.typography.customInput }}
                                     />
                                     {touched.prenom && errors.prenom && (

@@ -41,7 +41,7 @@ const LoginArea = () => {
                 } else if (AuthService.getCurrentUser().roles.indexOf("ROLE_CLIENT") > -1) {
                     AuthService.show().then((res) => {
                         localStorage.setItem('user', JSON.stringify({ nom: res.data.nom, prenom: res.data.prenom, photo: res.data.photo, email: res.data.email, numTel: res.data.numTel }))
-                        history.push("/cart/" + params.idE);
+                        history.push('/' + params.idE + "/cart");
                         window.location.reload();
                     })
 

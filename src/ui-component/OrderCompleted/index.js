@@ -43,7 +43,7 @@ const OrderComplete = () => {
                                                 <h2>votre commande est en cours de préparation par l'entreprise !</h2>
                                             </div>
                                             <p>Nous vous remercions de votre commande ! Votre commande est en cours de traitement et sera finalisée dans un délai de 1 à 7 jours. Vous recevrez un email pour vous informer  l'état de votre commande .</p>
-                                            <Link to={"/shop/" + params.idE} className="theme-btn-one bg-black btn_sm">Continuer vos achats</Link>
+                                            <Link to={'/' + params.idE + "/shop"} className="theme-btn-one bg-black btn_sm">Continuer vos achats</Link>
                                         </div>
                                     ) : (null)}
                                     {(commande.status === 'confirmationClient') ? (
@@ -53,7 +53,7 @@ const OrderComplete = () => {
                                                 <h2>votre commande est confirmée par l'entreprise !</h2>
                                             </div>
                                             <p>Nous vous remercions de votre commande ! Votre commande est en cours de traitement et sera finalisée dans un délai de 1 à 7 jours. Vous recevrez un email pour vous informer  l'état de votre commande .</p>
-                                            <Link to={"/shop/" + params.idE} className="theme-btn-one bg-black btn_sm">Continuer vos achats</Link>
+                                            <Link to={'/' + params.idE + "/shop"} className="theme-btn-one bg-black btn_sm">Continuer vos achats</Link>
                                         </div>
                                     ) : (null)}
                                     {(commande.status === 'affectationPoste') ? (
@@ -63,7 +63,7 @@ const OrderComplete = () => {
                                                 <h2>votre commande est Affectée à la poste !</h2>
                                             </div>
                                             <p>Nous vous remercions de votre commande ! Votre commande est en cours de traitement et sera finalisée dans un délai de 1 à 7 jours. Vous recevrez un email pour vous informer  l'état de votre commande .</p>
-                                            <Link to={"/shop/" + params.idE} className="theme-btn-one bg-black btn_sm">Continuer vos achats</Link>
+                                            <Link to={'/' + params.idE + "/shop"} className="theme-btn-one bg-black btn_sm">Continuer vos achats</Link>
                                         </div>
                                     ) : (null)}
                                     {(commande.status === 'confirmationPoste') ? (
@@ -73,7 +73,7 @@ const OrderComplete = () => {
                                                 <h2>votre commande est confirmée par la poste !</h2>
                                             </div>
                                             <p>Nous vous remercions de votre commande ! Votre commande est en cours de traitement et sera finalisée dans un délai de 1 à 7 jours. Vous recevrez un email pour vous informer  l'état de votre commande .</p>
-                                            <Link to={"/shop/" + params.idE} className="theme-btn-one bg-black btn_sm">Continuer vos achats</Link>
+                                            <Link to={'/' + params.idE + "/shop"} className="theme-btn-one bg-black btn_sm">Continuer vos achats</Link>
                                         </div>
                                     ) : (null)}
                                     {(commande.status === 'affecterLivreur') ? (
@@ -83,7 +83,7 @@ const OrderComplete = () => {
                                                 <h2>votre commande est Affectée à un livreur!</h2>
                                             </div>
                                             <p>Nous vous remercions de votre commande ! Votre commande est en cours de traitement et sera finalisée dans un délai de 1 à 7 jours. Vous recevrez un email pour vous informer  l'état de votre commande .</p>
-                                            <Link to={"/shop/" + params.idE} className="theme-btn-one bg-black btn_sm">Continuer vos achats</Link>
+                                            <Link to={'/' + params.idE + "/shop"} className="theme-btn-one bg-black btn_sm">Continuer vos achats</Link>
                                         </div>
                                     ) : (null)}
                                     {(commande.status === 'finie') ? (
@@ -93,7 +93,7 @@ const OrderComplete = () => {
                                                 <h2>votre commande est terminée!</h2>
                                             </div>
                                             <p>Merci de faire partie de notre communauté ! .</p>
-                                            <Link to={"/shop/" + params.idE} className="theme-btn-one bg-black btn_sm">Continuer vos achats</Link>
+                                            <Link to={'/' + params.idE + "/shop"} className="theme-btn-one bg-black btn_sm">Continuer vos achats</Link>
                                         </div>
                                     ) : (null)}
                                     {(commande.status === 'retour') ? (
@@ -103,7 +103,7 @@ const OrderComplete = () => {
                                                 <h2>votre commande a été classée comme retour !</h2>
                                             </div>
                                             <p>Merci de faire partie de notre communauté ! .</p>
-                                            <Link to={"/shop/" + params.idE} className="theme-btn-one bg-black btn_sm">Continuer vos achats</Link>
+                                            <Link to={'/' + params.idE + "/shop"} className="theme-btn-one bg-black btn_sm">Continuer vos achats</Link>
                                         </div>
                                     ) : (null)}
                                     {(commande.status === 'annulee') ? (
@@ -113,7 +113,7 @@ const OrderComplete = () => {
                                                 <h2>votre commande a été annulée !</h2>
                                             </div>
                                             <p>Merci de faire partie de notre communauté ! </p>
-                                            <Link to={"/shop/" + params.idE} className="theme-btn-one bg-black btn_sm">Continuer vos achats</Link>
+                                            <Link to={'/' + params.idE + "/shop"} className="theme-btn-one bg-black btn_sm">Continuer vos achats</Link>
                                         </div>
                                     ) : (null)}
                                 </div>

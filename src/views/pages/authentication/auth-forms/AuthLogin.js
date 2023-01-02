@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import AuthService from "services/auth-services/AuthService";
 import { createBrowserHistory } from 'history';
@@ -23,36 +23,28 @@ import {
     OutlinedInput,
     Stack,
     Typography,
-    useMediaQuery
+
 } from '@mui/material';
 
 // third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 
-// project imports
-import useScriptRef from 'hooks/useScriptRef';
-import AnimateButton from 'ui-component/extended/AnimateButton';
-
 // assets
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import Google from 'assets/images/icons/social-google.svg';
 import { LoadingButton } from '@mui/lab';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
 const FirebaseLogin = ({ ...others }) => {
     const theme = useTheme();
-    const scriptedRef = useScriptRef();
-    const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
+
     const customization = useSelector((state) => state.customization);
     const [checked, setChecked] = useState(true);
 
-    const googleHandler = async () => {
-        console.error('Login');
-    };
+
 
     const [message, setMessage] = useState(null);
 
